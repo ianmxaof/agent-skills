@@ -1,0 +1,7 @@
+# Skill execution logs (opt-in logging)
+.skill-usage/
+
+# OS files
+.DS_Store
+Thumbs.db
+

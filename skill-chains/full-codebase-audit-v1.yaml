@@ -1,0 +1,32 @@
+name: Full Codebase Audit
+version: 1.0.0
+description: Comprehensive codebase analysis including structure, architecture, and dependencies
+execution: mixed
+skills:
+  - name: project-structure-analyzer
+    version: 1.0.0
+    mode: full-scan
+    order: 1
+  - name: architecture-review
+    version: 1.0.0
+    mode: full-scan
+    order: 2
+    depends_on:
+      - project-structure-analyzer
+  - name: dependency-health-check
+    version: 1.0.0
+    mode: full-scan
+    order: 2
+    parallel_with:
+      - architecture-review
+  - name: handoff-quality-validator
+    version: 1.0.0
+    mode: full-scan
+    order: 3
+    depends_on:
+      - project-structure-analyzer
+      - architecture-review
+      - dependency-health-check
+expected_runtime: 10-20min
+estimated_cost: medium
+
