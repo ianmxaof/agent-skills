@@ -1,0 +1,20 @@
+# Artifact Directory Git Ignore
+# See meta/artifact-policy.md for full documentation
+
+# Transient directories - these change frequently
+# and contain work-in-progress artifacts
+incoming/
+processed/
+
+# Archive is optional to track
+# Uncomment the next line to ignore archive as well
+# archive/
+
+# Keep directory structure
+!.gitkeep
+
+# Temporary files
+*.tmp
+*.bak
+*~
+

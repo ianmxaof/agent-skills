@@ -7,6 +7,19 @@ estimated-cost: medium
 typical-runtime: 5-10min
 complexity-level: moderate
 requires-deep-analysis: true
+scope: core
+tier: 3
+writes-code: false
+modifies-files: false
+handoff-protocol: standard-v1
+promotion-candidate: false
+tags:
+  - architecture
+  - design
+  - patterns
+  - refactoring
+  - quality
+  - technical-debt
 prerequisites:
   - skill: project-structure-analyzer
     reason: "Need codebase map and dependency graph to review architecture effectively"
@@ -21,6 +34,14 @@ execution-modes:
 ## Purpose
 
 Reviews codebase architecture, identifies design patterns, detects architectural issues, and provides refactoring recommendations. Builds on project structure analysis to evaluate architectural quality.
+
+## Scope and Classification
+
+**Scope:** `core` - Universal skill that works on any project
+
+**Tier:** `3` - Long-term quality (architecture review and refactoring)
+
+See `meta/skill-scope-policy.md` for detailed guidance on scope classification and promotion paths.
 
 ## When to Invoke
 

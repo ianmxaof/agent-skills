@@ -7,6 +7,21 @@ estimated-cost: medium
 typical-runtime: 5-15min
 complexity-level: moderate
 requires-deep-analysis: true
+scope: core
+tier: 2
+writes-code: false
+modifies-files: false
+handoff-protocol: standard-v1
+promotion-candidate: false
+tags:
+  - ui
+  - ux
+  - adversarial
+  - failure-modes
+  - accessibility
+  - dark-patterns
+  - user-testing
+  - edge-cases
 prerequisites: []
 execution-modes:
   - full-scan
@@ -19,6 +34,14 @@ execution-modes:
 ## Purpose
 
 Tests user interfaces from an adversarial user perspective, identifying UX issues, edge cases, accessibility problems, and potential user frustration points. This skill demonstrates the value of non-code analysis in the agent-skills toolbox.
+
+## Scope and Classification
+
+**Scope:** `core` - Universal skill that works on any project
+
+**Tier:** `2` - System health (UX and accessibility validation)
+
+See `meta/skill-scope-policy.md` for detailed guidance on scope classification and promotion paths.
 
 ## When to Invoke
 

@@ -7,6 +7,19 @@ estimated-cost: low
 typical-runtime: 1-3min
 complexity-level: simple
 requires-deep-analysis: false
+scope: core
+tier: 3
+writes-code: false
+modifies-files: false
+handoff-protocol: standard-v1
+promotion-candidate: false
+tags:
+  - architecture
+  - structure
+  - mapping
+  - foundation
+  - dependencies
+  - codebase
 prerequisites: []
 execution-modes:
   - full-scan
@@ -19,6 +32,14 @@ execution-modes:
 ## Purpose
 
 Maps the codebase structure, identifies key components, creates dependency graphs, and provides a foundation for other skills to build upon. This is a foundational skill that should often run before other analysis skills.
+
+## Scope and Classification
+
+**Scope:** `core` - Universal skill that works on any project
+
+**Tier:** `3` - Long-term quality (codebase structure mapping)
+
+See `meta/skill-scope-policy.md` for detailed guidance on scope classification and promotion paths.
 
 ## When to Invoke
 

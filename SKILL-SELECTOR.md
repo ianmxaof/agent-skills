@@ -167,9 +167,29 @@ Choose skills appropriate for your expertise:
 ## Still Not Sure?
 
 1. **Start with project-structure-analyzer**: It's foundational and low cost
-2. **Check profiles/**: See if your project type has a profile
-3. **Use skill chains**: Try `full-codebase-audit-v1` for comprehensive analysis
-4. **Ask**: Review skill descriptions in `skills/` directory
+2. **Check skills-index.md**: Comprehensive index organized by scope and tier
+3. **Check profiles/**: See if your project type has a profile
+4. **Use skill chains**: Try `full-codebase-audit-v1` for comprehensive analysis
+5. **Review skill-scope-policy.md**: Understand when to use project-specific vs universal skills
+6. **Ask**: Review skill descriptions in `skills/` directory
+
+## Project-Specific vs Universal Skills
+
+**Universal Skills (Core):**
+- Work on any project
+- Located in `agent-skills/skills/core/`
+- Examples: dependency-health-check, architecture-review
+
+**Project-Specific Skills:**
+- Only relevant to your project
+- Located in `.agent-skills/skills/project/`
+- Examples: philosophy-compliance-enforcer (Prompt Library)
+
+**When to use each:**
+- Use universal skills for general analysis (architecture, dependencies, testing)
+- Use project-specific skills for project-specific invariants (philosophy, privacy tiers, state machines)
+
+See `meta/skill-scope-policy.md` for detailed guidance.
 
 ## Examples
 

@@ -1,12 +1,27 @@
 ---
+type: skill-definition
 name: skill-health-check
 category: meta
-version: 1.0.0
+version: 1.1.0
 maturity: validated
+lifecycle: validated
 estimated-cost: low
 typical-runtime: 1-2min
 complexity-level: simple
 requires-deep-analysis: false
+scope: meta
+tier: meta
+writes-code: false
+modifies-files: false
+handoff-protocol: standard-v1
+promotion-candidate: false
+tags:
+  - meta
+  - validation
+  - quality
+  - format
+  - template
+  - health
 prerequisites: []
 execution-modes:
   - full-scan
@@ -19,6 +34,16 @@ execution-modes:
 ## Purpose
 
 Validates that skill definition files are well-formed, complete, and follow the template structure. This meta-skill prevents broken or incomplete skills from being committed to the repository.
+
+## Scope and Classification
+
+**Scope:** `meta` - Governance skill that operates on other skills
+
+**Tier:** `meta` - Skill management (health checks, validation)
+
+**Type:** `skill-definition` - This is an executable skill
+
+See `meta/skill-scope-policy.md` for detailed guidance on scope classification and promotion paths.
 
 ## When to Invoke
 
@@ -52,8 +77,9 @@ Validates that skill definition files are well-formed, complete, and follow the 
 - Check all required sections present
 - Verify prerequisites are resolvable
 - Validate version format
-- Check execution modes are valid
+- Check execution modes are valid (with meta-specific allowances)
 - Ensure template compliance
+- Validate artifact-type field when present
 
 ### What It Must Avoid
 
@@ -61,6 +87,7 @@ Validates that skill definition files are well-formed, complete, and follow the 
 - Don't check if skill works correctly (only definition)
 - Don't modify the skill (only validate)
 - Don't check handoff report quality (that's handoff-quality-validator)
+- Don't reject valid meta scope or custom execution modes for meta skills
 
 ### What It Must Prioritize
 
@@ -69,6 +96,7 @@ Validates that skill definition files are well-formed, complete, and follow the 
 - Prerequisite resolvability
 - Version format correctness
 - Template compliance
+- Correct handling of meta scope and type field
 
 ## Execution Mode Implementation
 
@@ -85,12 +113,13 @@ Validates that skill definition files are well-formed, complete, and follow the 
 
 **Process:**
 1. Parse and validate YAML front matter
-2. Check all required sections present
-3. Verify prerequisites are resolvable
-4. Validate version format
-5. Check execution modes
-6. Validate template compliance
-7. Generate health report
+2. Check `type` field (distinguish skills from non-skills)
+3. Check all required sections present
+4. Verify prerequisites are resolvable
+5. Validate version format
+6. Check execution modes (standard or meta-extended)
+7. Validate artifact-type if present
+8. Generate health report
 
 **Invocation Example:**
 > "Run skill-health-check in full-scan mode on skills/architecture/architecture-review.md"
@@ -150,6 +179,10 @@ Validates that skill definition files are well-formed, complete, and follow the 
 - **Instead:** This skill validates, it doesn't fix. Fix the skill manually.
 - **Why:** This is a validation tool, not an editor.
 
+**Anti-Pattern 4: Rejecting Valid Meta Skills**
+- **Instead:** Accept `scope: meta` and custom execution modes for meta skills
+- **Why:** Meta skills have different requirements than domain skills.
+
 ### ⚠️ WARNING: Known Limitations
 
 **Limitation:** Cannot validate skill logic or correctness
@@ -191,6 +224,7 @@ If this skill fails, try:
    - Invalid version format
    - Unresolvable prerequisites
    - Template compliance issues
+   - Type and scope validation results
 
 3. **Recommendations**
    - Fixes needed for compliance
@@ -217,14 +251,26 @@ The validator checks:
 
 **YAML Front Matter:**
 - [ ] Valid YAML syntax
+- [ ] `type` field present (skill-definition | changelog | readme)
 - [ ] All required fields present (name, category, version, maturity, etc.)
 - [ ] Version format is semantic (X.Y.Z)
 - [ ] Maturity level is valid (draft/validated/hardened/deprecated)
 - [ ] Complexity level is valid (simple/moderate/complex/expert)
 - [ ] Estimated cost is valid (low/medium/high/extreme)
-- [ ] Execution modes are valid (full-scan/incremental/targeted)
+- [ ] Scope is valid (core/domain/project/meta)
+- [ ] Execution modes are valid (see below)
+- [ ] `artifact-type` is valid if present (raw-findings/refined-findings/implementation-plan)
 
-**Required Sections:**
+**Execution Mode Validation:**
+- Standard skills: `full-scan`, `incremental`, `targeted` (required set)
+- Meta skills (`scope: meta`): May include custom modes like `change-analysis`, `assessment`, `intentless`
+
+**Type-Aware Validation:**
+- If `type: skill-definition` → validate as skill
+- If `type: changelog` or `type: readme` → skip skill validation (not a skill)
+- If `type` missing → warn and validate as skill (backwards compatibility)
+
+**Required Sections (for skill-definition only):**
 - [ ] Purpose section present
 - [ ] When to Invoke section present
 - [ ] Required Cursor Settings section present
@@ -277,6 +323,8 @@ After execution:
 
 **Expected Output:**
 - YAML front matter valid ✓
+- Type: skill-definition ✓
+- Scope: core ✓
 - All sections present ✓
 - Prerequisites valid ✓
 - Version format correct ✓
@@ -293,3 +341,23 @@ After execution:
 - **Result:** Non-compliant
 - **Recommendations:** Add missing section, fix version format, add prerequisite reasons
 
+### Example 3: Meta Skill with Custom Modes
+
+**Scenario:** Validating a meta skill with custom execution modes
+
+**Expected Output:**
+- YAML front matter valid ✓
+- Type: skill-definition ✓
+- Scope: meta ✓ (custom modes allowed)
+- Execution modes: full-scan, assessment, intentless ✓ (valid for meta)
+- All sections present ✓
+- **Result:** Compliant
+
+### Example 4: Non-Skill Document
+
+**Scenario:** Validating a changelog file
+
+**Expected Output:**
+- Type: changelog ✓
+- **Result:** Skipped (not a skill definition)
+- **Note:** File correctly identified as non-skill document

@@ -1,0 +1,246 @@
+# Column Configuration Template
+#
+# Use this template to define a 2-agent column for structured analysis.
+# Each column produces one artifact through the Agent A → Agent B pipeline.
+#
+# Copy this file and customize for your column.
+
+# Column Identity
+column:
+  name: <column-name>                    # e.g., "ux-adversarial", "architecture", "performance"
+  purpose: <what this column detects>    # e.g., "Surface adversarial UX failure modes"
+  description: |
+    <Longer description of what this column is for and when to use it>
+
+# Agent A Configuration (Exploration Layer)
+agent-a:
+  skill: <skill-name>                    # e.g., "adversarial-ui-tester"
+  posture: exploratory                   # Always "exploratory" for Agent A
+  output: raw                            # Output is passed to Agent B, not persisted
+  
+  # Agent A behavior notes
+  behavior:
+    - Maximize coverage
+    - Allow mess
+    - Don't self-censor
+    - Don't deduplicate
+    - Don't rank by importance
+
+# Agent B Configuration (Refinement Layer)
+agent-b:
+  skill: refinement-layer                # Usually the generic refinement-layer meta-skill
+  mode: generic | domain-aware | effectiveness
+  
+  # If mode is domain-aware, specify the lens skill
+  domain-skill: <skill-name>             # e.g., "ux-copy-neutrality-checker"
+  
+  output: artifacts/incoming/            # Final artifact location
+  
+  # Agent B behavior notes
+  behavior:
+    - Deduplicate
+    - Rank by severity
+    - Clarify for actionability
+    - Enforce handoff protocol
+    - Produce one artifact
+
+# Expected Output Characteristics
+expected-output:
+  typical-finding-count: <range>         # e.g., "5-10 findings"
+  compression-ratio: <ratio>             # e.g., "3:1" (Agent A produces 3x more than Agent B outputs)
+  common-categories:
+    - <category1>                        # e.g., "accessibility"
+    - <category2>                        # e.g., "error-handling"
+    - <category3>                        # e.g., "user-trust"
+
+# When to Use This Column
+when-to-use:
+  - <scenario 1>                         # e.g., "Pre-release UI audit"
+  - <scenario 2>                         # e.g., "After major UX changes"
+  - <scenario 3>                         # e.g., "When adversarial testing is needed"
+
+# When NOT to Use This Column
+when-not-to-use:
+  - <anti-scenario 1>                    # e.g., "Quick fixes to existing flows"
+  - <anti-scenario 2>                    # e.g., "Non-user-facing changes"
+
+# Invocation Examples
+invocation:
+  pattern: "Run {column-name} column on {target}"
+  examples:
+    - "Run ux-adversarial column on the checkout flow"
+    - "Run ux-adversarial column on the onboarding wizard"
+
+---
+# Example: UX/Adversarial Column
+#
+# column:
+#   name: ux-adversarial
+#   purpose: Surface adversarial UX failure modes and user-hostile edge cases
+#   description: |
+#     This column tests UI flows under adversarial assumptions:
+#     confused users, malicious users, impatient users, users with
+#     accessibility constraints. Produces findings that improve
+#     UX robustness.
+#
+# agent-a:
+#   skill: adversarial-ui-tester
+#   posture: exploratory
+#   output: raw
+#   behavior:
+#     - Test misclicks, rapid actions, partial completion
+#     - Surface dark patterns and hidden consequences
+#     - Check accessibility edge cases
+#
+# agent-b:
+#   skill: refinement-layer
+#   mode: generic
+#   output: artifacts/incoming/
+#   behavior:
+#     - Merge similar UX issues
+#     - Rank by user impact
+#     - Clarify reproduction steps
+#
+# expected-output:
+#   typical-finding-count: "5-8 findings"
+#   compression-ratio: "2:1"
+#   common-categories:
+#     - accessibility
+#     - error-handling
+#     - user-trust
+#     - dark-patterns
+#
+# when-to-use:
+#   - Pre-release UI audit
+#   - After major UX redesign
+#   - When user complaints increase
+#
+# when-not-to-use:
+#   - Backend-only changes
+#   - Quick copy fixes
+#
+# invocation:
+#   pattern: "Run ux-adversarial column on {target}"
+#   examples:
+#     - "Run ux-adversarial column on the checkout flow"
+#     - "Run ux-adversarial column on account settings"
+
+---
+# Example: Architecture Column
+#
+# column:
+#   name: architecture
+#   purpose: Find structural issues and architectural drift
+#   description: |
+#     This column reviews codebase architecture against established
+#     patterns and detects drift from intended design.
+#
+# agent-a:
+#   skill: architecture-review
+#   posture: exploratory
+#   output: raw
+#
+# agent-b:
+#   skill: refinement-layer
+#   mode: domain-aware
+#   domain-skill: architectural-drift-detector
+#   output: artifacts/incoming/
+#
+# expected-output:
+#   typical-finding-count: "3-6 findings"
+#   compression-ratio: "2:1"
+#   common-categories:
+#     - coupling
+#     - abstraction-leaks
+#     - pattern-violations
+#
+# when-to-use:
+#   - Before major refactoring
+#   - Quarterly health checks
+#   - After rapid feature development
+#
+# invocation:
+#   pattern: "Run architecture column on {target}"
+#   examples:
+#     - "Run architecture column on the backend module"
+#     - "Run architecture column on the API layer"
+
+---
+# Example: Performance Column
+#
+# column:
+#   name: performance
+#   purpose: Catch performance regressions and budget violations
+#   description: |
+#     This column monitors performance budgets, bundle sizes,
+#     and identifies optimization opportunities.
+#
+# agent-a:
+#   skill: performance-budget-guardian
+#   posture: exploratory
+#   output: raw
+#
+# agent-b:
+#   skill: refinement-layer
+#   mode: domain-aware
+#   domain-skill: bundle-size-analyzer
+#   output: artifacts/incoming/
+#
+# expected-output:
+#   typical-finding-count: "2-5 findings"
+#   compression-ratio: "1.5:1"
+#   common-categories:
+#     - bundle-size
+#     - load-time
+#     - memory-usage
+#
+# when-to-use:
+#   - Before deployment
+#   - After adding dependencies
+#   - Performance regression hunting
+#
+# invocation:
+#   pattern: "Run performance column on {target}"
+#   examples:
+#     - "Run performance column on the main bundle"
+#     - "Run performance column on the checkout module"
+
+---
+# Example: Correctness/Safety Column
+#
+# column:
+#   name: correctness
+#   purpose: Validate system resilience and failure handling
+#   description: |
+#     This column simulates failure modes and validates that
+#     the system handles edge cases correctly.
+#
+# agent-a:
+#   skill: failure-mode-simulator
+#   posture: exploratory
+#   output: raw
+#
+# agent-b:
+#   skill: handoff-quality-validator
+#   mode: generic
+#   output: artifacts/incoming/
+#
+# expected-output:
+#   typical-finding-count: "3-7 findings"
+#   compression-ratio: "2:1"
+#   common-categories:
+#     - error-handling
+#     - edge-cases
+#     - data-integrity
+#
+# when-to-use:
+#   - Before production release
+#   - After error handling changes
+#   - When reliability is critical
+#
+# invocation:
+#   pattern: "Run correctness column on {target}"
+#   examples:
+#     - "Run correctness column on the payment flow"
+#     - "Run correctness column on the data sync service"
+

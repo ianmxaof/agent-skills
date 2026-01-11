@@ -1,3 +1,9 @@
+---
+type: changelog
+name: architecture-review-changelog
+description: Change history for architecture-review skill
+---
+
 # Architecture Review Changelog
 
 ## v1.0.0 - 2024-01-05

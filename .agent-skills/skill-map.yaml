@@ -1,0 +1,280 @@
+# Skill Map for prompt-library
+#
+# This file is the contract between the project and agents.
+# It declares what prompt-library IS, what surfaces exist,
+# what risks matter, and which skills are enabled.
+#
+# Used by: health-assessor, column-router, skill-router, strategic-governor
+#
+# To validate: > Assume skill-map-validator and validate this project's skill map
+
+# =============================================================================
+# PROJECT IDENTITY
+# =============================================================================
+
+project:
+  name: prompt-library
+  type: developer-tooling
+  domain: ai-infrastructure
+  description: "Self-reflective agent skills system for Warp-to-Cursor workflows"
+  
+  # How paranoid should the system be by default?
+  risk-profile: medium
+  
+  # Domains this project spans
+  domains:
+    - ai-infrastructure
+    - developer-tooling
+
+# =============================================================================
+# SURFACES
+# =============================================================================
+# Surfaces are the distinct areas of the codebase that can be analyzed.
+# Each surface has its own risk weight and failure mode.
+
+surfaces:
+  
+  # Agent skill definitions - the core product
+  agent-skills:
+    paths:
+      - "skills/**/*.md"
+    risk-weight: high
+    failure-mode: behavioral-regression
+    description: "Skill definitions that agents execute"
+    validation-skills:
+      - skill-health-check
+      - architecture-review
+    
+  # Meta-system files - governance layer
+  meta-system:
+    paths:
+      - "meta/**/*"
+      - "TEMPLATE.md"
+    risk-weight: critical
+    failure-mode: governance-collapse
+    description: "Rules, policies, and templates that govern the system"
+    validation-skills:
+      - skill-health-check
+      - documentation-drift-detector
+    
+  # Protocols - contracts between agents
+  protocols:
+    paths:
+      - "protocols/**/*.md"
+    risk-weight: high
+    failure-mode: contract-violation
+    description: "Handoff and communication protocols"
+    validation-skills:
+      - documentation-drift-detector
+      - architecture-review
+    
+  # Templates - starting points for new artifacts
+  templates:
+    paths:
+      - "templates/**/*"
+    risk-weight: medium
+    failure-mode: propagated-defects
+    description: "Templates used to create new skills and configurations"
+    validation-skills:
+      - skill-health-check
+    
+  # Documentation - explanations and guides
+  documentation:
+    paths:
+      - "docs/**/*.md"
+      - "README.md"
+      - "*.md"
+    risk-weight: low
+    failure-mode: drift-from-reality
+    description: "Human-readable documentation and guides"
+    validation-skills:
+      - documentation-drift-detector
+    
+  # Skill chains - version-locked combinations
+  skill-chains:
+    paths:
+      - "skill-chains/**/*"
+    risk-weight: medium
+    failure-mode: invalid-composition
+    description: "Pre-configured skill sequences"
+    validation-skills:
+      - skill-map-validator
+    
+  # Tests and validation
+  tests:
+    paths:
+      - "tests/**/*"
+    risk-weight: low
+    failure-mode: false-confidence
+    description: "Test fixtures and validation infrastructure"
+    validation-skills:
+      - test-coverage-gap-finder
+
+# =============================================================================
+# QUALITY BARS
+# =============================================================================
+# Standards that define "good enough" for this project
+
+quality-bars:
+  correctness: critical        # Skills must do what they claim
+  consistency: critical        # Patterns must be uniform across skills
+  novelty: allowed            # New approaches encouraged (not discouraged)
+  breaking-changes: discouraged # Prefer backwards compatibility
+  
+  # Specific thresholds
+  thresholds:
+    skill-definition-completeness: 0.9  # 90% of template sections filled
+    documentation-freshness-days: 30    # Docs updated within 30 days of code
+    test-coverage-minimum: 0.5          # At least 50% of skills have tests
+
+# =============================================================================
+# ENABLED SKILLS
+# =============================================================================
+# Only skills listed here are available for this project
+
+universal-skills:
+  # Core skills for any project
+  - architecture-review
+  - architectural-drift-detector
+  - project-structure-analyzer
+  - test-coverage-gap-finder
+  - bundle-size-analyzer
+  - api-boundary-validator
+  - failure-mode-simulator
+  
+domain-skills: []
+  # No domain-specific skills currently
+
+project-skills:
+  # Skills specific to prompt-library (would live in .agent-skills/skills/project/)
+  # - prompt-consistency-auditor     # Future: Check prompt patterns
+  # - skill-template-validator       # Future: Validate against TEMPLATE.md
+
+meta-skills:
+  # Governance and routing skills
+  - column-router
+  - strategic-governor
+  - skill-router
+  - skill-gap-detector
+  - skill-health-check
+  - skill-map-validator
+  - skill-effectiveness-analyzer
+  - handoff-quality-validator
+  - refinement-layer
+  # New skills from autonomous attention system
+  - readiness-certifier
+  - health-assessor
+  - change-amplification-detector
+  - documentation-drift-detector
+
+# =============================================================================
+# SKILL CHAINS
+# =============================================================================
+# Pre-configured sequences for common workflows
+
+chains:
+  
+  # Before adding new skills
+  pre-skill-creation:
+    description: "Run before creating a new skill"
+    skills:
+      - skill-health-check
+      - architecture-review
+    
+  # Before major releases
+  pre-release:
+    description: "Run before tagging a release"
+    skills:
+      - health-assessor
+      - documentation-drift-detector
+      - readiness-certifier
+    
+  # Full system audit
+  full-audit:
+    description: "Comprehensive system health check"
+    skills:
+      - project-structure-analyzer
+      - architecture-review
+      - documentation-drift-detector
+      - skill-effectiveness-analyzer
+    
+  # Quick health check
+  quick-health:
+    description: "Fast sanity check"
+    skills:
+      - health-assessor
+      - skill-map-validator
+
+# =============================================================================
+# ATTENTION TRIGGERS
+# =============================================================================
+# Conditions that should trigger autonomous analysis
+
+attention-triggers:
+  
+  # Changes that should auto-trigger health assessment
+  auto-assess-on:
+    - pattern: "skills/**/*.md"
+      action: "Queue health-assessor for agent-skills surface"
+      priority: high
+      
+    - pattern: "meta/**/*"
+      action: "Queue health-assessor with elevated risk"
+      priority: critical
+      
+    - pattern: "protocols/**/*.md"
+      action: "Queue documentation-drift-detector"
+      priority: high
+      
+    - pattern: "TEMPLATE.md"
+      action: "Queue change-amplification-detector"
+      priority: high
+      
+    - pattern: "skill-map.yaml"
+      action: "Queue skill-map-validator"
+      priority: critical
+  
+  # Files/patterns to always ignore
+  always-ignore:
+    - ".skill-usage/**"
+    - "*.log"
+    - ".git/**"
+    - "node_modules/**"
+  
+  # Scheduled checks (for CI/automation integration)
+  scheduled:
+    daily:
+      - health-assessor
+    weekly:
+      - documentation-drift-detector
+      - skill-effectiveness-analyzer
+    monthly:
+      - readiness-certifier
+      - full-audit
+
+# =============================================================================
+# OVERRIDES
+# =============================================================================
+# Project-specific customizations of universal skills
+
+overrides: []
+  # Example:
+  # - skill: architecture-review
+  #   override-file: .agent-skills/skills/overrides/architecture-review-custom.md
+  #   reason: "Add skill-specific architecture patterns"
+
+# =============================================================================
+# METADATA
+# =============================================================================
+
+metadata:
+  version: 1.0.0
+  created: 2026-01-10
+  last-updated: 2026-01-10
+  maintainer: "prompt-library team"
+  
+  # Notes for future maintenance
+  notes:
+    - "Surfaces defined based on actual directory structure"
+    - "Meta-system marked critical because changes cascade"
+    - "Documentation marked low-risk but still monitored for drift"

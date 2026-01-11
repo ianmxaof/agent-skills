@@ -1,0 +1,261 @@
+# Taste Profile
+#
+# Encodes preferences, biases, and learned heuristics that shape routing decisions.
+# This file captures "what good looks like" for your development workflow.
+#
+# Used by: column-router, skill-router, strategic-governor
+#
+# IMPORTANT: This is a template. Customize based on your project/team preferences.
+
+# =============================================================================
+# GENERAL PREFERENCES
+# =============================================================================
+
+# These encode your default biases when making decisions
+prefer:
+  boring_over_clever: true          # Prefer simple, obvious solutions
+  explicit_over_implicit: true       # Prefer explicit configuration
+  feature_flags_over_branches: true  # Prefer flags for gradual rollout
+  composition_over_inheritance: true # Prefer composition in architecture
+  fail_fast_over_silent: true        # Prefer loud failures
+  
+# Things to prioritize (in order)
+priority_stack:
+  - user_trust                        # Never erode user confidence
+  - data_integrity                    # Never corrupt or lose data
+  - correctness                       # Be right before being fast
+  - simplicity                        # Simple > clever
+  - performance                       # Fast enough for context
+
+# =============================================================================
+# COLUMN PREFERENCES
+# =============================================================================
+
+# Default column behavior by change type
+column_defaults:
+  
+  # UI/UX changes
+  ui_changes:
+    always_include:
+      - adversarial-ui              # Always check for adversarial UX
+    rarely_needed:
+      - architecture-review         # UI changes rarely need arch review
+    refinement: normal
+  
+  # API changes
+  api_changes:
+    always_include:
+      - correctness
+    often_include:
+      - architecture-review
+    refinement: normal
+  
+  # Database/persistence changes  
+  persistence_changes:
+    always_include:
+      - correctness
+      - architecture-review
+    often_include:
+      - failure-mode-simulator
+    refinement: strict
+    proof_required: true
+  
+  # Auth/security changes
+  auth_changes:
+    always_include:
+      - correctness
+      - adversarial-ui
+      - failure-mode-simulator
+    refinement: strict
+    proof_required: true
+    minimum_columns: 4
+  
+  # Payment/money changes
+  payment_changes:
+    always_include:
+      - correctness
+      - adversarial-ui
+      - failure-mode-simulator
+      - architecture-review
+    refinement: strict
+    proof_required: always
+    minimum_columns: 4
+
+# =============================================================================
+# SKILL BIASES
+# =============================================================================
+
+# Boost or suppress specific skills in certain contexts
+skill_biases:
+  
+  adversarial-ui-tester:
+    # Boost for high-traffic, high-trust areas
+    boost_for:
+      - checkout
+      - onboarding
+      - payment
+      - account-settings
+    boost_amount: 0.15              # Add to confidence score
+    
+    # Suppress for internal/low-risk areas
+    suppress_for:
+      - admin
+      - internal-tools
+      - debug-panels
+    suppress_amount: 0.10           # Subtract from confidence score
+  
+  architecture-review:
+    boost_for:
+      - refactoring
+      - new-service
+      - api-design
+    suppress_for:
+      - hotfix
+      - copy-change
+      - config
+  
+  performance-budget-guardian:
+    boost_for:
+      - landing-page
+      - checkout
+      - search
+    suppress_for:
+      - admin
+      - internal-tools
+  
+  failure-mode-simulator:
+    boost_for:
+      - payment
+      - auth
+      - data-mutation
+    suppress_for:
+      - read-only
+      - display
+
+# =============================================================================
+# RISK BIASES
+# =============================================================================
+
+# Areas that should always escalate risk tier
+always_high_risk:
+  - auth/*                           # Auth code paths
+  - payment/*                        # Payment processing
+  - user-data/*                      # Personal data handling
+  - delete*                          # Deletion operations
+  - migration/*                      # Database migrations
+
+# Areas that can be treated as lower risk
+lower_risk_ok:
+  - admin/*                          # Admin-only features
+  - internal/*                       # Internal tools
+  - debug/*                          # Debug utilities
+  - test/*                           # Test code
+
+# =============================================================================
+# REFINEMENT PREFERENCES
+# =============================================================================
+
+# How strict should Agent B be?
+refinement_defaults:
+  
+  # For high-stakes changes
+  high_stakes:
+    strictness: strict
+    deduplication: aggressive
+    minimum_severity: medium         # Filter out low-severity findings
+    require_reproduction_steps: true
+  
+  # For normal changes  
+  normal:
+    strictness: normal
+    deduplication: standard
+    minimum_severity: low
+    require_reproduction_steps: false
+  
+  # For exploratory/experimental changes
+  experimental:
+    strictness: light
+    deduplication: light
+    minimum_severity: high           # Only surface critical issues
+    require_reproduction_steps: false
+
+# =============================================================================
+# QUALITY THRESHOLDS
+# =============================================================================
+
+# Minimum standards for different contexts
+quality_thresholds:
+  
+  production:
+    test_coverage: 80
+    lint_warnings: 0
+    security_issues: 0
+    accessibility_score: 90
+  
+  staging:
+    test_coverage: 70
+    lint_warnings: 5
+    security_issues: 0
+    accessibility_score: 85
+  
+  development:
+    test_coverage: 50
+    lint_warnings: 10
+    security_issues: 0
+    accessibility_score: 70
+
+# =============================================================================
+# WORKFLOW PREFERENCES
+# =============================================================================
+
+# How you prefer to work
+workflow:
+  
+  # Default number of columns for unclear cases
+  default_column_count: 2
+  
+  # Maximum columns before governor should warn
+  max_columns_before_warn: 4
+  
+  # Minimum confidence for skill selection
+  min_skill_confidence: 0.7
+  
+  # When to require human approval
+  require_approval_for:
+    - critical_risk_tier
+    - payment_changes
+    - auth_changes
+    - data_deletion
+  
+  # Auto-approve for these (no human in loop)
+  auto_approve_for:
+    - trivial_risk_tier
+    - config_only
+    - documentation_only
+
+# =============================================================================
+# EVOLUTION
+# =============================================================================
+
+# How this profile should evolve
+evolution:
+  
+  # When to update this file
+  update_triggers:
+    - "After major incident"
+    - "Quarterly review"
+    - "When patterns emerge from lessons learned"
+  
+  # Who can update
+  update_authority: human           # Always human, never automated
+  
+  # Track history
+  last_updated: 2026-01-08
+  version: 1.0.0
+  
+  # Notes for future self
+  notes:
+    - "Calibrate biases after 30 days of use"
+    - "Review always_high_risk list if false positives increase"
+    - "Adjust column_defaults based on actual usage patterns"
+

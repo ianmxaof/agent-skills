@@ -1,0 +1,154 @@
+# Risk Assessment Template
+#
+# Use this template when invoking the column-router to assess change risk.
+# Copy and fill in the relevant fields for your change.
+#
+# See meta/risk-tiers.md for tier definitions and escalation rules.
+
+# REQUIRED: What is being changed
+change:
+  description: "<Brief description of what you're changing and why>"
+  type: feature | refactor | bugfix | config | migration | integration
+  
+# REQUIRED: Files affected by this change
+files:
+  - path/to/file1.ts
+  - path/to/file2.ts
+  # List all files that will be modified
+
+# REQUIRED: Which system surfaces does this change touch?
+# Surfaces affect risk tier calculation
+surfaces:
+  - ui           # User-facing interface
+  # - api        # Backend endpoints
+  # - persistence # Database, storage, cache
+  # - auth       # Authentication/authorization
+  # - payment    # Money handling
+  # - data       # User data, PII
+  # - config     # Configuration only
+
+# OPTIONAL: Pattern matching
+# If this matches a known validated pattern, risk can be de-escalated
+pattern:
+  match: novel | <pattern-id>  # e.g., "checkout-form-validation-v1"
+  confidence: 0.0-1.0          # How sure are you this matches?
+
+# OPTIONAL: Reversibility assessment
+# Affects de-escalation rules
+reversibility:
+  type: feature-flag | quick-rollback | migration | permanent
+  rollback_time: "<estimated time to rollback>"
+  rollback_complexity: simple | moderate | complex
+
+# OPTIONAL: Prior signals
+# Helps calibrate risk tier
+prior_signals:
+  has_tests: true | false
+  test_coverage: 0-100        # Percentage of affected code covered
+  prior_failures: true | false # Has this area had bugs before?
+  last_changed: "<date>"
+
+# OPTIONAL: Context for better assessment
+context:
+  deadline_pressure: low | medium | high
+  reviewer_available: true | false
+  dependencies: 
+    - "<external dependency if any>"
+
+---
+# Example: Low-Risk UI Change
+
+change:
+  description: "Adding toast notification component for success messages"
+  type: feature
+  
+files:
+  - src/components/Toast.tsx
+  - src/components/Toast.test.tsx
+
+surfaces:
+  - ui
+
+pattern:
+  match: notification-system-v1
+  confidence: 0.9
+
+reversibility:
+  type: feature-flag
+  rollback_time: "<1 minute"
+  rollback_complexity: simple
+
+prior_signals:
+  has_tests: true
+  test_coverage: 85
+  prior_failures: false
+
+---
+# Example: High-Risk Auth Change
+
+change:
+  description: "Refactoring authentication token refresh logic"
+  type: refactor
+  
+files:
+  - src/auth/tokenRefresh.ts
+  - src/auth/session.ts
+  - src/api/client.ts
+  - src/hooks/useAuth.ts
+
+surfaces:
+  - auth
+  - api
+
+pattern:
+  match: novel
+  confidence: 0.0
+
+reversibility:
+  type: quick-rollback
+  rollback_time: "5 minutes"
+  rollback_complexity: moderate
+
+prior_signals:
+  has_tests: true
+  test_coverage: 70
+  prior_failures: true  # Had session bugs before
+
+---
+# Example: Critical Payment Change
+
+change:
+  description: "Implementing Stripe payment processing for checkout"
+  type: integration
+  
+files:
+  - src/payment/stripe.ts
+  - src/payment/types.ts
+  - src/checkout/PaymentForm.tsx
+  - src/api/payment.ts
+
+surfaces:
+  - payment
+  - ui
+  - api
+
+pattern:
+  match: novel
+  confidence: 0.0
+
+reversibility:
+  type: feature-flag
+  rollback_time: "2 minutes"
+  rollback_complexity: simple
+
+prior_signals:
+  has_tests: false  # New integration
+  test_coverage: 0
+  prior_failures: false
+
+context:
+  deadline_pressure: medium
+  reviewer_available: true
+  dependencies:
+    - "Stripe SDK"
+

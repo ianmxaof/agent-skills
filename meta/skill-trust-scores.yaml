@@ -1,0 +1,438 @@
+# Skill Trust Scores
+#
+# This file tracks lifecycle stage and trust metrics for each skill.
+# Updated by skill-effectiveness-analyzer and manual review.
+#
+# See meta/skill-lifecycle.md for stage definitions and transition rules.
+
+# ============================================================================
+# META SKILLS
+# ============================================================================
+
+skill-router:
+  lifecycle: validated
+  trust_score: 0.80
+  last_updated: 2026-01-08
+  usage_count: 0
+  last_used: null
+  projects_used_in: 0
+  metrics:
+    actionable_rate: 0.0    # N/A for routing
+    false_positive_rate: 0.0
+    override_rate: 0.0
+  strengths:
+    - "Deterministic intent resolution"
+    - "Confidence threshold prevents bad matches"
+  weaknesses:
+    - "New - needs validation"
+  pairs_well_with:
+    - skill-map-validator
+  lifecycle_history:
+    - stage: experimental
+      date: 2026-01-01
+    - stage: validated
+      date: 2026-01-08
+
+skill-effectiveness-analyzer:
+  lifecycle: validated
+  trust_score: 0.70
+  last_updated: 2026-01-08
+  usage_count: 0
+  last_used: null
+  projects_used_in: 0
+  metrics:
+    actionable_rate: 0.0
+    false_positive_rate: 0.0
+    override_rate: 0.0
+  strengths:
+    - "Structured effectiveness analysis"
+    - "Clear boundaries"
+  weaknesses:
+    - "Requires usage data to be valuable"
+  pairs_well_with: []
+  lifecycle_history:
+    - stage: experimental
+      date: 2026-01-01
+    - stage: validated
+      date: 2026-01-08
+
+refinement-layer:
+  lifecycle: validated
+  trust_score: 0.75
+  last_updated: 2026-01-08
+  usage_count: 0
+  last_used: null
+  projects_used_in: 0
+  metrics:
+    actionable_rate: 0.0
+    false_positive_rate: 0.0
+    override_rate: 0.0
+  strengths:
+    - "Signal compression"
+    - "Protocol enforcement"
+    - "Three refinement modes"
+  weaknesses:
+    - "New - needs validation in real columns"
+  pairs_well_with:
+    - adversarial-ui-tester
+    - architecture-review
+    - failure-mode-simulator
+  lifecycle_history:
+    - stage: experimental
+      date: 2026-01-08
+    - stage: validated
+      date: 2026-01-08
+
+column-router:
+  lifecycle: experimental
+  trust_score: 0.60
+  last_updated: 2026-01-08
+  usage_count: 0
+  last_used: null
+  projects_used_in: 0
+  metrics:
+    actionable_rate: 0.0
+    false_positive_rate: 0.0
+    override_rate: 0.0
+  strengths:
+    - "Risk-based attention allocation"
+    - "Prevents over/under-analysis"
+  weaknesses:
+    - "Brand new - completely untested"
+  pairs_well_with:
+    - strategic-governor
+  lifecycle_history:
+    - stage: experimental
+      date: 2026-01-08
+
+skill-map-validator:
+  lifecycle: validated
+  trust_score: 0.75
+  last_updated: 2026-01-08
+  usage_count: 0
+  last_used: null
+  projects_used_in: 0
+  metrics:
+    actionable_rate: 0.0
+    false_positive_rate: 0.0
+    override_rate: 0.0
+  strengths:
+    - "Catches broken skill references"
+    - "Validates front matter"
+  weaknesses:
+    - "Limited scope"
+  pairs_well_with:
+    - skill-health-check
+  lifecycle_history:
+    - stage: validated
+      date: 2026-01-08
+
+skill-health-check:
+  lifecycle: validated
+  trust_score: 0.70
+  last_updated: 2026-01-08
+  usage_count: 0
+  last_used: null
+  projects_used_in: 0
+  metrics:
+    actionable_rate: 0.0
+    false_positive_rate: 0.0
+    override_rate: 0.0
+  strengths:
+    - "Validates skill definition quality"
+  weaknesses:
+    - "Limited to structural validation"
+  pairs_well_with:
+    - skill-map-validator
+  lifecycle_history:
+    - stage: validated
+      date: 2026-01-08
+
+skill-gap-detector:
+  lifecycle: validated
+  trust_score: 0.70
+  last_updated: 2026-01-08
+  usage_count: 0
+  last_used: null
+  projects_used_in: 0
+  metrics:
+    actionable_rate: 0.0
+    false_positive_rate: 0.0
+    override_rate: 0.0
+  strengths:
+    - "Proposes new skills when routing fails"
+    - "Identifies coverage gaps"
+  weaknesses:
+    - "Proposals need human validation"
+  pairs_well_with:
+    - skill-router
+  lifecycle_history:
+    - stage: validated
+      date: 2026-01-08
+
+handoff-quality-validator:
+  lifecycle: validated
+  trust_score: 0.75
+  last_updated: 2026-01-08
+  usage_count: 0
+  last_used: null
+  projects_used_in: 0
+  metrics:
+    actionable_rate: 0.0
+    false_positive_rate: 0.0
+    override_rate: 0.0
+  strengths:
+    - "Enforces handoff protocol"
+    - "Catches missing sections"
+  weaknesses:
+    - "Structural validation only"
+  pairs_well_with:
+    - refinement-layer
+  lifecycle_history:
+    - stage: validated
+      date: 2026-01-08
+
+# ============================================================================
+# DOMAIN SKILLS - ANALYSIS
+# ============================================================================
+
+adversarial-ui-tester:
+  lifecycle: validated
+  trust_score: 0.75
+  last_updated: 2026-01-08
+  usage_count: 0
+  last_used: null
+  projects_used_in: 1
+  metrics:
+    actionable_rate: 0.70
+    false_positive_rate: 0.15
+    override_rate: 0.10
+  strengths:
+    - "Early flaw detection"
+    - "Accessibility gaps"
+    - "Dark pattern identification"
+  weaknesses:
+    - "Over-flags on low-risk UI"
+    - "Can be noisy without refinement"
+  pairs_well_with:
+    - refinement-layer
+    - ux-copy-neutrality-checker
+  lifecycle_history:
+    - stage: experimental
+      date: 2025-12-01
+    - stage: validated
+      date: 2026-01-01
+
+architecture-review:
+  lifecycle: validated
+  trust_score: 0.72
+  last_updated: 2026-01-08
+  usage_count: 0
+  last_used: null
+  projects_used_in: 0
+  metrics:
+    actionable_rate: 0.65
+    false_positive_rate: 0.20
+    override_rate: 0.15
+  strengths:
+    - "Identifies design pattern issues"
+    - "Catches coupling problems"
+  weaknesses:
+    - "Can be overly theoretical"
+  pairs_well_with:
+    - architectural-drift-detector
+    - refinement-layer
+  lifecycle_history:
+    - stage: validated
+      date: 2026-01-08
+
+architectural-drift-detector:
+  lifecycle: validated
+  trust_score: 0.70
+  last_updated: 2026-01-08
+  usage_count: 0
+  last_used: null
+  projects_used_in: 0
+  metrics:
+    actionable_rate: 0.60
+    false_positive_rate: 0.20
+    override_rate: 0.15
+  strengths:
+    - "Catches pattern drift"
+    - "Good lens for architecture-review"
+  weaknesses:
+    - "Requires clear baseline patterns"
+  pairs_well_with:
+    - architecture-review
+  lifecycle_history:
+    - stage: validated
+      date: 2026-01-08
+
+project-structure-analyzer:
+  lifecycle: validated
+  trust_score: 0.75
+  last_updated: 2026-01-08
+  usage_count: 0
+  last_used: null
+  projects_used_in: 0
+  metrics:
+    actionable_rate: 0.70
+    false_positive_rate: 0.10
+    override_rate: 0.05
+  strengths:
+    - "Good first-run skill"
+    - "Creates dependency maps"
+  weaknesses:
+    - "One-time use mostly"
+  pairs_well_with:
+    - architecture-review
+  lifecycle_history:
+    - stage: validated
+      date: 2026-01-08
+
+# ============================================================================
+# DOMAIN SKILLS - TESTING & VALIDATION
+# ============================================================================
+
+test-coverage-gap-finder:
+  lifecycle: validated
+  trust_score: 0.70
+  last_updated: 2026-01-08
+  usage_count: 0
+  last_used: null
+  projects_used_in: 0
+  metrics:
+    actionable_rate: 0.65
+    false_positive_rate: 0.15
+    override_rate: 0.10
+  strengths:
+    - "Identifies critical untested paths"
+  weaknesses:
+    - "Requires existing test setup"
+  pairs_well_with:
+    - failure-mode-simulator
+  lifecycle_history:
+    - stage: validated
+      date: 2026-01-08
+
+failure-mode-simulator:
+  lifecycle: validated
+  trust_score: 0.72
+  last_updated: 2026-01-08
+  usage_count: 0
+  last_used: null
+  projects_used_in: 0
+  metrics:
+    actionable_rate: 0.70
+    false_positive_rate: 0.15
+    override_rate: 0.10
+  strengths:
+    - "Simulates edge cases"
+    - "Good for correctness columns"
+  weaknesses:
+    - "Can be time-consuming"
+  pairs_well_with:
+    - test-coverage-gap-finder
+    - handoff-quality-validator
+  lifecycle_history:
+    - stage: validated
+      date: 2026-01-08
+
+# ============================================================================
+# DOMAIN SKILLS - SECURITY & DEPENDENCIES
+# ============================================================================
+
+dependency-health-check:
+  lifecycle: validated
+  trust_score: 0.78
+  last_updated: 2026-01-08
+  usage_count: 0
+  last_used: null
+  projects_used_in: 0
+  metrics:
+    actionable_rate: 0.75
+    false_positive_rate: 0.10
+    override_rate: 0.05
+  strengths:
+    - "Catches outdated dependencies"
+    - "Security vulnerability detection"
+  weaknesses:
+    - "Can flag benign version differences"
+  pairs_well_with: []
+  lifecycle_history:
+    - stage: validated
+      date: 2026-01-08
+
+# ============================================================================
+# DOMAIN SKILLS - PERFORMANCE
+# ============================================================================
+
+bundle-size-analyzer:
+  lifecycle: validated
+  trust_score: 0.70
+  last_updated: 2026-01-08
+  usage_count: 0
+  last_used: null
+  projects_used_in: 0
+  metrics:
+    actionable_rate: 0.65
+    false_positive_rate: 0.15
+    override_rate: 0.10
+  strengths:
+    - "Identifies heavy dependencies"
+    - "Tree-shaking opportunities"
+  weaknesses:
+    - "Numbers can be misleading without context"
+  pairs_well_with:
+    - performance-budget-guardian
+  lifecycle_history:
+    - stage: validated
+      date: 2026-01-08
+
+performance-budget-guardian:
+  lifecycle: validated
+  trust_score: 0.70
+  last_updated: 2026-01-08
+  usage_count: 0
+  last_used: null
+  projects_used_in: 0
+  metrics:
+    actionable_rate: 0.65
+    false_positive_rate: 0.15
+    override_rate: 0.10
+  strengths:
+    - "Budget enforcement"
+    - "Regression detection"
+  weaknesses:
+    - "Requires established budgets"
+  pairs_well_with:
+    - bundle-size-analyzer
+  lifecycle_history:
+    - stage: validated
+      date: 2026-01-08
+
+# ============================================================================
+# NOTES
+# ============================================================================
+
+# Trust Score Calculation:
+# trust_score = (
+#     0.4 * actionable_rate +
+#     0.3 * (1 - false_positive_rate) +
+#     0.2 * (1 - override_rate) +
+#     0.1 * recency_factor
+# )
+#
+# Lifecycle Stages:
+# - experimental: 0.7x router weight
+# - validated: 1.0x router weight
+# - preferred: 1.1x router weight
+# - default: 1.2x router weight
+# - legacy: 0.5x router weight
+# - deprecated: 0.1x router weight
+#
+# This file should be updated:
+# - Automatically by skill-effectiveness-analyzer
+# - Manually during weekly/monthly reviews
+# - When promoting or demoting skills
+

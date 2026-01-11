@@ -3,10 +3,24 @@ name: dependency-health-check
 category: security
 version: 1.0.0
 maturity: validated
+lifecycle: validated
 estimated-cost: low
 typical-runtime: 2-5min
 complexity-level: simple
 requires-deep-analysis: false
+scope: core
+tier: 1
+writes-code: false
+modifies-files: false
+handoff-protocol: standard-v1
+promotion-candidate: false
+tags:
+  - security
+  - dependencies
+  - vulnerabilities
+  - npm
+  - audit
+  - packages
 prerequisites:
   - file: package.json
     reason: "Need dependency list to analyze"
@@ -22,6 +36,27 @@ execution-modes:
 
 Analyzes project dependencies for security vulnerabilities, outdated packages, license issues, and maintenance status. Provides actionable recommendations for dependency updates and security fixes.
 
+## Scope and Classification
+
+**Scope:** `core` - Universal skill that works on any project with dependencies
+
+**Tier:** `1` - Existential risk (security vulnerabilities)
+
+**Lifecycle Stage:** `validated` - Proven to work in production
+
+See `meta/skill-scope-policy.md` for detailed guidance on scope classification and promotion paths.
+
+## Tags (for Intent Resolution)
+
+Tags enable the skill-router to match user intents to skills:
+
+- **security** - Core domain
+- **dependencies** - What is being analyzed
+- **vulnerabilities** - Primary concern
+- **npm** - Common package manager
+- **audit** - Action type
+- **packages** - Alternate term for dependencies
+
 ## When to Invoke
 
 ### Explicit Trigger Phrases
@@ -30,6 +65,8 @@ Analyzes project dependencies for security vulnerabilities, outdated packages, l
 - "Check for security vulnerabilities"
 - "Analyze dependency health"
 - "Find outdated packages"
+- "Audit npm packages"
+- "Check for CVEs in dependencies"
 
 ### Situational Triggers
 
@@ -255,6 +292,19 @@ After execution:
 2. Save report with proper filename
 3. Provide summary: "Dependency check complete. Found [X] vulnerabilities, [Y] outdated packages. See report for details."
 4. Indicate readiness for updates
+
+## Context Received (for Chained Skills)
+
+If this skill builds on others:
+
+```markdown
+## Context Received
+
+This analysis builds on:
+- project-structure-analyzer v1.0.0 (executed [date])
+- Key findings: Project structure mapped, dependency locations identified
+- Assumptions carried forward: Package manager is npm/yarn
+```
 
 ## Examples
 

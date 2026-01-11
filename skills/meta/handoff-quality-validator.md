@@ -7,6 +7,19 @@ estimated-cost: low
 typical-runtime: 1-2min
 complexity-level: simple
 requires-deep-analysis: false
+scope: meta
+tier: meta
+writes-code: false
+modifies-files: false
+handoff-protocol: standard-v1
+promotion-candidate: false
+tags:
+  - meta
+  - handoff
+  - quality
+  - protocol
+  - validation
+  - reports
 prerequisites: []
 execution-modes:
   - full-scan
@@ -19,6 +32,14 @@ execution-modes:
 ## Purpose
 
 Validates that handoff reports produced by other skills meet the protocol standards defined in `protocols/handoff-protocol.md`. This meta-skill ensures consistency and quality across all skill outputs.
+
+## Scope and Classification
+
+**Scope:** `meta` - Meta-skill for handoff quality validation
+
+**Tier:** `meta` - Meta-skill (handoff report validation)
+
+See `meta/skill-scope-policy.md` for detailed guidance on scope classification and promotion paths.
 
 ## When to Invoke
 

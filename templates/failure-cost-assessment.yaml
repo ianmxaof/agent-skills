@@ -1,0 +1,168 @@
+# Failure Cost Assessment Template
+#
+# Use this template to assess the cost of potential failures for a change.
+# This feeds into column-router decisions about analysis depth.
+#
+# See meta/failure-cost-model.md for axis definitions and score interpretation.
+
+# REQUIRED: What is being changed
+change:
+  description: "<Brief description of the change>"
+  type: feature | refactor | bugfix | config | migration | integration
+
+# REQUIRED: Cost axis assessments
+# Score each axis 0.0 (low cost) to 1.0 (high cost)
+
+cost_axes:
+  # How much breaks if this fails?
+  blast_radius:
+    score: 0.0-1.0
+    level: low | medium | high  # 0-0.3 = low, 0.3-0.6 = medium, 0.6-1.0 = high
+    reasoning: "<Why this score>"
+    examples:
+      - low: "Single component (toast notification)"
+      - medium: "Feature-level (checkout flow)"
+      - high: "System-wide (auth system)"
+  
+  # Will failure be obvious?
+  # NOTE: Higher score = HARDER to detect = WORSE
+  detectability:
+    score: 0.0-1.0
+    level: low | medium | high
+    reasoning: "<Why this score>"
+    examples:
+      - low: "Immediate crash or visible error"
+      - medium: "Subtle bug (wrong calculation)"
+      - high: "Silent corruption (data loss without errors)"
+  
+  # Can we roll back cleanly?
+  reversibility:
+    score: 0.0-1.0
+    level: low | medium | high
+    reasoning: "<Why this score>"
+    examples:
+      - low: "Feature flag (instant rollback)"
+      - medium: "Migration required (database rollback)"
+      - high: "Permanent (sent notifications, deleted data)"
+  
+  # Does this affect user confidence?
+  trust_impact:
+    score: 0.0-1.0
+    level: low | medium | high
+    reasoning: "<Why this score>"
+    examples:
+      - low: "Internal only (admin tools)"
+      - medium: "User-facing (UI bugs)"
+      - high: "Money/data (payment errors, exposure)"
+
+# OPTIONAL: Override shortcuts
+# Use these to skip detailed assessment for obvious cases
+shortcut:
+  applied: false
+  type: null  # auto-low | auto-medium | auto-high | auto-critical
+  reason: null
+
+---
+# Example 1: Low-Cost Change (Toast Notification)
+
+change:
+  description: "Adding success toast to checkout completion"
+  type: feature
+
+cost_axes:
+  blast_radius:
+    score: 0.1
+    level: low
+    reasoning: "Single UI component, no state impact"
+  
+  detectability:
+    score: 0.1
+    level: low
+    reasoning: "Obvious if toast doesn't appear"
+  
+  reversibility:
+    score: 0.1
+    level: low
+    reasoning: "Feature-flagged, instant rollback"
+  
+  trust_impact:
+    score: 0.3
+    level: low
+    reasoning: "User-facing but purely cosmetic"
+
+# Combined score: (0.1 + 0.1 + 0.1 + 0.3) / 4 = 0.15 (LOW)
+
+---
+# Example 2: Medium-Cost Change (Form Refactoring)
+
+change:
+  description: "Refactoring checkout form validation logic"
+  type: refactor
+
+cost_axes:
+  blast_radius:
+    score: 0.4
+    level: medium
+    reasoning: "Affects entire checkout flow"
+  
+  detectability:
+    score: 0.6
+    level: medium
+    reasoning: "Validation bugs can be subtle (edge cases)"
+  
+  reversibility:
+    score: 0.3
+    level: low
+    reasoning: "Feature-flagged, no migrations"
+  
+  trust_impact:
+    score: 0.7
+    level: high
+    reasoning: "Checkout is critical conversion path"
+
+# Combined score: (0.4 + 0.6 + 0.3 + 0.7) / 4 = 0.50 (MEDIUM-HIGH)
+
+---
+# Example 3: Critical-Cost Change (Payment Integration)
+
+change:
+  description: "Implementing Stripe payment processing"
+  type: integration
+
+cost_axes:
+  blast_radius:
+    score: 0.8
+    level: high
+    reasoning: "Affects all purchases, core business function"
+  
+  detectability:
+    score: 0.9
+    level: high
+    reasoning: "Payment bugs can be silent (wrong amounts, failed retries)"
+  
+  reversibility:
+    score: 0.7
+    level: high
+    reasoning: "Partial transactions are hard to undo"
+  
+  trust_impact:
+    score: 1.0
+    level: high
+    reasoning: "Money handling = maximum trust sensitivity"
+
+# Combined score: (0.8 + 0.9 + 0.7 + 1.0) / 4 = 0.85 (CRITICAL)
+
+---
+# Example 4: Using Shortcut (Config Change)
+
+change:
+  description: "Updating feature flag default value"
+  type: config
+
+shortcut:
+  applied: true
+  type: auto-low
+  reason: "Config-only change, instant rollback possible"
+
+# No detailed axis assessment needed - shortcut determines LOW cost
+

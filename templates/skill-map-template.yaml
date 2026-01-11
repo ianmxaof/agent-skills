@@ -1,0 +1,61 @@
+# Skill Map Template
+# Copy this file to your project root as .agent-skills/skill-map.yaml
+# 
+# This file declares which skills are available for this project.
+# Agents use this to determine which skills to load and execute.
+#
+# To validate this skill map, run:
+# > Assume skill-map-validator and validate this project's skill map
+
+project:
+  name: YOUR_PROJECT_NAME
+  type: react-app | cli-tool | electron-app | web-extension | etc
+  domains:
+    - react-apps  # If applicable
+    - cli-tools   # If applicable
+
+# Universal skills from agent-skills/skills/core/
+# Only enable skills you actually use (recommended: 10-15)
+universal-skills:
+  - dependency-health-check
+  - test-coverage-gap-finder
+  - bundle-size-analyzer
+  # Add more as needed
+
+# Domain-specific skills from agent-skills/skills/domains/{domain}/
+# Format: domain-name/skill-name
+domain-skills:
+  # - react-apps/react-state-management-review
+  # Add domain skills as needed
+
+# Project-specific skills from .agent-skills/skills/project/
+# These are skills specific to this project only
+project-skills:
+  # - my-project-specific-skill
+  # Add project-specific skills here
+
+# Project-specific overrides of universal or domain skills
+# Use when you need to customize a universal skill for this project
+overrides:
+  # - skill: architecture-review
+  #   override-file: .agent-skills/skills/overrides/architecture-review-custom.md
+  #   reason: "Add project-specific philosophy checks"
+
+# Pre-configured skill chains for common workflows
+# Use chains instead of listing all skills individually (better performance)
+chains:
+  # pre-implementation:
+  #   - philosophy-compliance-enforcer
+  #   - privacy-tier-auditor
+  #   - state-invariant-validator
+  #
+  # pre-deployment:
+  #   - performance-budget-guardian
+  #   - bundle-size-analyzer
+  #   - api-boundary-validator
+  #
+  # quality-audit:
+  #   - test-coverage-gap-finder
+  #   - failure-mode-simulator
+  #   - architectural-drift-detector
+

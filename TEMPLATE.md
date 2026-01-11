@@ -1,12 +1,28 @@
 ---
+type: skill-definition
 name: skill-name
 category: category-name
 version: 1.0.0
 maturity: draft
+lifecycle: experimental | validated | preferred | default | legacy | deprecated
 estimated-cost: low
 typical-runtime: 2-5min
 complexity-level: simple
 requires-deep-analysis: false
+scope: core | domain | project | meta
+domain: react-apps | cli-tools | etc
+derived-from: project-name/skill-name
+promotion-candidate: true | false
+tier: 1 | 2 | 3 | meta
+writes-code: false
+modifies-files: false
+handoff-protocol: standard-v1
+artifact-type: raw-findings | refined-findings | implementation-plan
+tags:
+  - category-tag      # e.g., testing, performance, security
+  - surface-tag       # e.g., ui, api, database, architecture
+  - action-tag        # e.g., audit, validate, detect, analyze
+  - domain-tag        # e.g., react, node, typescript (if applicable)
 prerequisites:
   - skill: prerequisite-skill-name
     reason: "Why this is needed"
@@ -23,6 +39,93 @@ execution-modes:
 ## Purpose
 
 [What this skill does and when it should be used]
+
+## Scope and Classification
+
+**Scope:** `core` | `domain` | `project` | `meta`
+
+- **`core`**: Universal skill that works on any project (language-agnostic where possible)
+- **`domain`**: Technology-specific skill (e.g., React apps, CLI tools)
+- **`project`**: Project-specific skill (only relevant to this project)
+- **`meta`**: Governance skill that operates on other skills or the skill system itself
+
+**Tier:** `1` | `2` | `3` | `meta`
+
+- **Tier 1**: Existential risk (philosophy, privacy, performance, state invariants)
+- **Tier 2**: System health (migrations, accuracy, drift detection)
+- **Tier 3**: Long-term quality (testing, documentation, architecture)
+- **Meta**: Skill management (effectiveness analysis, health checks, routing)
+
+**Type:** `skill-definition` | `changelog` | `readme`
+
+- **`skill-definition`**: A skill file that can be executed
+- **`changelog`**: Change log document (not a skill)
+- **`readme`**: Documentation file (not a skill)
+
+Use the `type` field to distinguish skill definitions from other documents in the skills directory.
+
+**Promotion Status:**
+
+- `promotion-candidate: true` - Skill is ready to be promoted to next layer
+- `promotion-candidate: false` - Skill should remain in current layer
+- `derived-from` - Tracks promotion path (e.g., "prompt-library/philosophy-compliance-enforcer")
+
+**Lifecycle Stage:**
+
+Skills progress through lifecycle stages based on real-world performance:
+
+| Stage | Meaning | Router Weight |
+|-------|---------|---------------|
+| `experimental` | New, untested | 0.7x (deprioritized) |
+| `validated` | Proven to work | 1.0x (baseline) |
+| `preferred` | Strong track record | 1.1x (boosted) |
+| `default` | First choice for domain | 1.2x (highest) |
+| `legacy` | Superseded but functional | 0.5x (deprioritized) |
+| `deprecated` | Scheduled for removal | 0.1x (warn) |
+
+New skills should start as `experimental`. See `meta/skill-lifecycle.md` for promotion/demotion criteria.
+
+See `meta/skill-scope-policy.md` for detailed guidance on scope classification and promotion paths.
+
+## Tags (for Intent Resolution)
+
+Tags enable the skill-router to match user intents to skills. Choose tags carefully:
+
+**Tag Categories:**
+
+| Category | Purpose | Examples |
+|----------|---------|----------|
+| **Surface** | What is being analyzed | ui, api, database, architecture, state |
+| **Action** | What the skill does | audit, validate, detect, analyze, test |
+| **Domain** | Technology area | performance, security, ux, testing |
+| **Specific** | Unique identifiers | adversarial, privacy, drift, coverage |
+
+**Tag Guidelines:**
+
+1. **Be specific** - "adversarial" is better than "testing" for UI adversarial testing
+2. **Include synonyms** - If users might say "check" or "validate", include both concepts
+3. **4-6 tags optimal** - Too few = poor matching, too many = false positives
+4. **Match user vocabulary** - Use terms users actually say, not internal jargon
+
+**Example Tag Sets:**
+
+```yaml
+# Good: Specific and varied
+tags:
+  - ui
+  - ux
+  - adversarial
+  - failure-modes
+  - accessibility
+  - dark-patterns
+
+# Bad: Too generic
+tags:
+  - testing
+  - analysis
+```
+
+See `skills/meta/skill-router.md` for how tags are used in intent resolution.
 
 ## When to Invoke
 
@@ -64,6 +167,12 @@ execution-modes:
 - [Critical aspects to focus on]
 
 ## Execution Mode Implementation
+
+Skills support execution modes to control analysis scope. The standard set is:
+
+- **full-scan**: Comprehensive analysis of entire target
+- **incremental**: Analysis of changes only
+- **targeted**: Focused analysis of specific area
 
 ### Full Scan Mode
 
@@ -122,6 +231,18 @@ execution-modes:
 **Invocation Example:**
 > "Run [skill-name] in targeted mode on src/auth/ directory"
 
+### Meta Skill Execution Modes (scope: meta only)
+
+Skills with `scope: meta` may define additional execution modes beyond the standard set:
+
+| Mode | Purpose | Example Use |
+|------|---------|-------------|
+| `change-analysis` | Analyze impact of changes to skills | Detecting amplification |
+| `assessment` | Evaluate health/readiness | Health assessment |
+| `intentless` | Route without explicit user intent | Skill routing |
+
+Meta skills should document their custom modes in the Execution Mode Implementation section. Validators should accept custom modes for `scope: meta` skills.
+
 ## Common Misuses / Anti-Patterns
 
 ### ❌ DON'T Use This Skill For...
@@ -155,6 +276,16 @@ If this skill fails, try:
 3. [Fallback option 3 - e.g., "Manual review required"]
 
 ## Output Contract
+
+### Artifact Type (Pipeline Integration)
+
+When skills produce artifacts for the pipeline, specify the artifact type:
+
+- **`raw-findings`**: Unrefined exploration output (Agent A → `incoming/`)
+- **`refined-findings`**: Validated, compressed output (Agent B → `refined/`)
+- **`implementation-plan`**: Action records (Cursor → `processed/`)
+
+See `templates/artifact-types.md` for full artifact type documentation.
 
 ### Handoff Report Structure
 
