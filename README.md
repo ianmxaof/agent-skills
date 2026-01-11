@@ -1,37 +1,119 @@
 # Agent Skills Toolbox
 
-A production-grade repository of reusable AI agent skills designed for Warp-to-Cursor workflows.
+A production-grade repository of reusable AI agent skills designed for **Warp-to-Cursor workflows**. This system enables structured, high-signal analysis through executable agent roles that produce standardized handoff artifacts.
+
+[![GitHub](https://img.shields.io/badge/GitHub-ianmxaof%2Fagent--skills-blue)](https://github.com/ianmxaof/agent-skills)
+
+---
+
+## Table of Contents
+
+- [What Is This?](#what-is-this)
+- [Key Features](#key-features)
+- [Quick Start](#quick-start)
+  - [For Warp Users](#for-warp-users)
+  - [Setting Up Your Project](#setting-up-your-project)
+- [How It Works](#how-it-works)
+  - [Single Skill Invocation](#single-skill-invocation)
+  - [Column Pattern (2-Agent Pipeline)](#column-pattern-2-agent-pipeline)
+  - [Cursor Intake](#cursor-intake)
+- [Available Skills](#available-skills)
+- [Governance System](#governance-system)
+- [Autonomous Attention](#autonomous-attention)
+- [Project Structure](#project-structure)
+- [Key Documents](#key-documents)
+- [Creating New Skills](#creating-new-skills)
+- [Contributing](#contributing)
+
+---
 
 ## What Is This?
 
-This repository contains **executable agent roles** ("skills") that can be invoked by Warp agents to analyze codebases, generate recommendations, and produce structured handoff reports for implementation in Cursor.
+This repository contains **executable agent roles** ("skills") that can be invoked by Warp agents to:
+
+- Analyze codebases for architecture, security, performance, and UX issues
+- Generate structured findings with severity rankings
+- Produce standardized handoff reports for implementation in Cursor
+- Self-improve through feedback loops and effectiveness tracking
 
 **Key Characteristics:**
-- **Infrastructure, not content**: These are toolchain components, not prompt snippets
-- **Portable**: Copy into any project, works across codebases
-- **Structured**: Skills produce standardized handoff reports
-- **Composable**: Skills can work together in chains
-- **Observable**: Optional execution logging for improvement
 
-## Philosophy
+| Characteristic | Description |
+|----------------|-------------|
+| **Infrastructure** | Toolchain components, not prompt snippets |
+| **Portable** | Copy into any project, works across codebases |
+| **Structured** | Skills produce standardized handoff artifacts |
+| **Composable** | Skills work together in chains and columns |
+| **Self-Governing** | Built-in risk assessment and attention allocation |
+| **Observable** | Optional execution logging for improvement |
 
-### Separation of Concerns
+---
 
-- **Prompt library** = Content artifacts (prompts, patterns, examples)
-- **Agent-skills repo** = Infrastructure (roles, protocols, handoff contracts)
+## Key Features
 
-Skills are **executable capabilities**, not text templates.
+### 1. Two Invocation Modes
 
-### One Source of Truth
+| Mode | Pattern | Use When |
+|------|---------|----------|
+| **Direct** | `"Assume {skill-name} and analyze {target}"` | You know exactly which skill you want |
+| **Intent-Based** | `"Resolve and execute the appropriate skill for: {intent}"` | Let the system find the right skill |
 
-- One canonical repository
-- Copy or subtree into projects as needed
-- Cursor can operate on it cleanly
-- Warp agents see consistent structure
+### 2. Column Pattern (2-Agent Pipeline)
+
+Higher signal quality through exploration + refinement:
+
+```
+Agent A (Exploration) → 15 raw findings
+        ↓
+Agent B (Refinement) → 6 high-quality findings
+        ↓
+Single artifact → Cursor intake
+```
+
+### 3. Governance Layer
+
+- **Risk Assessment**: Automatically determines analysis depth
+- **Strategic Governor**: Throttles/escalates based on findings
+- **Attention Budget**: Prevents over-analysis
+
+### 4. Autonomous Attention
+
+- **Health Assessment**: "What needs my attention?" without specifying
+- **Readiness Certification**: Ship/no-ship decisions with evidence
+- **Change Amplification**: Detect high-leverage changes
+
+---
 
 ## Quick Start
 
-### Setting Up Project-Specific Skills
+### For Warp Users
+
+#### Step 1: Set Up Artifacts Directory
+
+```bash
+mkdir -p .agent-skills/artifacts/incoming
+mkdir -p .agent-skills/artifacts/processed
+```
+
+#### Step 2: Invoke a Skill (Direct Mode)
+
+```
+warp> Assume the architecture-review skill and analyze this codebase
+```
+
+#### Step 3: Or Use Intent-Based Resolution
+
+```
+warp> Resolve and execute the appropriate skill for: finding security vulnerabilities
+```
+
+#### Step 4: Process Results in Cursor
+
+```
+cursor> Run the standard artifact intake and integration pass
+```
+
+### Setting Up Your Project
 
 1. **Copy project structure template:**
    ```bash
@@ -43,407 +125,399 @@ Skills are **executable capabilities**, not text templates.
    cp templates/skill-map-template.yaml .agent-skills/skill-map.yaml
    ```
 
-3. **Edit skill-map.yaml:**
-   - Set your project name and type
-   - Enable relevant universal skills
-   - Add project-specific skills
+3. **Edit skill-map.yaml** with your project details:
+   ```yaml
+   project:
+     name: your-project-name
+     type: react-app | cli-tool | api-service
+     risk-profile: low | medium | high
+   
+   universal-skills:
+     - architecture-review
+     - dependency-health-check
+     - test-coverage-gap-finder
+   ```
 
 4. **Validate skill map:**
    ```
-   > Assume skill-map-validator and validate this project's skill map
+   warp> Assume skill-map-validator and validate this project's skill map
    ```
 
-See `docs/migration-guide.md` for detailed setup instructions.
+---
 
-### Using a Skill with Warp
+## How It Works
 
-1. **Choose a skill** from your skill map or `skills/` directory
-2. **Invoke in Warp**:
-   ```
-   > Assume architecture-review and analyze this codebase
-   ```
-3. **Review handoff report** generated by the skill
-4. **Handoff to Cursor** for implementation
+### Single Skill Invocation
 
-See `docs/agent-invocation-guide.md` for detailed usage examples.
-
-### Using the Column Pattern (Higher Signal Quality)
-
-For high-stakes analysis, use the 2-agent column pattern:
-
-```bash
-# Invoke a column (Agent A explores, Agent B refines)
-warp> Run UX/Adversarial column on the checkout flow
-
-# Agent A surfaces 15 raw findings
-# Agent B compresses to 6 high-quality findings
-# Single artifact written to artifacts/incoming/
-
-# Cursor processes the artifact
-cursor> Run the standard artifact intake and integration pass
+```mermaid
+flowchart LR
+    U[User Intent] --> W[Warp Agent]
+    W --> S[Skill Definition]
+    S --> A[Analysis]
+    A --> H[Handoff Artifact]
+    H --> C[Cursor Intake]
+    C --> I[Implementation]
 ```
 
-**When to use columns:**
-- Pre-release audits
-- Complex domain analysis
-- When you want higher signal quality
-- When you've been burned by false negatives
+**Example:**
+```
+warp> Assume the dependency-health-check skill and analyze this project
 
-See `docs/column-pattern-guide.md` for complete documentation.
-
-### Example Workflow
-
-```bash
-# 1. Warp agent executes skill
-warp> Run project-structure-analyzer on this codebase
-
-# 2. Skill generates handoff report
-# Output: 2024-01-05_project-structure-analyzer_full-project.md
-
-# 3. Review report, then handoff to Cursor
-cursor> Implement the recommendations from 2024-01-05_project-structure-analyzer_full-project.md
+# Warp loads skills/security/dependency-health-check.md
+# Executes analysis per skill behavioral rules
+# Produces structured artifact in artifacts/incoming/
 ```
 
-## Three-Tier Architecture
+### Column Pattern (2-Agent Pipeline)
 
-Skills are organized into three layers:
+For high-stakes analysis, use the column pattern:
 
-### Core Skills (Universal)
-**Location:** `skills/core/`
+```mermaid
+flowchart TD
+    subgraph Column ["Column (e.g., UX/Adversarial)"]
+        A[Agent A: Exploration] --> |"raw findings (15)"| B[Agent B: Refinement]
+        B --> |"compressed (6)"| Art[Single Artifact]
+    end
+    Art --> Inc[artifacts/incoming/]
+    Inc --> Cur[Cursor Intake]
+    Cur --> Proc[artifacts/processed/]
+```
 
-Universal skills that work on **any** project (language-agnostic where possible):
-- `dependency-health-check` - Scans package.json, requirements.txt, etc.
-- `test-coverage-gap-finder` - Works with any test framework
-- `bundle-size-analyzer` - Works with any bundler
-- `architecture-review` - Reviews design patterns generally
+#### Agent A Invocation (Exploration)
 
-### Domain Skills (Technology-Specific)
-**Location:** `skills/domains/{domain}/`
+```markdown
+You are Agent A (Exploration Layer) in a 2-agent column.
 
-Skills specific to a technology domain (React apps, CLI tools, etc.):
-- `domains/react-apps/` - React-specific skills
-- `domains/cli-tools/` - CLI-specific skills
+**Skill:** `adversarial-ui-tester`
+**Target:** the checkout flow
 
-### Project-Specific Skills
-**Location:** `.agent-skills/skills/project/` (in your project root)
+Operating Posture:
+- Maximize coverage
+- Allow mess (comprehensiveness > polish)
+- Do NOT self-censor findings
+- Do NOT deduplicate (that's Agent B's job)
 
-Skills specific to your project only:
-- Encodes project-specific invariants/patterns
-- Not intended for reuse elsewhere
-- May eventually be promoted to domain or core
+Your output goes to Agent B. Do NOT write artifacts.
+```
 
-See `meta/skill-scope-policy.md` for detailed guidance on scope classification and promotion paths.
+#### Agent B Invocation (Refinement)
 
-## Tag Taxonomy Status
+```markdown
+You are Agent B (Refinement Layer) in a 2-agent column.
 
-**Current Status:** Pending validation
+**Input:** [Paste Agent A's output here]
 
-The tag taxonomy enables intent-based skill routing through the `skill-router` meta-skill. Tags are used to match user intents to appropriate skills.
+Your Job:
+1. Deduplicate — Merge overlapping findings
+2. Rank — Assign severity (critical/high/medium/low)
+3. Clarify — Rewrite for actionability
+4. Package — Write ONE artifact to artifacts/incoming/
 
-**Validation Process:**
-- Tag taxonomy will be validated through real routing tests (see `tests/routing-validation.md`)
-- After validation, tags will be refined based on observations (one deliberate pass)
-- Taxonomy will be locked as stable API
-- Future changes require skill-gap-detector or effectiveness analysis
+You are a filter, not a second thinker.
+```
 
-**Key Points:**
-- Tags are organized into categories: Surface, Action, Domain, Specific
-- 4-6 tags per skill is optimal
-- Tags should be specific, not generic
-- Tags describe scope, not outcomes
+#### When to Use Columns
 
-See `meta/tag-taxonomy.md` for the complete taxonomy documentation, including anti-patterns and naming conventions.
+| Use Columns | Use Single Skills |
+|-------------|-------------------|
+| Pre-release audits | Quick checks |
+| Complex domain analysis | Low-stakes review |
+| High-stakes changes | Time-constrained |
+| When burned by false negatives | When you trust skill output |
 
-## Skill Organization (Legacy)
+### Cursor Intake
 
-Skills are also organized by category (for backward compatibility):
+After Warp produces artifacts, switch to Cursor:
 
-- **analysis/**: Discovery and mapping skills
-- **architecture/**: Architecture review and design skills
-- **security/**: Security and dependency analysis skills
-- **testing/**: Testing and validation skills
-- **meta/**: Meta-skills for system validation
+> **"Run the standard artifact intake and integration pass."**
 
-## Skill Maturity Levels
+Cursor will:
+1. Read all artifacts from `artifacts/incoming/`
+2. Parse findings and priorities
+3. Synthesize across multiple artifacts (detect convergence/conflicts)
+4. Produce a concrete action plan
+5. Move processed artifacts to `artifacts/processed/`
 
-Skills progress through maturity levels:
+---
 
-- **draft**: New skill, experimental, may change
-- **validated**: Used successfully, stable structure
-- **hardened**: Long-term use, rarely needs updates
-- **deprecated**: Being phased out, has replacement
+## Available Skills
 
-See `meta/promotion-criteria.md` for details.
+### By Risk Tier
 
-## Skill Lifecycle
+| Tier | Purpose | Skills |
+|------|---------|--------|
+| **Tier 1** (Existential) | Philosophy, privacy, performance | `philosophy-compliance-enforcer`, `privacy-tier-auditor`, `performance-budget-guardian`, `state-invariant-validator`, `capture-surface-focus-auditor` |
+| **Tier 2** (System Health) | Migrations, accuracy, drift | `dependency-health-check`, `architectural-drift-detector`, `adversarial-ui-tester`, `database-migration-safety-checker`, `rac-accuracy-evaluator`, `variant-tree-explosion-detector`, `toast-notification-spam-detector` |
+| **Tier 3** (Long-term Quality) | Testing, docs, architecture | `test-coverage-gap-finder`, `bundle-size-analyzer`, `api-boundary-validator`, `project-structure-analyzer`, `architecture-review`, `failure-mode-simulator`, `ux-copy-neutrality-checker`, `documentation-drift-detector` |
+| **Meta** | Skill management | `skill-router`, `skill-health-check`, `skill-gap-detector`, `skill-effectiveness-analyzer`, `column-router`, `strategic-governor`, `health-assessor`, `readiness-certifier`, `refinement-layer`, `handoff-quality-validator`, `skill-map-validator`, `change-amplification-detector` |
 
-Skills also have lifecycle stages that affect routing priority:
+### By Category
 
-| Stage | Router Weight | Meaning |
-|-------|---------------|---------|
-| `experimental` | 0.7x | New, untested |
-| `validated` | 1.0x | Proven, available |
-| `preferred` | 1.1x | Strong track record |
-| `default` | 1.2x | First choice for domain |
-| `legacy` | 0.5x | Superseded but functional |
-| `deprecated` | 0.1x | Scheduled for removal |
+| Category | Skills |
+|----------|--------|
+| **Analysis** | `project-structure-analyzer`, `documentation-drift-detector` |
+| **Architecture** | `architecture-review`, `architectural-drift-detector` |
+| **API** | `api-boundary-validator` |
+| **Database** | `database-migration-safety-checker` |
+| **Performance** | `bundle-size-analyzer`, `performance-budget-guardian`, `capture-surface-focus-auditor` |
+| **Security** | `dependency-health-check`, `privacy-tier-auditor` |
+| **Testing** | `adversarial-ui-tester`, `test-coverage-gap-finder`, `failure-mode-simulator` |
+| **UX** | `ux-copy-neutrality-checker` |
+| **State** | `state-invariant-validator` |
+| **Philosophy** | `philosophy-compliance-enforcer` |
 
-Skills progress through lifecycle stages based on real-world performance metrics tracked in `meta/skill-trust-scores.yaml`.
+See `skills-index.md` for complete skill documentation.
 
-See `meta/skill-lifecycle.md` for detailed transition criteria.
+---
 
 ## Governance System
 
-The agent-skills system includes a **governance layer** that allocates attention proportionally to risk:
+### Risk Assessment Flow
 
-### Column Router
-
-Before running analysis, the column-router assesses:
-- **Risk tier** (Trivial → Low → Medium → High → Critical)
-- **Failure cost** (blast radius, detectability, reversibility, trust impact)
-- **Appropriate column count** and refinement strictness
-
-**Invocation:**
 ```
-"Assess risk and plan columns for: refactoring checkout validation"
+warp> Assess risk and plan columns for: refactoring checkout validation
 ```
 
-See `skills/meta/column-router.md` and `meta/risk-tiers.md`.
+The column-router produces:
+
+```yaml
+risk_assessment:
+  tier: medium
+  failure_cost:
+    level: medium-high
+    highest_concern: trust_impact
+
+column_plan:
+  recommended_columns:
+    - name: ux-adversarial
+      reason: "User-facing checkout change"
+    - name: correctness
+      reason: "Functional behavior change"
+```
+
+### Risk Tiers
+
+| Tier | Columns | Refinement | Use When |
+|------|---------|------------|----------|
+| Trivial | 0 | None | Config, copy, styling |
+| Low | 1 | Light | Reversible, bounded |
+| Medium | 2-3 | Normal | Functional changes |
+| High | 4 | Strict | Irreversible, sensitive |
+| Critical | 4+ | Strict + Proofs | Payment, auth, data |
 
 ### Strategic Governor
 
 During execution, the governor:
-- **Throttles** excessive analysis (too many columns for risk tier)
-- **Escalates** when critical findings emerge in low-risk assessments
-- **Halts** when proofs are missing or conflicts exist
+- **Throttles**: Excessive analysis for risk tier
+- **Escalates**: Critical findings in low-risk assessments
+- **Halts**: Missing proofs or conflicts
 
-See `skills/meta/strategic-governor.md` and `meta/governor-rules.md`.
+---
 
-### Taste Profile
+## Autonomous Attention
 
-Encode your preferences and biases:
-- Column preferences by change type
-- Skill biases for target surfaces
-- Anti-patterns that trigger escalation
-
-See `meta/taste-profile.yaml` and `meta/anti-patterns.md`.
-
-### Governance Flow
+### Health Assessment (Intentless)
 
 ```
-Intent → Column Router → Governor (validate) → Columns → Governor (monitor) → Synthesis
-```
-
-## Autonomous Attention System
-
-The agent-skills system includes an **autonomous attention layer** that decides where scrutiny is valuable without requiring manual invocation.
-
-### Health Assessment (Intentless Analysis)
-
-Instead of deciding what to analyze, ask the system:
-
-```bash
 warp> Assess the health of this project
 ```
 
 The health-assessor will:
-- Load the project's skill-map contract
+- Load your skill-map contract
 - Detect recent changes across surfaces
-- Calculate concern scores (risk × change velocity × staleness)
+- Calculate concern scores
 - Recommend specific skills to run
-- Explicitly report "no action needed" for clean surfaces
-
-See `skills/meta/health-assessor.md` for details.
+- Report "no action needed" for clean surfaces
 
 ### Readiness Certification
 
-Before shipping, get a canonical readiness certificate:
-
-```bash
+```
 warp> Certify readiness for production
 ```
 
-The readiness-certifier produces:
-- **READY**: All blockers resolved, safe to ship
-- **CONDITIONAL**: Some issues with documented tradeoffs
+Produces:
+- **READY**: Safe to ship
+- **CONDITIONAL**: Issues with documented tradeoffs
 - **BLOCKED**: Hard blockers that must be addressed
 
-Certificates include evidence, confidence scores, and explicit reasoning.
-
-See `skills/meta/readiness-certifier.md` for details.
-
-### Change Amplification Detection
-
-Detect when small changes have disproportionate impact:
-
-```bash
-warp> Check amplification for changes to meta/risk-tiers.md
-```
-
-The amplification detector identifies high-leverage changes (templates, governance files, schemas) and recommends appropriate risk tier escalation.
-
-See `skills/meta/change-amplification-detector.md` for details.
-
-### Documentation Drift Detection
-
-Ensure documentation stays synchronized with reality:
-
-```bash
-warp> Check for documentation drift
-```
-
-Detects structural drift (paths that don't exist), behavioral drift (output contracts that changed), and temporal drift (stale documentation).
-
-See `skills/analysis/documentation-drift-detector.md` for details.
-
-### Attention Autonomy Protocol
-
-The system can be configured for autonomous operation:
-
-- **Change triggers**: Auto-assess when specific files change
-- **Scheduled checks**: Daily/weekly health assessments
-- **Anomaly triggers**: Alert on skill failures or trust score drops
-- **Attention budget**: Prevent over-analysis with configurable limits
-
-See `protocols/attention-autonomy-protocol.md` for integration details.
-
-### Autonomous Attention Flow
+### Change Amplification
 
 ```
-Trigger (change/schedule/anomaly)
-    │
-    ▼
-Health Assessor (identify concerns)
-    │
-    ▼
-Column Router (plan analysis depth)
-    │
-    ▼
-Strategic Governor (validate proportionality)
-    │
-    ▼
-Execute Skills → Findings
-    │
-    ▼
-Readiness Certifier (ship/no-ship decision)
-    │
-    ▼
-Feedback Loop (update trust scores)
+warp> Check amplification for changes to TEMPLATE.md
 ```
 
-## Handoff Process
+Identifies high-leverage changes (templates, governance files) that deserve extra scrutiny.
 
-### How Handoffs Work
+---
 
-1. **Warp agent executes skill**
-   - Skill analyzes codebase
-   - Generates structured handoff report
-   - Saves report with standardized filename
+## Project Structure
 
-2. **Handoff report structure** (see `protocols/handoff-protocol.md`):
-   - Context summary
-   - Findings (prioritized)
-   - Recommendations
-   - Implementation steps
-   - Files to modify/create
-   - Dependencies
-
-3. **Cursor receives report**
-   - Implementation agent reads handoff report
-   - Executes recommendations
-   - Modifies code per specifications
-
-### Filename Convention
-
-Handoff reports follow: `YYYY-MM-DD_skill-name_target-component.md`
-
-Example: `2024-01-05_architecture-review_auth-service.md`
-
-## Skill Chains
-
-Skills can be chained together for comprehensive analysis:
-
-```yaml
-# skill-chains/full-codebase-audit-v1.yaml
-name: Full Codebase Audit
-skills:
-  - project-structure-analyzer
-  - architecture-review
-  - dependency-health-check
-execution: sequential
+```
+agent-skills/
+├── README.md                     # This file
+├── TEMPLATE.md                   # Skill creation template
+├── SKILL-SELECTOR.md             # Decision tree for choosing skills
+├── SKILL-MAP.mmd                 # Visual skill relationships
+├── skills-index.md               # Complete skill inventory
+│
+├── skills/                       # All skill definitions
+│   ├── analysis/                 # Discovery and mapping
+│   ├── api/                      # API boundary validation
+│   ├── architecture/             # Architecture review
+│   ├── database/                 # Database migrations
+│   ├── failure-modes/            # Failure simulation
+│   ├── meta/                     # Meta-skills (routing, governance)
+│   ├── notifications/            # Notification patterns
+│   ├── performance/              # Performance analysis
+│   ├── philosophy/               # Philosophy compliance
+│   ├── rac/                      # RAC accuracy
+│   ├── security/                 # Security and dependencies
+│   ├── state/                    # State management
+│   ├── testing/                  # Testing and validation
+│   ├── ux/                       # UX analysis
+│   └── variants/                 # Variant management
+│
+├── templates/                    # Templates for skills and columns
+│   ├── agent-a-instruction-template.md
+│   ├── agent-b-instruction-template.md
+│   ├── column-configuration-template.yaml
+│   ├── skill-map-template.yaml
+│   └── project-structure/        # Project setup template
+│
+├── protocols/                    # Communication contracts
+│   ├── handoff-protocol.md       # Artifact structure
+│   ├── attention-autonomy-protocol.md
+│   └── lessons-learned-protocol.md
+│
+├── meta/                         # System rules and policies
+│   ├── anti-patterns.md          # Learned regrets
+│   ├── artifact-policy.md        # Artifact lifecycle
+│   ├── failure-cost-model.md     # Cost assessment axes
+│   ├── governor-rules.md         # Throttle/escalate triggers
+│   ├── risk-tiers.md             # Risk tier definitions
+│   ├── skill-lifecycle.md        # Promotion/demotion
+│   ├── skill-scope-policy.md     # Three-tier architecture
+│   ├── skill-trust-scores.yaml   # Trust metrics
+│   ├── tag-taxonomy.md           # Tag naming conventions
+│   └── taste-profile.yaml        # Preferences and biases
+│
+├── docs/                         # User documentation
+│   ├── warp-integration-guide.md # How Warp uses skills
+│   ├── cursor-intake-protocol.md # Standard Cursor command
+│   ├── column-pattern-guide.md   # 2-agent pipeline
+│   ├── column-examples.md        # Worked examples
+│   ├── agent-invocation-guide.md # Detailed invocation
+│   ├── migration-guide.md        # Setup instructions
+│   └── self-improvement-mechanism.md
+│
+├── skill-chains/                 # Pre-configured sequences
+│   └── full-codebase-audit-v1.yaml
+│
+├── profiles/                     # Project-type profiles
+│   └── react-spa.md
+│
+├── tests/                        # Validation framework
+│   ├── routing-validation.md
+│   └── routing-observations.md
+│
+└── .agent-skills/                # Project-specific config
+    ├── skill-map.yaml            # Project contract
+    └── artifacts/
+        ├── incoming/             # New artifacts
+        └── processed/            # Completed artifacts
 ```
 
-See `skill-chains/` for version-locked combinations.
+---
 
-## Execution Modes
+## Key Documents
 
-Skills support different execution modes:
+### Getting Started
+| Document | Purpose |
+|----------|---------|
+| `docs/warp-integration-guide.md` | How to use Warp with agent-skills |
+| `docs/cursor-intake-protocol.md` | Standard Cursor intake command |
+| `docs/migration-guide.md` | Setting up your project |
 
-- **full-scan**: Analyze entire codebase (initial assessment)
-- **incremental**: Analyze only changed files (PR review)
-- **targeted**: Analyze specific modules (focused debugging)
+### Column Pattern
+| Document | Purpose |
+|----------|---------|
+| `docs/column-pattern-guide.md` | Complete column documentation |
+| `docs/column-examples.md` | Worked examples with artifacts |
+| `templates/agent-a-instruction-template.md` | Agent A (exploration) |
+| `templates/agent-b-instruction-template.md` | Agent B (refinement) |
 
-See individual skill documentation for mode details.
+### Governance
+| Document | Purpose |
+|----------|---------|
+| `meta/risk-tiers.md` | Risk tier definitions |
+| `meta/governor-rules.md` | Throttle/escalate triggers |
+| `meta/failure-cost-model.md` | Cost assessment axes |
+| `meta/anti-patterns.md` | Learned regrets |
 
-## Decision Support
+### Skill Development
+| Document | Purpose |
+|----------|---------|
+| `TEMPLATE.md` | Skill creation template |
+| `meta/skill-scope-policy.md` | Three-tier architecture |
+| `meta/skill-lifecycle.md` | Promotion criteria |
+| `meta/tag-taxonomy.md` | Tag naming conventions |
 
-- **SKILL-SELECTOR.md**: Decision tree for choosing skills
-- **SKILL-MAP.mmd**: Visual diagram of skill relationships
-- **profiles/**: Recommended skill sequences by project type
-
-## Observability
-
-Opt-in execution logging tracks:
-- Which skills are used
-- Success/failure rates
-- Runtime performance
-- Error patterns
-
-**Privacy**: No code content, file paths, or project data is logged.
-
-See `meta/observability.md` for details.
+---
 
 ## Creating New Skills
 
-1. **Determine skill scope:**
-   - **Core**: Works on any project → `skills/core/`
-   - **Domain**: Technology-specific → `skills/domains/{domain}/`
-   - **Project**: Project-specific → `.agent-skills/skills/project/`
+### 1. Determine Scope
 
-2. **Copy TEMPLATE.md**
-   ```bash
-   cp TEMPLATE.md skills/core/new-skill.md  # or appropriate location
-   ```
+| Scope | Location | Use When |
+|-------|----------|----------|
+| **core** | `skills/{category}/` | Works on any project |
+| **domain** | `skills/domains/{domain}/` | Technology-specific |
+| **project** | `.agent-skills/skills/project/` | Project-specific only |
+| **meta** | `skills/meta/` | Operates on skills themselves |
 
-3. **Fill in the template**
-   - YAML front matter (include scope, tier, writes-code, etc.)
-   - Purpose and when to use
-   - Behavioral rules
-   - Output contract
+### 2. Create Skill File
 
-4. **Update skill map** (if project-specific):
-   - Add to `project-skills` in `.agent-skills/skill-map.yaml`
+```bash
+cp TEMPLATE.md skills/category/new-skill.md
+```
 
-5. **Test the skill**
-   - Use in real scenarios
-   - Validate handoff reports
-   - Refine based on results
+### 3. Fill Required Sections
 
-6. **Promote to validated**
-   - After 3+ successful uses
-   - Update maturity level
-   - Consider promotion to next layer (project → domain → core)
+```yaml
+---
+type: skill-definition
+name: new-skill-name
+scope: core | domain | project | meta
+tier: 1 | 2 | 3 | meta
+lifecycle: experimental
+execution-modes:
+  - full-scan
+  - incremental
+  - targeted
+tags:
+  - surface-tag
+  - action-tag
+  - domain-tag
+---
+```
 
-See `TEMPLATE.md`, `meta/skill-scope-policy.md`, and `meta/promotion-criteria.md` for details.
+### 4. Validate
+
+```
+warp> Assume skill-health-check and validate skills/category/new-skill.md
+```
+
+---
 
 ## Contributing
 
-### Skill Development
+### Skill Development Guidelines
 
-1. Follow the template structure
-2. Include all required sections
-3. Test thoroughly before promoting
-4. Document anti-patterns and limitations
+1. Follow `TEMPLATE.md` structure exactly
+2. Include all required YAML front matter fields
+3. Document anti-patterns and limitations
+4. Test with real scenarios before promotion
+5. Start with `lifecycle: experimental`
 
 ### Skill Retirement
 
@@ -452,88 +526,19 @@ Skills are deprecated when:
 - Superseded by better skill
 - Technology becomes obsolete
 
-See `meta/promotion-criteria.md` for retirement process.
+See `meta/promotion-criteria.md` for full lifecycle details.
 
-## Project Structure
-
-```
-agent-skills/ (universal repo)
-├── README.md                 # This file
-├── TEMPLATE.md               # Skill creation template
-├── SKILL-SELECTOR.md         # Decision tree
-├── SKILL-MAP.mmd             # Visual skill map
-├── skills/
-│   ├── core/                 # Universal skills (work on any project)
-│   ├── domains/              # Domain-specific skills (react-apps, etc.)
-│   └── meta/                 # Meta-skills (skill management)
-├── templates/
-│   ├── skill-map-template.yaml
-│   └── project-structure/    # Template for project-specific setup
-├── protocols/                # Handoff protocols
-├── meta/                     # System rules and policies
-├── docs/                     # Documentation (migration, invocation guides)
-├── skill-chains/             # Version-locked combinations
-├── profiles/                 # Project-type profiles
-├── tests/                    # Testing framework
-└── .skill-usage/             # Execution logs (git-ignored)
-
-project-root/.agent-skills/ (project-specific)
-├── skills/
-│   ├── project/              # Project-specific skills
-│   └── overrides/           # Project-specific overrides
-├── skill-map.yaml            # Which skills apply to this project
-└── README.md                 # How this project uses agent-skills
-```
-
-## Key Documents
-
-### Core Documentation
-- **TEMPLATE.md**: Template for creating new skills
-- **protocols/handoff-protocol.md**: Handoff report structure
-- **protocols/lessons-learned-protocol.md**: How to ingest lessons learned
-
-### Architecture & Governance
-- **meta/skill-scope-policy.md**: Three-tier architecture, promotion paths, conflict resolution
-- **meta/promotion-criteria.md**: Skill lifecycle and promotion process
-- **meta/composition-rules.md**: How skills work together
-- **meta/rule-precedence.md**: Conflict resolution
-- **meta/observability.md**: Execution logging
-
-### Setup & Usage
-- **docs/migration-guide.md**: Migrating to three-tier architecture
-- **docs/agent-invocation-guide.md**: How agents use skill maps
-- **docs/warp-integration-guide.md**: How Warp agents execute skills
-- **docs/cursor-intake-protocol.md**: Standard Cursor intake command
-- **templates/skill-map-template.yaml**: Skill map template
-- **templates/project-structure/**: Project-specific setup template
-
-### Column Pattern (2-Agent Pipelines)
-- **docs/column-pattern-guide.md**: Complete column pattern documentation
-- **docs/column-examples.md**: Worked examples with artifacts
-- **docs/self-improvement-mechanism.md**: How the system evolves over time
-- **skills/meta/refinement-layer.md**: Agent B meta-skill for column pattern
-- **templates/agent-a-instruction-template.md**: Agent A (exploration) instructions
-- **templates/agent-b-instruction-template.md**: Agent B (refinement) instructions
-- **templates/column-configuration-template.yaml**: Column configuration template
-
-### Decision Support
-- **SKILL-SELECTOR.md**: Decision tree for choosing skills
-- **SKILL-MAP.mmd**: Visual diagram of skill relationships
-- **skills-index.md**: Comprehensive index of all skills (see below)
-
-### Autonomous Attention System
-- **skills/meta/health-assessor.md**: Intentless health assessment
-- **skills/meta/readiness-certifier.md**: Ship/no-ship certification
-- **skills/meta/change-amplification-detector.md**: High-leverage change detection
-- **skills/analysis/documentation-drift-detector.md**: Documentation sync validation
-- **protocols/attention-autonomy-protocol.md**: Autonomous triggering and integration
-- **.agent-skills/skill-map.yaml**: Project contract (when configured)
+---
 
 ## License
 
-[Add your license here]
+MIT License - See LICENSE file for details.
 
 ## Support
 
-[Add support information here]
+- **GitHub Issues**: [github.com/ianmxaof/agent-skills/issues](https://github.com/ianmxaof/agent-skills/issues)
+- **Documentation**: See `docs/` directory
 
+---
+
+*Last updated: January 2026*
