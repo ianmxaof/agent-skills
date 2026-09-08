@@ -221,11 +221,15 @@ agent-skills/
 - **meta/observability.md**: Execution logging
 - **MIGRATION-GUIDE.md**: Refactoring and rollback procedures
 
+## Who should use this
+
+People who run Warp (or similar) for analysis and Cursor for implementation, and want copy-pasteable skill folders instead of one-off prompts.
+
 ## License
 
-[Add your license here]
+No license file is published in this repository yet.
 
 ## Support
 
-[Add support information here]
+Open an issue on GitHub: https://github.com/ianmxaof/agent-skills/issues
 
