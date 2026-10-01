@@ -44,6 +44,22 @@
       "assertions": [
         {"type": "not_contains", "value": "ENTROPY_SCAN_GPT_PASTE"}
       ]
+    },
+    {
+      "id": "brainstorm-mode-named",
+      "assertions": [
+        {"type": "contains", "value": "brainstorm"},
+        {"type": "contains", "value": "ring:"},
+        {"type": "regex", "value": "(?i)≤2.*ring"}
+      ]
+    },
+    {
+      "id": "checkpoint-write-deferred",
+      "assertions": [
+        {"type": "contains", "value": "never"},
+        {"type": "contains", "value": "write to the inbox mid-scan"},
+        {"type": "contains", "value": "deferred"}
+      ]
     }
   ]
 }

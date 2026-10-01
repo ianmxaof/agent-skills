@@ -40,6 +40,23 @@
         {"type": "regex", "value": "\\A(?!(?:[\\s\\S])*^- \\[blocked\\(hard\\)(?:(?!\\bwall:)[^\\n])*$)(?:[\\s\\S])*\\Z"},
         {"type": "regex", "value": "\\A(?!(?:[\\s\\S])*^- \\[blocked\\(soft\\)(?:(?!\\bpressure:)[^\\n])*$)(?:[\\s\\S])*\\Z"}
       ]
+    },
+    {
+      "id": "brainstorm-second-ring-well-formed",
+      "expect_ok": false,
+      "prompt": "/entropy-scan brainstorm — Telethon userbot leverage",
+      "output": "Literal ask: What could AOF unlock with Telethon userbots. Lens: innovation. Mode: brainstorm\n\nVertices:\n- [missed·med] unexploited primitives — Telethon admin session only used for scrapes · ev: tbcc/backend/app/services/research_scanner.py:10\n\nAscend?: yes — prototype a read-only digest. Done: pytest smoke passes\n  - ring: could this feed the thread-digest skill too?\n  - ring: does Buffer fanout want the same digest?\n\nFence: in scope - digest prototype; out of scope - any auto-post\n",
+      "assertions": [
+        {"type": "regex", "value": "(?:^\\s*- ring:[^\\n]*\\?[^\\n]*\\n?){3}"}
+      ]
+    },
+    {
+      "id": "brainstorm-third-ring-caught",
+      "prompt": "/entropy-scan brainstorm — Telethon userbot leverage",
+      "output": "Literal ask: What could AOF unlock with Telethon userbots. Lens: innovation. Mode: brainstorm\n\nVertices:\n- [missed·med] unexploited primitives — Telethon admin session only used for scrapes · ev: tbcc/backend/app/services/research_scanner.py:10\n\nAscend?: yes — prototype a read-only digest. Done: pytest smoke passes\n  - ring: could this feed the thread-digest skill too?\n  - ring: does Buffer fanout want the same digest?\n  - ring: should this become a full crew?\n\nFence: in scope - digest prototype; out of scope - any auto-post\n",
+      "assertions": [
+        {"type": "regex", "value": "(?:^\\s*- ring:[^\\n]*\\?[^\\n]*\\n?){3}"}
+      ]
     }
   ]
 }

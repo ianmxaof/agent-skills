@@ -1,5 +1,5 @@
 {
-  "current": "v0002_20261001-234605_4-4-6-6",
+  "current": "v0003_20261001-234811_6-6-8-8",
   "entries": [
     {
       "id": "v0001_20261001-234339_1-1-1",
@@ -18,6 +18,16 @@
       "score": "evals 4/4, body 6/6",
       "note": "S3: Freedom + Harness attach + evals scaffold",
       "parent": "v0001_20261001-234339_1-1-1",
+      "source": "manual",
+      "pinned": false
+    },
+    {
+      "id": "v0003_20261001-234811_6-6-8-8",
+      "file": "v0003_20261001-234811_6-6-8-8.md",
+      "ts": "2026-10-01T23:48:11Z",
+      "score": "evals 6/6, body 8/8",
+      "note": "S5: brainstorm mode (second-ring <=2, checkpoint-write deferred)",
+      "parent": "v0002_20261001-234605_4-4-6-6",
       "source": "manual",
       "pinned": false
     }

@@ -8,7 +8,7 @@ description: >-
 
 # TBCC Entropy Scan (v1.2-dev)
 
-Changelog: v1.2 (in progress) — S1: evidence + confidence per vertex, self-correct step. S2: blocked hard/soft pressure. S3: Freedom + Harness attach, evals scaffold, third-person description. v1.1 — lens registry via `tbcc/docs/entropy-lenses.json`; compose Exit. v1.0 — initial conversion scan.
+Changelog: v1.2 (in progress) — S1: evidence + confidence per vertex, self-correct step. S2: blocked hard/soft pressure. S3: Freedom + Harness attach, evals scaffold, third-person description. S5: brainstorm mode (second-ring, ≤2, no checkpoint-write). v1.1 — lens registry via `tbcc/docs/entropy-lenses.json`; compose Exit. v1.0 — initial conversion scan.
 
 ## Purpose
 
@@ -18,8 +18,8 @@ Changelog: v1.2 (in progress) — S1: evidence + confidence per vertex, self-cor
 
 ## When to Invoke
 
-- Trigger phrases: `/entropy-scan`, `/entropy-scan <lens>`, `entropy scan`, `scour vertices`, `max yield this request`, `conversion vertices`, `/tbcc-entropy-scan`
-- Situational: product/funnel/pricing/CTA; or topic matches a lens `when_hints` in the JSON (e.g. notification tone → `marketing`)
+- Trigger phrases: `/entropy-scan`, `/entropy-scan <lens>`, `/entropy-scan brainstorm [lens]`, `entropy scan`, `scour vertices`, `max yield this request`, `conversion vertices`, `/tbcc-entropy-scan`
+- Situational: product/funnel/pricing/CTA; or topic matches a lens `when_hints` in the JSON (e.g. notification tone → `marketing`); a greenfield/idea ask (`what if`, `brainstorm`, `new product idea`, `underexploited`) → `brainstorm` mode, lens defaults to `innovation`
 - **Skip:** named file-level bug fix; docs/lint/pytest only; tray / Telethon / `.env` / bot spawn; island deploy mechanics; “just the bug” / “literal only”
 
 ## Execution Profile
@@ -50,6 +50,7 @@ Changelog: v1.2 (in progress) — S1: evidence + confidence per vertex, self-cor
 ## Behavioral Rules
 
 - Resolve lens: explicit `/entropy-scan <lens>` → else infer from `infer_rules` → else default `revenue` only for funnel/money asks; if topic is clearly non-revenue, **ask once** or use inferred lens (do not force monetization axes on devops/marketing threads)
+- **Brainstorm mode** — `/entropy-scan brainstorm [lens]`, or auto-detected on a greenfield/idea ask: lens defaults to `innovation` unless named explicitly; inside **Ascend?**, add ≤2 indented `- ring: <question>?` lines (second-ring follow-on questions, never implemented, never a 6th vertex); outside brainstorm mode, do not add ring lines
 - Reason by: literal → ≤5 vertices on that lens’s `vertex_axes` → one slice or no-ascend
 - **Blocked pressure** — every `blocked` vertex is `blocked(hard)` or `blocked(soft)`, never bare `blocked`:
   - `blocked(hard)` — a live-ops/doctrine/do-not-touch wall. Cite the wall source inline (`wall: <SPRINT_STATE.md line | CLAUDE.md policy | doctrine>`) and stop expanding — never propose unblocking a hard wall.
@@ -60,14 +61,14 @@ Changelog: v1.2 (in progress) — S1: evidence + confidence per vertex, self-cor
 ## Output Contract
 
 - Required (dense), still exactly **four** sections — depth lives inside the Vertices lines, never as a fifth section:
-  1. **Literal ask** — one sentence (+ **Lens:** name)
+  1. **Literal ask** — one sentence (+ **Lens:** name, + **Mode:** `scan` | `brainstorm` when brainstorm is active)
   2. **Vertices** — ≤5 lines, one of:
      - `- [missed·<high|med|low>] <axis> — <claim> · ev: <path:line | cmd output | "inferred">`
      - `- [covered·<high|med|low>] <axis> — <claim> · ev: <...>`
      - `- [blocked(hard)] <axis> — <claim> · wall: <source>`
      - `- [blocked(soft)·<high|med|low>] <axis> — <claim> · ev: <...> · pressure: <reversible unblock hypothesis>`
      - `ev: inferred` (no file/cmd evidence) forces `conf: low` — never `high`/`med` on a vibe
-  3. **Ascend?** — yes + one slice + done-condition **or** no + why literal
+  3. **Ascend?** — yes + one slice + done-condition **or** no + why literal; in `brainstorm` mode only, ≤2 `  - ring: <question>?` lines may follow (not implemented this pass)
   4. **Fence** — in / out
 - Done means: operator picked or said literal only; **no code** in this protocol
 - Failure: blocked vertex → tag and stop expanding
@@ -75,7 +76,7 @@ Changelog: v1.2 (in progress) — S1: evidence + confidence per vertex, self-cor
 ### Self-correct
 
 1. **Draft** the four sections.
-2. **Check**: every `missed`/`covered` line has `ev:`; `ev: inferred` lines are `conf: low`; every `blocked` line is tagged `(hard)` with `wall:` or `(soft)` with `pressure:`; ≤5 vertex lines total.
+2. **Check**: every `missed`/`covered` line has `ev:`; `ev: inferred` lines are `conf: low`; every `blocked` line is tagged `(hard)` with `wall:` or `(soft)` with `pressure:`; ≤5 vertex lines total; if `brainstorm` mode, ≤2 `ring:` lines and none implemented.
 3. **Revise** once if any check fails — fix the line, don't drop the section.
 
 ## Exit Conditions
@@ -86,6 +87,8 @@ Changelog: v1.2 (in progress) — S1: evidence + confidence per vertex, self-cor
 
 ## Agent procedure
 
-1. Read sprint state + `entropy-lenses.json`. Resolve lens.
+1. Read sprint state + `entropy-lenses.json`. Resolve mode (`scan` default, `brainstorm` if flagged/inferred) and lens.
 2. If skip matches: one line, do literal ask.
-3. Emit four sections. Stop for pick.
+3. Draft four sections per Output Contract (brainstorm adds ring lines inside Ascend? only).
+4. Self-correct per above — revise once if any check fails.
+5. Emit. Stop for pick.
