@@ -8,7 +8,7 @@ description: >-
 
 # TBCC Entropy Scan (v1.2-dev)
 
-Changelog: v1.2 (in progress) — S1: evidence + confidence per vertex, self-correct step. v1.1 — lens registry via `tbcc/docs/entropy-lenses.json`; compose Exit. v1.0 — initial conversion scan.
+Changelog: v1.2 (in progress) — S1: evidence + confidence per vertex, self-correct step. S2: blocked hard/soft pressure. v1.1 — lens registry via `tbcc/docs/entropy-lenses.json`; compose Exit. v1.0 — initial conversion scan.
 
 ## Purpose
 
@@ -41,7 +41,10 @@ Changelog: v1.2 (in progress) — S1: evidence + confidence per vertex, self-cor
 
 - Resolve lens: explicit `/entropy-scan <lens>` → else infer from `infer_rules` → else default `revenue` only for funnel/money asks; if topic is clearly non-revenue, **ask once** or use inferred lens (do not force monetization axes on devops/marketing threads)
 - Reason by: literal → ≤5 vertices on that lens’s `vertex_axes` → one slice or no-ascend
-- Avoid: fake FOMO; dark patterns; rewriting Do not touch; unbounded implementation
+- **Blocked pressure** — every `blocked` vertex is `blocked(hard)` or `blocked(soft)`, never bare `blocked`:
+  - `blocked(hard)` — a live-ops/doctrine/do-not-touch wall. Cite the wall source inline (`wall: <SPRINT_STATE.md line | CLAUDE.md policy | doctrine>`) and stop expanding — never propose unblocking a hard wall.
+  - `blocked(soft)` — missing data / unbuilt dependency / unread file. Add one reversible unblock hypothesis inline (`pressure: <...>`) — a hypothesis only, never implemented in-scan.
+- Avoid: fake FOMO; dark patterns; rewriting Do not touch; unbounded implementation; proposing a workaround for a hard wall
 - Prioritize: operator done-condition; sprint goal; reversible slices
 
 ## Output Contract
@@ -51,7 +54,8 @@ Changelog: v1.2 (in progress) — S1: evidence + confidence per vertex, self-cor
   2. **Vertices** — ≤5 lines, one of:
      - `- [missed·<high|med|low>] <axis> — <claim> · ev: <path:line | cmd output | "inferred">`
      - `- [covered·<high|med|low>] <axis> — <claim> · ev: <...>`
-     - a `blocked` line — see Behavioral Rules for the `(hard)`/`(soft)` form
+     - `- [blocked(hard)] <axis> — <claim> · wall: <source>`
+     - `- [blocked(soft)·<high|med|low>] <axis> — <claim> · ev: <...> · pressure: <reversible unblock hypothesis>`
      - `ev: inferred` (no file/cmd evidence) forces `conf: low` — never `high`/`med` on a vibe
   3. **Ascend?** — yes + one slice + done-condition **or** no + why literal
   4. **Fence** — in / out
@@ -61,7 +65,7 @@ Changelog: v1.2 (in progress) — S1: evidence + confidence per vertex, self-cor
 ### Self-correct
 
 1. **Draft** the four sections.
-2. **Check**: every `missed`/`covered` line has `ev:`; `ev: inferred` lines are `conf: low`; ≤5 vertex lines total.
+2. **Check**: every `missed`/`covered` line has `ev:`; `ev: inferred` lines are `conf: low`; every `blocked` line is tagged `(hard)` with `wall:` or `(soft)` with `pressure:`; ≤5 vertex lines total.
 3. **Revise** once if any check fails — fix the line, don't drop the section.
 
 ## Exit Conditions

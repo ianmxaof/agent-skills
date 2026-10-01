@@ -19,6 +19,27 @@
       "assertions": [
         {"type": "regex", "value": "\\A(?!(?:[\\s\\S])*^- \\[(?:missed|covered)(?:(?!\\bev:)[^\\n])*$)(?:[\\s\\S])*\\Z"}
       ]
+    },
+    {
+      "id": "blocked-pressure-well-formed",
+      "prompt": "/entropy-scan devops — harden VIP checkout",
+      "output": "Literal ask: Harden VIP checkout. Lens: devops\n\nVertices:\n- [missed·high] toil — manual Stars reconcile · ev: tbcc/backend/scripts/nut_wallet/run_daily.py:40\n- [blocked(hard)] fragility — swap Celery broker · wall: CLAUDE.md \"cloud-only runtime; no local Celery\"\n- [blocked(soft)·med] observability — no Beat heartbeat metric · ev: inferred · pressure: add a last_tick_ts gauge, reversible\n- [covered·high] reversibility — deploy script already idempotent · ev: tbcc/scripts/revenue-island/deploy-island-live.ps1:20\n\nAscend?: yes — add last_tick_ts gauge. Done: /health shows last_tick_ts\n\nFence: in scope - observability gauge; out of scope - broker swap\n",
+      "assertions": [
+        {"type": "regex", "value": "\\A(?!(?:[\\s\\S])*^- \\[blocked(?!\\((?:hard|soft)\\))[^\\n]*$)(?:[\\s\\S])*\\Z"},
+        {"type": "regex", "value": "\\A(?!(?:[\\s\\S])*^- \\[blocked\\(hard\\)(?:(?!\\bwall:)[^\\n])*$)(?:[\\s\\S])*\\Z"},
+        {"type": "regex", "value": "\\A(?!(?:[\\s\\S])*^- \\[blocked\\(soft\\)(?:(?!\\bpressure:)[^\\n])*$)(?:[\\s\\S])*\\Z"}
+      ]
+    },
+    {
+      "id": "blocked-tag-missing-caught",
+      "expect_ok": false,
+      "prompt": "/entropy-scan devops — harden VIP checkout",
+      "output": "Literal ask: Harden VIP checkout. Lens: devops\n\nVertices:\n- [missed·high] toil — manual Stars reconcile · ev: tbcc/backend/scripts/nut_wallet/run_daily.py:40\n- [blocked(hard)] fragility — swap Celery broker · wall: CLAUDE.md \"cloud-only runtime; no local Celery\"\n- [blocked] observability — no Beat heartbeat metric\n- [covered·high] reversibility — deploy script already idempotent · ev: tbcc/scripts/revenue-island/deploy-island-live.ps1:20\n\nAscend?: yes — add last_tick_ts gauge. Done: /health shows last_tick_ts\n\nFence: in scope - observability gauge; out of scope - broker swap\n",
+      "assertions": [
+        {"type": "regex", "value": "\\A(?!(?:[\\s\\S])*^- \\[blocked(?!\\((?:hard|soft)\\))[^\\n]*$)(?:[\\s\\S])*\\Z"},
+        {"type": "regex", "value": "\\A(?!(?:[\\s\\S])*^- \\[blocked\\(hard\\)(?:(?!\\bwall:)[^\\n])*$)(?:[\\s\\S])*\\Z"},
+        {"type": "regex", "value": "\\A(?!(?:[\\s\\S])*^- \\[blocked\\(soft\\)(?:(?!\\bpressure:)[^\\n])*$)(?:[\\s\\S])*\\Z"}
+      ]
     }
   ]
 }
