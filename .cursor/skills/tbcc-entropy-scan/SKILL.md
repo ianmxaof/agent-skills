@@ -8,7 +8,7 @@ description: >-
 
 # TBCC Entropy Scan (v1.2-dev)
 
-Changelog: v1.2 (in progress) — S1: evidence + confidence per vertex, self-correct step. S2: blocked hard/soft pressure. v1.1 — lens registry via `tbcc/docs/entropy-lenses.json`; compose Exit. v1.0 — initial conversion scan.
+Changelog: v1.2 (in progress) — S1: evidence + confidence per vertex, self-correct step. S2: blocked hard/soft pressure. S3: Freedom + Harness attach, evals scaffold, third-person description. v1.1 — lens registry via `tbcc/docs/entropy-lenses.json`; compose Exit. v1.0 — initial conversion scan.
 
 ## Purpose
 
@@ -24,6 +24,7 @@ Changelog: v1.2 (in progress) — S1: evidence + confidence per vertex, self-cor
 
 ## Execution Profile
 
+- Freedom: **medium-low** on the contract (four-section format, `missed|covered|blocked(hard)|blocked(soft)` enum, ≤5 cap are fixed); **medium** on which axes light up inside the resolved lens; **high** on axis pick only in `brainstorm` mode (cap still ≤5)
 - Mode: **Plan / Ask**; no code edits during the scan
 - Model lane: Frontier Plan/Ask when judgment gate fires; Auto for small copy/CTA; never Cloud for the scan itself
 - Parallelism: optional one readonly cheap explore
@@ -31,11 +32,20 @@ Changelog: v1.2 (in progress) — S1: evidence + confidence per vertex, self-cor
 
 ## Delegation & Tooling
 
-- **Required read:** `tbcc/docs/entropy-lenses.json` (axes + infer_rules)
-- Also: `tbcc/docs/SPRINT_STATE.md`; paste twin `tbcc/docs/ENTROPY_SCAN_GPT_PASTE.md`
+- **Required read:** `tbcc/docs/entropy-lenses.json` (axes + infer_rules) — single source of truth; do not inline the per-lens axis lists here
+- Also: `tbcc/docs/SPRINT_STATE.md`
 - After pick: `tbcc-preflight` if ≥3 files; else implement / `directive-generator` per chains
 - Optional text lens (Plan only): `tbcc-prompt-chains` → `ENTROPY_AUDIT` on a pasted docs/handoff excerpt when vertices flag stale assumptions — not a replacement for this scan
 - MCP: none; do not Start bots
+
+## Harness attach
+
+| Surface | Value |
+|---------|-------|
+| **MCP** | none |
+| **Hooks** | none mid-scan — this skill stops before any hook-worthy action (Plan-only) |
+| **Memory** | chat-ok; reading prior scan notes / inbox thinktank bullets as an evidence source is fine — **never** write to the inbox mid-scan (checkpoint-write deferred, see Prior state) |
+| **Compose** | → `tbcc-preflight` (≥3-file pick) \| `directive-generator` (Lane C) \| `tbcc-prompt-chains` (`ENTROPY_AUDIT` / `LEVERAGE_MATRIX`) |
 
 ## Behavioral Rules
 

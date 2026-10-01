@@ -1,5 +1,5 @@
 {
-  "current": "v0001_20261001-234339_1-1-1",
+  "current": "v0002_20261001-234605_4-4-6-6",
   "entries": [
     {
       "id": "v0001_20261001-234339_1-1-1",
@@ -9,6 +9,16 @@
       "note": "initial seed",
       "parent": null,
       "source": "seed",
+      "pinned": false
+    },
+    {
+      "id": "v0002_20261001-234605_4-4-6-6",
+      "file": "v0002_20261001-234605_4-4-6-6.md",
+      "ts": "2026-10-01T23:46:05Z",
+      "score": "evals 4/4, body 6/6",
+      "note": "S3: Freedom + Harness attach + evals scaffold",
+      "parent": "v0001_20261001-234339_1-1-1",
+      "source": "manual",
       "pinned": false
     }
   ]

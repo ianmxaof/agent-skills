@@ -1,0 +1,49 @@
+{
+  "skill": "tbcc-entropy-scan",
+  "cases": [
+    {
+      "id": "anthropic-harness-shape",
+      "assertions": [
+        {"type": "contains", "value": "Freedom:"},
+        {"type": "contains", "value": "Self-correct"},
+        {"type": "contains", "value": "Harness attach"}
+      ]
+    },
+    {
+      "id": "four-section-contract-intact",
+      "assertions": [
+        {"type": "contains", "value": "**Literal ask**"},
+        {"type": "contains", "value": "**Vertices**"},
+        {"type": "contains", "value": "**Ascend?**"},
+        {"type": "contains", "value": "**Fence**"},
+        {"type": "contains", "value": "exactly **four** sections"}
+      ]
+    },
+    {
+      "id": "cap-stays-five",
+      "assertions": [
+        {"type": "regex", "value": "(?i)≤5 (?:vertex )?lines"}
+      ]
+    },
+    {
+      "id": "blocked-hard-soft-present",
+      "assertions": [
+        {"type": "contains", "value": "blocked(hard)"},
+        {"type": "contains", "value": "blocked(soft)"}
+      ]
+    },
+    {
+      "id": "lens-single-source-of-truth",
+      "assertions": [
+        {"type": "contains", "value": "entropy-lenses.json"},
+        {"type": "not_contains", "value": "unexploited primitives already sitting in"}
+      ]
+    },
+    {
+      "id": "paste-twin-reference-dropped",
+      "assertions": [
+        {"type": "not_contains", "value": "ENTROPY_SCAN_GPT_PASTE"}
+      ]
+    }
+  ]
+}
