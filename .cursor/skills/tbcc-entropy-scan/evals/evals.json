@@ -1,0 +1,24 @@
+{
+  "skill": "tbcc-entropy-scan",
+  "notes": "Legacy folder name; new skills use powercore-* naming. Fixtures use anchored whole-string regex (\\A...\\Z with a negative lookahead) so one bad line inside an otherwise-good fixture is still caught — a plain 'contains ev:' check is not (see S1 cases).",
+  "cases": [
+    {
+      "id": "vertex-evidence-well-formed",
+      "prompt": "/entropy-scan revenue — VIP Stars tier",
+      "output": "Literal ask: Add Stars pricing tier for VIP. Lens: revenue\n\nVertices:\n- [missed·high] CTA — no deep link on loot bot share card · ev: tbcc/backend/app/bots/loot.py:120\n- [covered·high] paywall/SKU — Stars SKU already wired · ev: tbcc/backend/app/api/tools_slots.py:40\n- [missed·med] attribution — source_ref not logged on VIP checkout · ev: tbcc/backend/app/services/checkout_list_hub.py:88\n- [blocked(hard)] friction-to-cash — raising VIP price · wall: CLAUDE.md \"Cursor owns pricing/doctrine\"\n\nAscend?: yes — add source_ref logging to VIP checkout. Done: pytest test_checkout_list_hub.py::test_source_ref passes\n\nFence: in scope - source_ref logging; out of scope - price change, new SKU\n",
+      "assertions": [
+        {"type": "regex", "value": "\\A(?!(?:[\\s\\S])*^- \\[(?:missed|covered)(?:(?!\\bev:)[^\\n])*$)(?:[\\s\\S])*\\Z"},
+        {"type": "not_contains", "value": "looks fine"}
+      ]
+    },
+    {
+      "id": "vertex-evidence-missing-line-caught",
+      "expect_ok": false,
+      "prompt": "/entropy-scan revenue — VIP Stars tier",
+      "output": "Literal ask: Add Stars pricing tier for VIP. Lens: revenue\n\nVertices:\n- [missed·high] CTA — no deep link on loot bot share card · ev: tbcc/backend/app/bots/loot.py:120\n- [covered·high] paywall/SKU — Stars SKU already wired · ev: tbcc/backend/app/api/tools_slots.py:40\n- [missed·med] attribution — source_ref not logged on VIP checkout\n- [blocked(hard)] friction-to-cash — raising VIP price · wall: CLAUDE.md \"Cursor owns pricing/doctrine\"\n\nAscend?: yes — add source_ref logging to VIP checkout. Done: pytest test_checkout_list_hub.py::test_source_ref passes\n\nFence: in scope - source_ref logging; out of scope - price change, new SKU\n",
+      "assertions": [
+        {"type": "regex", "value": "\\A(?!(?:[\\s\\S])*^- \\[(?:missed|covered)(?:(?!\\bev:)[^\\n])*$)(?:[\\s\\S])*\\Z"}
+      ]
+    }
+  ]
+}
