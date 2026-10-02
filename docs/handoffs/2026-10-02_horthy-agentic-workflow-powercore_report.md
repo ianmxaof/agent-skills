@@ -37,3 +37,21 @@ Each phase must name one external stop in its report.
 
 ### Reject list
 JSON->XML migration; lights-off factory; unbounded context dumps; any new always-on tip; incident->PR factory (deferred); mega dirty-tree cleanup; blind remote creation; new mega-skill.
+
+## Phase 1 — Grinder (2026-10-02)
+
+H1 + H6 only. No tip/rule file touched, no telegram_bot2 file touched, nothing pushed.
+
+### Delivered
+- `docs/POWERCORE_AGENTIC_WORKFLOW.md`: Horthy point → existing surface table (lights-off → silent-fail + Planner peek + ship-gate/no-done-without-external-stop; four-stage → entropy-scan → directive-generator → phase grind, table deferred to P3; tracer bullet → one phase = one slice = one external verify command; dumb zone → compaction; inverse prompt → Planner ACK / Grinder STOP low-confidence question, wording deferred to P2; bottleneck → tip prune). Reject list (JSON→XML, lights-off, unbounded dumps, new always-on tip, incident→PR deferred, mega dirty-tree, blind remote creation, mega-skill) and the note that tip prune never touches the skill catalog.
+- 10-line compaction checklist in the same doc.
+- `tools/skill_gap/compact.py`: dated stub writer (`.skill-gap/compacts/` gitignored by default, `--out-dir` override, never overwrites, `-2` suffix on collision); cites `tbcc-auto-crystallize` and `*_report.md` as the habits it wires to.
+- `tests/test_skill_gap.py`: +2 tests (stub name/contents/no-overwrite; CLI prints path).
+
+### External stop (output)
+- `rg -n -i "dumb.?zone|compaction|tracer|inverse" docs/POWERCORE_AGENTIC_WORKFLOW.md` → hits in the table + checklist (the directive's case-sensitive pattern only matches line 39 "inverse prompt" in the new doc; the doc capitalizes the others).
+- Compaction CLI: `py -3.13 -m tools.skill_gap.compact --goal "Phase 1 smoke" --done "doc+cli" --next "Phase 2" --verify "pytest tests -q"` → `...\.skill-gap\compacts\2026-10-02_0256_compact_phase-1-smoke.md` (gitignored: `.gitignore:5 .skill-gap/`).
+- `pytest tests -q` → 54 passed. `run_rank_evals --json` → 13/13, hit_rate 1.0.
+
+### Low-confidence choice (inverse prompt)
+I made the CLI a pure stub writer (fields supplied via flags) instead of auto-summarizing the session or reading git state, because the tool cannot see the conversation and guessing would invent "done" evidence. Trade-off: the agent must fill `--done/--next`, so a lazy invocation yields TODO placeholders. Also unsure whether the default dir should be gitignored `.skill-gap/compacts/` vs tracked `docs/handoffs/`; I chose ignored to avoid commit noise.

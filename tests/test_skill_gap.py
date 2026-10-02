@@ -466,3 +466,26 @@ def test_rank_and_endgates_share_ack_pattern():
     assert rank_skills.rank_skills_for_invoke(
         user_prompt="okay, got it", ai_response="Great, let me know."
     ) == []
+
+
+def test_compact_writes_dated_stub_and_never_overwrites(tmp_path: Path):
+    from datetime import datetime
+
+    from tools.skill_gap.compact import write_compact
+
+    now = datetime(2026, 10, 2, 14, 5)
+    a = write_compact(goal="Ship the Gate!", done=["x (abc123)"], next_steps=["y"],
+                      verify="pytest -q", out_dir=tmp_path, now=now)
+    b = write_compact(goal="Ship the Gate!", out_dir=tmp_path, now=now)
+    assert a.name == "2026-10-02_1405_compact_ship-the-gate.md"
+    assert b != a and b.name.endswith("-2.md")
+    text = a.read_text(encoding="utf-8")
+    assert "- x (abc123)" in text and "pytest -q" in text and "tbcc-auto-crystallize" in text
+    assert "TODO" in b.read_text(encoding="utf-8")
+
+
+def test_compact_cli_prints_path(tmp_path: Path, capsys):
+    from tools.skill_gap.compact import main
+
+    assert main(["--goal", "g", "--out-dir", str(tmp_path)]) == 0
+    assert str(tmp_path) in capsys.readouterr().out
