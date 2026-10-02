@@ -68,3 +68,25 @@ Phase 2 amendments:
 2. Smallest surface only: relay SKILL + its Claude twin get (a) Planner ACK must ask the inverse-confidence question ("which choices are you least sure of?") and (b) Grinder phase contract = one external verify command per phase. directive-generator gets ONE tracer-bullet verification line. Bump the relay changelog (v1.2) per skill versioning convention. Do not edit `powercore-cc-cc-relay.mdc` (no tip growth), do not touch telegram_bot2's `tbcc-directive-generator`, no mass skill rewrite.
 3. If a GPT paste twin for the relay or directive-generator exists in docs/gpt-paste/, mirror the same sentence there; if not, say so and do not create one.
 4. External stop: `rg -n -i "inverse|external (verify|stop)" .cursor/skills/powercore-cc-cc-relay .claude/skills/powercore-cc-cc-relay .cursor/skills/directive-generator`, relay skill's own evals still run (use its evals runner if one exists, else cite that none ran), `pytest tests -q`, `run_rank_evals --json` 13/13.
+
+## Phase 2 — Grinder (2026-10-02)
+
+H2 + H3 only. No tips, no telegram_bot2, nothing pushed.
+
+### Commits
+- `a28438c` baseline (UNMODIFIED): relay Cursor SKILL.md + evals/evals.json, relay Claude twin, directive-generator SKILL.md + evals/evals.json + body_assertions.json. Excluded: all `evals/versions/`, directive-generator `examples.md` (not an evals definition; left untracked).
+- `56023a3` patch: relay SKILL (v1.1 → **v1.2**, changelog line), relay Claude twin (v1.2 + short section), directive-generator (one tracer-bullet clause on the Phases line), relay GPT paste (same two sentences). `.cursor/rules/*` untouched; no directive-generator paste twin; tbcc-directive-generator untouched.
+- Note: `POWERCORE_CC_CC_RELAY_GPT_PASTE.md` was untracked, so the patch commit is its first commit (baseline carve-out only covered the skills).
+
+### What changed
+1. Inverse confidence: every Planner ACK asks "which choices are you least sure of?" — put to the Grinder (new `Least sure:` line in the Grinder STOP fence) or answered by the Planner in the ACK (new `Least sure:` line in the ACK fence); Planner tickable updated.
+2. Vertical slice: each Grinder phase names ONE external verify command, runs it, cites output, stops (new `Verify:` line in STOP fence; Grinder tickable updated).
+3. directive-generator Phases line: each phase is a thin end-to-end tracer-bullet slice with ONE external stop command.
+
+### External stop
+- `rg -n -i "inverse|external (verify|stop)" ...` → hits: relay Cursor SKILL lines 15/97/98/151, relay Claude twin 22/25, directive-generator 68, GPT paste 46/47 (all four surfaces).
+- Relay evals: `run_evals --skill powercore-cc-cc-relay` → 3/3 PASS. directive-generator evals → ran (see output in session; no versions/results files written).
+- `pytest tests -q` → 54 passed. `run_rank_evals --json` → 13/13, hit_rate 1.0.
+
+### Low-confidence choice (inverse prompt)
+I made the Grinder STOP carry `Least sure:` and `Verify:` as new fence lines (additive, existing eval assertions still pass) instead of only adding prose rules. Unsure whether Planner will want them as required fence fields versus guidance; extra lines lengthen every fence. Also unsure the baseline should have included `examples.md`.
