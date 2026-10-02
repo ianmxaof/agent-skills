@@ -1,0 +1,124 @@
+{
+  "skill": "cc-report",
+  "version": 2,
+  "cases": [
+    {
+      "id": "ack-go-phase",
+      "prompt": "/cc-report on 2026-09-22_topic_report.md — Phase 2 looks complete",
+      "output": "Phase 2 checks out against the report.\n\n```text\nPASTE INTO CLAUDE CODE\nVerdict: ACK — go Phase 3\nReport: tbcc/docs/handoffs/2026-09-22_topic_report.md\nDo: Execute Phase 3 only. Append reverse report. STOP for Cursor /cc-report.\nDo not: push; start bots; touch .env; Phase 4.\n```\n",
+      "assertions": [
+        {"type": "contains", "value": "PASTE INTO CLAUDE CODE"},
+        {"type": "contains", "value": "Verdict:"},
+        {"type": "contains", "value": "ACK"},
+        {"type": "contains", "value": "Report:"},
+        {"type": "contains", "value": "Do:"},
+        {"type": "contains", "value": "Do not:"},
+        {"type": "not_contains", "value": "ACK stays in Cursor. Do not paste"},
+        {"type": "max_words", "value": 400}
+      ]
+    },
+    {
+      "id": "fix-verdict",
+      "prompt": "/cc-report — verification claims look wrong",
+      "output": "Git does not match the report claims.\n\n```text\nPASTE INTO CLAUDE CODE\nVerdict: fix\nReport: tbcc/docs/handoffs/2026-09-22_topic_report.md\nDo: Amend the reverse report with real commit hashes and re-run the listed pytest. STOP for Cursor /cc-report.\nDo not: push; start Phase 3; start bots.\n```\n",
+      "assertions": [
+        {"type": "contains", "value": "PASTE INTO CLAUDE CODE"},
+        {"type": "regex", "value": "(?m)^Verdict:\\s*fix\\b"},
+        {"type": "contains", "value": "Do not:"},
+        {"type": "not_contains", "value": "go Phase"}
+      ]
+    },
+    {
+      "id": "wait-verdict",
+      "prompt": "Claude pasted PASTE INTO CURSOR but report file missing",
+      "output": "No reverse report on disk yet.\n\n```text\nPASTE INTO CLAUDE CODE\nVerdict: wait\nReport: (missing — write tbcc/docs/handoffs/<topic>_report.md first)\nDo: Write the reverse handoff markdown to disk, then STOP with PASTE INTO CURSOR naming /cc-report and the path.\nDo not: push; start bots; claim Phase complete without a report file.\n```\n",
+      "assertions": [
+        {"type": "contains", "value": "PASTE INTO CLAUDE CODE"},
+        {"type": "regex", "value": "(?m)^Verdict:\\s*wait\\b"},
+        {"type": "contains", "value": "Do not:"}
+      ]
+    },
+    {
+      "id": "emit-report-instructions",
+      "prompt": "How should Claude Code report back after Phase 1?",
+      "output": "Paste this into Claude Code:\n\n```text\nPASTE INTO CLAUDE CODE\nWrite a reverse handoff for Cursor review to:\n\ntbcc/docs/handoffs/2026-09-22_topic_report.md\n\nThen STOP. End your chat reply with a PASTE INTO CURSOR fence naming /cc-report and this report path.\n```\n",
+      "assertions": [
+        {"type": "contains", "value": "PASTE INTO CLAUDE CODE"},
+        {"type": "contains", "value": "_report.md"},
+        {"type": "contains", "value": "PASTE INTO CURSOR"},
+        {"type": "contains", "value": "/cc-report"},
+        {"type": "max_words", "value": 500}
+      ]
+    },
+    {
+      "id": "directive-complete",
+      "prompt": "/cc-report — final phase done, no more phases",
+      "output": "Directive complete.\n\n```text\nPASTE INTO CLAUDE CODE\nVerdict: ACK — directive complete\nReport: tbcc/docs/handoffs/2026-09-22_topic_report.md\nDo: Stop. No further phases unless Cursor opens a new directive.\nDo not: push unless Cursor Do says so; start bots; invent Phase N+1.\n```\n",
+      "assertions": [
+        {"type": "contains", "value": "PASTE INTO CLAUDE CODE"},
+        {"type": "contains", "value": "directive complete"},
+        {"type": "contains", "value": "Do not:"}
+      ]
+    },
+    {
+      "id": "missing-fence-fails",
+      "expect_ok": false,
+      "prompt": "/cc-report",
+      "output": "Looks good, tell Claude to continue Phase 3.",
+      "assertions": [
+        {"type": "contains", "value": "PASTE INTO CLAUDE CODE"}
+      ]
+    },
+    {
+      "id": "retired-ack-stays-fails",
+      "expect_ok": false,
+      "prompt": "/cc-report ACK Phase 2",
+      "output": "ACK stays in Cursor. Do not paste into Claude Code.\n\nPhase 2 is fine — continue when ready.",
+      "assertions": [
+        {"type": "not_contains", "value": "ACK stays in Cursor. Do not paste"},
+        {"type": "contains", "value": "PASTE INTO CLAUDE CODE"}
+      ]
+    },
+    {
+      "id": "push-from-report-alone-fails",
+      "expect_ok": false,
+      "prompt": "/cc-report",
+      "output": "Report looks good. I pushed to origin and started the bots.\n\n```text\nPASTE INTO CLAUDE CODE\nVerdict: ACK — go Phase 3\nReport: tbcc/docs/handoffs/2026-09-22_topic_report.md\nDo: Execute Phase 3.\nDo not: nothing\n```\n",
+      "assertions": [
+        {"type": "not_contains", "value": "I pushed"},
+        {"type": "not_contains", "value": "started the bots"}
+      ]
+    },
+    {
+      "id": "missing-do-not-fails",
+      "expect_ok": false,
+      "prompt": "/cc-report Phase 2 ACK",
+      "output": "Phase 2 looks fine.\n\n```text\nPASTE INTO CLAUDE CODE\nVerdict: ACK — go Phase 3\nReport: tbcc/docs/handoffs/2026-09-22_topic_report.md\nDo: Execute Phase 3 only.\n```\n",
+      "assertions": [
+        {"type": "contains", "value": "Do not:"}
+      ]
+    },
+    {
+      "id": "incomplete-verdict-line-fails",
+      "expect_ok": false,
+      "prompt": "/cc-report",
+      "output": "Ready for Claude.\n\n```text\nPASTE INTO CLAUDE CODE\nReport: tbcc/docs/handoffs/2026-09-22_topic_report.md\nDo: Continue Phase 3.\nDo not: push; start bots.\n```\n",
+      "assertions": [
+        {"type": "contains", "value": "Verdict:"}
+      ]
+    },
+    {
+      "id": "ack-four-fields-pass",
+      "prompt": "/cc-report — confirm four-field fence",
+      "output": "Review complete.\n\n```text\nPASTE INTO CLAUDE CODE\nVerdict: ACK — go Phase 3\nReport: tbcc/docs/handoffs/2026-09-22_topic_report.md\nDo: Execute Phase 3 only. Append reverse report. STOP for Cursor /cc-report.\nDo not: push; start bots; touch .env; Phase 4.\n```\n",
+      "assertions": [
+        {"type": "contains", "value": "PASTE INTO CLAUDE CODE"},
+        {"type": "regex", "value": "(?m)^Verdict:"},
+        {"type": "regex", "value": "(?m)^Report:"},
+        {"type": "regex", "value": "(?m)^Do:"},
+        {"type": "regex", "value": "(?m)^Do not:"},
+        {"type": "max_words", "value": 300}
+      ]
+    }
+  ]
+}

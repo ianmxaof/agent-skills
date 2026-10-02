@@ -1,0 +1,66 @@
+{
+  "skill": "cc-report",
+  "notes": "Layer-1 activation fixtures. Phrase matcher in run_triggers.py.",
+  "phrases": [
+    "/cc-report",
+    "/claude-code-report",
+    "cc-report",
+    "claude-code-report",
+    "cc report",
+    "reverse handoff",
+    "paste into cursor",
+    "lane c",
+    "_report.md",
+    "handoffs/",
+    "claude code finished",
+    "claude code report",
+    "claude code reverse"
+  ],
+  "cases": [
+    {
+      "id": "slash-cc-report",
+      "prompt": "/cc-report",
+      "should_trigger": true
+    },
+    {
+      "id": "paste-into-cursor-fence",
+      "prompt": "PASTE INTO CURSOR\n/cc-report\nReport: tbcc/docs/handoffs/2026-09-22_x_report.md\nPhase 2 complete",
+      "should_trigger": true
+    },
+    {
+      "id": "read-the-cc-report",
+      "prompt": "read the CC report and tell me if we can go Phase 3",
+      "should_trigger": true
+    },
+    {
+      "id": "reverse-handoff",
+      "prompt": "review the Claude Code reverse handoff before we continue",
+      "should_trigger": true
+    },
+    {
+      "id": "legacy-alias",
+      "prompt": "/claude-code-report please",
+      "should_trigger": true
+    },
+    {
+      "id": "lane-c-completion",
+      "prompt": "Claude Code finished Lane C Phase 2 — check the handoff report then ACK",
+      "should_trigger": true
+    },
+    {
+      "id": "unrelated-pytest",
+      "prompt": "run the crystallize gate unit tests",
+      "should_trigger": false
+    },
+    {
+      "id": "unrelated-vault-refresh",
+      "prompt": "Refresh DeepInfra models in PowerCore Vault",
+      "should_trigger": false
+    },
+    {
+      "id": "unrelated-commit",
+      "prompt": "commit the skill-gap changes with a good message",
+      "should_trigger": false
+    }
+  ]
+}
