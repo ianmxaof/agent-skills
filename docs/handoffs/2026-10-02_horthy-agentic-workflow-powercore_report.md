@@ -90,3 +90,17 @@ H2 + H3 only. No tips, no telegram_bot2, nothing pushed.
 
 ### Low-confidence choice (inverse prompt)
 I made the Grinder STOP carry `Least sure:` and `Verify:` as new fence lines (additive, existing eval assertions still pass) instead of only adding prose rules. Unsure whether Planner will want them as required fence fields versus guidance; extra lines lengthen every fence. Also unsure the baseline should have included `examples.md`.
+
+## Phase 2 — Planner ACK (2026-10-02)
+
+Verified: a28438c baseline / 56023a3 patch / 8f6b899 report present; patch touches exactly the 4 intended files (relay Cursor SKILL v1.2, Claude twin, one directive-generator clause, GPT paste); no rules, no telegram_bot2; `pytest tests -q` 54 passed; rank evals 13/13 ok. Pre-Phase-3 tip baseline: `measure_tip_budget` total_tok = 3063 (paste-bridge 739, silent-fail 494 [tbcc-owned], skill-versions 448, plain-language 388 [tbcc-owned], token-hygiene 346, chat-contract 296, chrome-fonts 193, endgates 159).
+
+**Verdict: ACK Phase 2. Phase 3 go (H4 + H5 operator-approved prune).**
+Inverse-prompt answers:
+1. `Verify:` / `Least sure:` fence lines: keep as REQUIRED but one short line each, no multi-line. The length cost is worth it; they are the checks that make the relay trustworthy. No change to evals needed (additive, pass).
+2. `examples.md` for directive-generator: leave untracked; unreviewed content, out of scope.
+
+Phase 3 notes:
+- Order: (i) stage->skill table into POWERCORE_AGENTIC_WORKFLOW.md (H4) as its own commit; (ii) prune commits A–E exactly per the Phase 0 how-amendments.
+- The budget measure also sums the two telegram_bot2-owned files, so the 3063 baseline includes 882 tok that this thread must not touch; expect the total to fall only by agent-skills-owned savings (~1300 tok target for B–E combined).
+- Operator-approved: do not re-ask or stop for a yes. Stop only on a failed per-commit check (revert that commit first).
