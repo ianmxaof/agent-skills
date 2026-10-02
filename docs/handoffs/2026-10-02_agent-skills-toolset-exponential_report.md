@@ -185,3 +185,15 @@ Caveats: the new twins/pastes are thin stubs; the three structured-log pending r
 
 ### Commits
 agent-skills: see the Phase 4 commit SHA in the PASTE INTO CC-PLANNER fence below (doc + report + 3 twin path fixes); powercore-ops: `0176f1f`.
+
+## Phase 4 — Planner close-out (2026-10-02)
+
+Verified: agent-skills 8cbb85b present, `pytest tests -q` 52 passed; powercore-ops 0176f1f touches exactly the 3 twin files, no control characters, each points at the absolute canonical path, unpushed.
+
+**Verdict: CLOSE-OUT ACKed. All 5 Goal stops pass.**
+Decisions:
+1. **Prune NOT applied under this directive.** Demoting always-on tips changes live agent behavior across sessions and the agent-skills `.cursor/rules/` dir is still untracked (no revert path in git). Needs an operator yes plus a first step that tracks `.cursor/rules/`. Recommended first apply if approved: powercore-skill-versions (448 tok) -> glob-scoped, as its own commit.
+2. **telegram_bot2 rows (tbcc-silent-fail 494, tbcc-plain-language 388): hand to a Lane C session** from the proposal doc; nothing done from this repo.
+3. **I5 stays NO.** Goldens are now 13; revisit only if the operator asks for powercore-skill-improve.
+4. Open caveat accepted: pending rows are legacy-parsed; structured logging is test-verified, not yet seen on live traffic. Check `py -3.13 -m tools.skill_gap.pending` after a few real turns.
+5. Process note logged: shell-escaping corrupted ops twin rewrites twice; final content verified clean.
