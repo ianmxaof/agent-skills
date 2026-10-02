@@ -159,3 +159,41 @@ Phase 4 facts / amendments (verified on disk):
 - REGISTRY roots: several products share `powercore-ops`; dedupe by root. `github-presentation`'s root is `powercore-store/test-installs/.../extracted` (a staged buyer copy, not a dev repo) and `powercore-store` itself is not a registry product. Backfill list from a scripted scan of REGISTRY roots PLUS the forward's named roots: expect `powercore-store`, `text-expander`, `vlc-skin` (git, no origin), `github-presentation` (no canonical dev root; list as "find source first, no init"), and any others the scan finds (e.g. `prompt-library`, `powercore-browser-hub`, `llm-rag`). Report the scan output; do not init or create any remote.
 - Gate surfaces: PPQ doc P0 row (design/powercore-product-qualification.md, in powercore-ops — commit there by explicit path, repo is dirty), `tools/product_qualify` scaffold (check; init git only for a root that is already a plain dir AND `--init-git` passed; never create a remote; print exact `gh repo create`/`git remote add` commands), ship-gate pre_activate (refuse or warn; pick the smallest existing gate). Behavior default: WARN in lean/code stages, REFUSE only in pre_activate.
 - External stop: scaffold dry-run against a tmp product root without git (shows the warning + printed commands) and one with git+origin (clean), plus new pytest for each, `pytest tests -q`, `run_rank_evals --json`.
+
+## Phase 4 — Grinder (2026-10-02)
+
+H7 product git gate. No repo initialized, no remote created, nothing pushed, no telegram_bot2 file or tip touched.
+
+### Commits
+- agent-skills `0073855`: tools/product_qualify/gitcheck.py (new), tools/product_qualify/__main__.py (Q-010 row, scaffold git gate, `--init-git`, `--create-remote OWNER/NAME`, `git-scan`), tools/ship_gate/run.py (pre_activate refuses; lean WARNs), tests/test_product_qualify.py (+7), powercore-product-qualify Cursor SKILL + Claude twin (P0 git gate section), docs/PRODUCT_GIT_BACKFILL.md.
+- powercore-ops `86897fc`: design/powercore-product-qualification.md only (explicit path; ops stays dirty, not pushed).
+
+### Behavior
+- Valid root = `git rev-parse --show-toplevel` equals root (strict) AND `origin` set.
+- scaffold: warns (stderr, Q-010 blocker) + prints exact `git init` / `gh repo create <owner>/<name>` / `git remote add origin` commands, NOT run. `--init-git` inits only a plain dir (never inside another work tree), creates .gitignore if missing, never a remote. `--create-remote` only with explicit slug, command printed first, refuses unless root is its own repo.
+- test-installs roots (github-presentation) get "find the real dev source repo first; do NOT init here".
+- ship-gate `pre_activate`: returns 1 with "pre_activate blocked" when root lacks own repo/origin; `lean` only prints "PSG warn".
+
+### External stop
+Dry-run (tmp registry, GIT_CEILING_DIRECTORIES set):
+- no git: `WARNING git gate (Q-010 blocker): nogit root ...: not a git repo (no .git)`, then "Operator ACK required. Commands (NOT run):" with `git -C "<root>" init -b main` / `gh repo create <owner>/nogit --private --source "<root>" --remote origin` / `git remote add origin <url>`; rc 0; no .git created.
+- git+origin: `git: ok (<root> -> origin https://example.invalid/withgit.git)`, no warning.
+Backfill scan (`py -3.13 -m tools.product_qualify git-scan`, 9 unique roots, 5 need action): text-expander NO git; github-presentation NO git (staged copy: do not init); powercore-store NO git; browser-hub git, NO origin; powerplayer/vlc-skin git, NO origin. OK: powercore-ops (vault/ops-feeds/rotator, one row), notes-app, llm-rag, prompt-library.
+`pytest tests -q` → 61 passed. `run_rank_evals --json` → 13/13, exit 0. (`run_evals --skill powercore-product-qualify` → no evals.json exists; none ran.)
+
+### Final scoreboard vs forward "Done when" (7 items)
+| # | Item | Result | Evidence |
+|---|------|--------|----------|
+| 1 | Doctrine doc mapping 6 points to existing surfaces | PASS | docs/POWERCORE_AGENTIC_WORKFLOW.md; rg → 9 matching lines |
+| 2 | Compaction CLI/checklist | PASS | `pytest -k compact` → 2 passed; checklist in doc |
+| 3 | Planner ACK inverse prompt | PASS | relay SKILL `Least sure:` → 4 hits (v1.2) |
+| 4 | One vertical-slice verification sentence in directive / CC-run / entropy templates | **PARTIAL** | added to directive-generator (+ relay); NOT added to tbcc-cc-run or tbcc-entropy-scan (rg → only directive-generator hits). Gap for Planner. |
+| 5 | Reject list in report | PASS | "Reject list" in Phase 0 report + doctrine doc |
+| 6 | Tip prune applied; tip_budget down; rank+endgates green | PASS | `measure_tip_budget` 3063 → 2080; rank 13/13; endgates prints open-skills |
+| 7 | Product git gate (PPQ P0 + scaffold + ship-gate + backfill list, no blind remotes) | PASS | this phase; no remote created |
+
+### Lane C handoff list (telegram_bot2-owned, not touched)
+`tbcc-silent-fail.mdc` 494 tok; `tbcc-plain-language.mdc` 388 tok; `telegram_bot2/.cursor/rules/powercore-skill-versions.mdc` 151 tok (alwaysApply duplicate of the glob-scoped agent-skills copy).
+
+### Least sure
+Strict "toplevel equals root" makes any product root nested in a bigger repo (e.g. powercore-store/products/solo-ops-os) read as "not its own repo", and ship-gate lean will WARN on those roots each run; also a git-tracked home dir made my first test runs fail until I set GIT_CEILING_DIRECTORIES. I kept the strict rule as directed.
