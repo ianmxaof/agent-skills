@@ -1,0 +1,45 @@
+---
+description: >-
+  PowerCore skill versioning — immutable snapshots for overnight-improved skills;
+  pin favorites; rollback forks forward from a prior version. Use with
+  skill_versions CLI and overnight_loop.
+alwaysApply: true
+---
+
+# PowerCore skill versions (always on when editing overnight skills)
+
+Skills that overnight (or a human) may rewrite **must** keep immutable history.
+
+## Layout (per skill)
+
+```
+.cursor/skills/<name>/evals/versions/
+  CURRENT              # version id string
+  index.json           # entries + current + pinned flags
+  CHANGELOG.md         # append-only human log
+  v0001_….md           # full SKILL.md snapshots
+```
+
+## Rules
+
+1. **On keep** (overnight mutation accepted): write a new snapshot and set CURRENT.
+2. **Never rewrite** an old `vNNNN_*.md` file. Append only.
+3. **Rollback forks forward:** restore that snapshot into `SKILL.md`, then snapshot again with `source=rollback` and `parent=<chosen id>`. Dead-end tips stay in the index.
+4. **Pin** marks taste preference (`pinned: true`). Score alone does not delete pins.
+5. **Do not** change the skill `name:` / slash id when versioning — version lives under `evals/versions/`.
+6. **Do not** prune pinned versions. Soft prune of unpinned tips is operator-only later.
+
+## CLI
+
+```powershell
+cd C:\Powercore-repo-main\agent-skills
+py -3.13 -m tools.skill_gap.skill_versions seed --skill cc-report --score 20/20
+py -3.13 -m tools.skill_gap.skill_versions list --skill cc-report
+py -3.13 -m tools.skill_gap.skill_versions pin --skill cc-report --id v0001
+py -3.13 -m tools.skill_gap.skill_versions rollback --skill cc-report --id v0001
+```
+
+## Operator cues
+
+- “this version felt better” → `pin` that id, then `rollback` if CURRENT drifted
+- Overnight continues from the new CURRENT after rollback
