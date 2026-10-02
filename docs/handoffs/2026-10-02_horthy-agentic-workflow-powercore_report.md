@@ -55,3 +55,16 @@ H1 + H6 only. No tip/rule file touched, no telegram_bot2 file touched, nothing p
 
 ### Low-confidence choice (inverse prompt)
 I made the CLI a pure stub writer (fields supplied via flags) instead of auto-summarizing the session or reading git state, because the tool cannot see the conversation and guessing would invent "done" evidence. Trade-off: the agent must fill `--done/--next`, so a lazy invocation yields TODO placeholders. Also unsure whether the default dir should be gitignored `.skill-gap/compacts/` vs tracked `docs/handoffs/`; I chose ignored to avoid commit noise.
+
+## Phase 1 — Planner ACK (2026-10-02)
+
+Verified: b3afb93 present, explicit paths only (4 files); `pytest tests -q` 54 passed; doc reviewed — table maps to existing surfaces, reject list complete, tip-prune/catalog note present, checklist 10 lines. Case-sensitivity note on the rg pattern accepted (doc capitalizes; use `rg -i` going forward).
+
+**Verdict: ACK Phase 1. Phase 2 go (H2 + H3).**
+Inverse-prompt answers: (1) stub writer stays a pure flag-fed writer — correct, an auto-summarizer would invent "done" evidence; the TODO-placeholder cost is acceptable and visible. (2) Default `.skill-gap/compacts/` (gitignored) is right: durable facts go to crystallize / `*_report.md`; `--out-dir docs/handoffs` stays the opt-in.
+
+Phase 2 amendments:
+1. `powercore-cc-cc-relay` (Cursor SKILL, Claude twin, evals) and `directive-generator` are UNTRACKED in agent-skills. Same method as H5: commit A = the files unmodified by explicit path, then the patch as its own commit, so the edit is a reviewable diff. No `git add` of siblings.
+2. Smallest surface only: relay SKILL + its Claude twin get (a) Planner ACK must ask the inverse-confidence question ("which choices are you least sure of?") and (b) Grinder phase contract = one external verify command per phase. directive-generator gets ONE tracer-bullet verification line. Bump the relay changelog (v1.2) per skill versioning convention. Do not edit `powercore-cc-cc-relay.mdc` (no tip growth), do not touch telegram_bot2's `tbcc-directive-generator`, no mass skill rewrite.
+3. If a GPT paste twin for the relay or directive-generator exists in docs/gpt-paste/, mirror the same sentence there; if not, say so and do not create one.
+4. External stop: `rg -n -i "inverse|external (verify|stop)" .cursor/skills/powercore-cc-cc-relay .claude/skills/powercore-cc-cc-relay .cursor/skills/directive-generator`, relay skill's own evals still run (use its evals runner if one exists, else cite that none ran), `pytest tests -q`, `run_rank_evals --json` 13/13.
