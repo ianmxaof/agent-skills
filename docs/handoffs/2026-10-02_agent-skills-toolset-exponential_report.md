@@ -82,3 +82,12 @@ Staged only: `tools/__init__.py`, `tools/skill_gap/**`, `tests/test_skill_gap.py
 ### Caveats
 - Several tests depend on skills still untracked in this repo (catalog/evals); a clean checkout of this commit alone won't pass them until those land.
 - Pre-existing `endgates.jsonl` rows were not rewritten (log is gitignored); recovery is via `--legacy`.
+
+## Phase 1 — Planner ACK (2026-10-02)
+
+Verified on disk: commits db45776 + 0b6e581 present; 25 pytest pass; `pending --legacy` works; `is_valid_slug` rejects untitled/bare-generic/non-powercore.
+
+**Verdict: ACK Phase 1. Phase 2 go, with two amendments.**
+1. Add `ops`, `store` (repo-name noise) to the generic-stem reject set in gate.py, with a test; re-run `pending --legacy` and cite that the two rows disappear. Small fold-in, same files as Phase 2 touches.
+2. Clean-checkout caveat: do not fix by sweeping untracked trees in. In Phase 2 report list which tests depend on untracked files; Phase 3 commits ship_gate/product_qualify/ux_prefs with their twins.
+Phase 2 stays: goldens ≥12 (powercore-promo-capture, product-qualify, ux-prefs, near-miss "thanks", store/ship, TBCC-only case not stealing powercore top1, ≥2 near-miss skips), honest failure/miss logging in run_rank_evals, thin utilization CLI (last-N ranked_top histogram + suggest rate; state it can't show skills actually opened). Goldens must be written from desired behavior, not tuned to pass: if a case fails, report it, do not weaken the case or edit ranking code to fit.
