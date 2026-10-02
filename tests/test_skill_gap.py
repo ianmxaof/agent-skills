@@ -431,3 +431,38 @@ def test_rank_evals_cli_nonzero_on_miss(monkeypatch, tmp_path: Path):
         encoding="utf-8",
     )
     assert main(["--cases", str(bad)]) == 1
+
+
+@pytest.mark.parametrize(
+    "prompt",
+    ["thanks", "thanks!", "okay, got it", "ok thanks", "yes and thanks", "Thank you.", "👍"],
+)
+def test_trivial_ack_positive(prompt: str):
+    from tools.skill_gap.trivial import is_trivial_ack
+
+    assert is_trivial_ack(prompt)
+
+
+@pytest.mark.parametrize(
+    "prompt",
+    [
+        "okay, run the deploy",
+        "yes, and also fix X",
+        "thanks, now ship the store SKU",
+        "",
+        "ok " * 20,
+    ],
+)
+def test_trivial_ack_negative(prompt: str):
+    from tools.skill_gap.trivial import is_trivial_ack
+
+    assert not is_trivial_ack(prompt)
+
+
+def test_rank_and_endgates_share_ack_pattern():
+    from tools.skill_gap import endgates, rank_skills
+
+    assert endgates.is_trivial_ack is rank_skills.is_trivial_ack
+    assert rank_skills.rank_skills_for_invoke(
+        user_prompt="okay, got it", ai_response="Great, let me know."
+    ) == []

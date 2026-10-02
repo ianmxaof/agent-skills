@@ -13,6 +13,7 @@ import re
 import sys
 from typing import Any
 
+from .trivial import is_trivial_ack
 from .catalog import SkillEntry, load_skill_catalog, nearest_skills
 
 _SUBSTANTIVE_RE = re.compile(
@@ -45,10 +46,6 @@ _ENDGATE_BOOSTS: dict[str, float] = {
 }
 
 
-_SKIP_RE = re.compile(
-    r"^(thanks|thank you|ok|okay|cool|got it|yes|no|yep|nope|👍|done)\.?!?\s*$",
-    re.I,
-)
 
 
 def rank_skills_for_invoke(
@@ -63,7 +60,7 @@ def rank_skills_for_invoke(
     response = (ai_response or "").strip()
     combined = f"{prompt}\n{response}".strip()
     # Trivial turns: do not recommend skills (avoids false crystallize tops)
-    if not response or (len(response) < 120 and _SKIP_RE.match(prompt)):
+    if not response or (len(response) < 120 and is_trivial_ack(prompt)):
         return []
     cat = catalog if catalog is not None else load_skill_catalog()
     near = nearest_skills(combined, cat, limit=max(limit, 12))

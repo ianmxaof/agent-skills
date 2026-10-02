@@ -20,10 +20,8 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 _TBCC_BACKEND = Path(r"C:\Powercore-repo-main\telegram_bot2\tbcc\backend")
-_SKIP_RE = re.compile(
-    r"^(thanks|thank you|ok|okay|cool|got it|yes|no|yep|nope|👍|done)\.?!?\s*$",
-    re.I,
-)
+
+from tools.skill_gap.trivial import is_trivial_ack  # noqa: E402
 
 
 def _trivial(prompt: str, response: str) -> bool:
@@ -31,7 +29,7 @@ def _trivial(prompt: str, response: str) -> bool:
     r = (response or "").strip()
     if not r:
         return True
-    if len(r) < 120 and _SKIP_RE.match(p):
+    if len(r) < 120 and is_trivial_ack(p):
         return True
     if len(r) < 80 and not re.search(r"[/\\]|\.py|\.mdc|```", r):
         return True
