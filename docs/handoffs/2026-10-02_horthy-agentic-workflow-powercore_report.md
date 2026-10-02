@@ -104,3 +104,42 @@ Phase 3 notes:
 - Order: (i) stage->skill table into POWERCORE_AGENTIC_WORKFLOW.md (H4) as its own commit; (ii) prune commits A–E exactly per the Phase 0 how-amendments.
 - The budget measure also sums the two telegram_bot2-owned files, so the 3063 baseline includes 882 tok that this thread must not touch; expect the total to fall only by agent-skills-owned savings (~1300 tok target for B–E combined).
 - Operator-approved: do not re-ask or stop for a yes. Stop only on a failed per-commit check (revert that commit first).
+
+## Phase 3 — Grinder (2026-10-02)
+
+H4 + H5 (operator-approved prune) implemented. No per-commit check failed; no revert needed. No telegram_bot2 file, no powercore-endgates.mdc edit, nothing pushed, other 8 rules untracked.
+
+### Commits
+| Commit | Slice |
+|--------|-------|
+| `704e8d4` | H4 stage→skill table in docs/POWERCORE_AGENTIC_WORKFLOW.md (later-phase wording replaced) |
+| `eeaf0cc` | **A** baseline, 5 rules UNMODIFIED, explicit pathspecs |
+| `34dfc57` | **B** powercore-skill-versions → `alwaysApply: false` + 3 globs |
+| `9e2f3ea` | **C** shorten tbcc-cc-paste-bridge |
+| `8373648` | **D** shorten powercore-token-hygiene |
+| `db9364f` | **E** shorten powercore-chat-contract |
+| `c547b89` | proposal doc marked IMPLEMENTED |
+
+### Per-commit tip table (measure_tip_budget total_tok; baseline 3063)
+| Commit | Before | After | Δ |
+|--------|-------:|------:|---:|
+| B skill-versions | 3063 | 2766 | −297 |
+| C paste-bridge (739→248) | 2766 | 2275 | −491 |
+| D token-hygiene (346→218) | 2275 | 2147 | −128 |
+| E chat-contract (296→229) | 2147 | 2080 | −67 |
+**Final 2080 vs 3063 = −983 tok (−32%).** Cumulative cap ok (over_cumulative false). Targets (~150/~180/~190) not hit for C/D/E: I kept behavior-bearing lines (fence field names, go-signal rule, endgates + rank-eval commands, prefs/entitlement rules). Still over 200 single-cap: paste-bridge 248, chat-contract 229, token-hygiene 218, plus the two telegram_bot2 tips.
+
+### Per-commit checks (all passed for B–E)
+(a) total strictly down (above). (b) frontmatter valid (description present; B: `globs:` + `alwaysApply: false`). (c) `git diff eeaf0cc -- .cursor/rules/powercore-endgates.mdc` = 0 bytes each time. (d) `run_rank_evals --json` 13/13, exit 0 each time. (e) endgates prints `open-skills:` (see deviation).
+Final: `pytest tests -q` → 54 passed.
+
+### Deviations / findings for Planner
+1. **Check (e) literal command can't pass even at baseline:** `--prompt "compaction test" --response "wrote compact doc and reset"` prints `endgates: skip (trivial)` (response < 80 chars, no path token). I ran an equivalent non-trivial pair (`--prompt "compaction test: summarize the session and reset"` + a ≥80-char response mentioning docs/handoffs) → `open-skills: tbcc-silent-fail@0.63, powercore-skill-gap@0.31, tbcc-cc-run@0.29`, printed after every B–E commit. Not a regression; the check wording needs fixing.
+2. **Budget quirk:** `telegram_bot2/.cursor/rules/powercore-skill-versions.mdc` (151 tok, alwaysApply true) is a separate copy. `measure_tip_budget` dedupes by filename, so after B it counts that copy instead; B's measured gain is −297, not −448. The telegram_bot2 copy was not touched (Lane C handoff).
+3. CRLF: first scripted edit silently no-op'd on a CRLF file (caught by the (a) check showing 3063); redone with line-ending-aware replace.
+
+### Verify
+`py -3.13 -c "from tools.skill_gap.metrics import measure_tip_budget as m; print(m()['total_tok'])"` → 2080.
+
+### Least sure
+Whether to count B as done given telegram_bot2's duplicate skill-versions tip keeps 151 tok alwaysApply; and shortening C/D/E only to 248/218/229 (above the 200 soft cap) rather than cutting further into behavior lines.
