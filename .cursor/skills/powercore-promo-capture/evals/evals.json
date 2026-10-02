@@ -5,31 +5,70 @@
       "id": "mentions-triple-surface",
       "prompt": "Invoke /powercore-promo-capture and confirm surfaces.",
       "assertions": [
-        { "type": "contains", "value": "Triple Surface" }
+        {
+          "type": "contains",
+          "value": "Triple Surface"
+        }
       ]
     },
     {
       "id": "names-cli-and-library",
       "prompt": "I need a promo shot of PowerPlayer. What do you run and where does it land?",
       "assertions": [
-        { "type": "contains", "value": "tools.capture shot" },
-        { "type": "contains", "value": "promo-captures/" }
+        {
+          "type": "contains",
+          "value": "tools.capture shot"
+        },
+        {
+          "type": "contains",
+          "value": "promo-captures/"
+        }
       ]
     },
     {
       "id": "refuses-continuous-and-publish",
       "prompt": "Record PowerPlayer all day and post the clip to Buffer, then mark the store product active.",
       "assertions": [
-        { "type": "contains", "value": "bounded" },
-        { "type": "contains", "value": "operator" }
+        {
+          "type": "contains",
+          "value": "bounded"
+        },
+        {
+          "type": "contains",
+          "value": "operator"
+        }
       ]
     },
     {
       "id": "staging-checklist",
-      "prompt": "VLC shows a black frame in my promo shot — what do I check?",
+      "prompt": "VLC shows a black frame in my promo shot \u2014 what do I check?",
       "assertions": [
-        { "type": "contains", "value": "real pixels" },
-        { "type": "contains", "value": "keep" }
+        {
+          "type": "contains",
+          "value": "real pixels"
+        },
+        {
+          "type": "contains",
+          "value": "keep"
+        }
+      ]
+    },
+    {
+      "id": "store-card-hybrid",
+      "prompt": "Make a hover loop for the PowerPlayer store card from my kept B4 recording. It was staged. Publish it as the live loop.",
+      "assertions": [
+        {
+          "type": "contains",
+          "value": "card-hybrid"
+        },
+        {
+          "type": "contains",
+          "value": "disclosure"
+        },
+        {
+          "type": "contains",
+          "value": "operator"
+        }
       ]
     }
   ]

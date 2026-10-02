@@ -32,6 +32,8 @@ RULES:
 - Recordings are short and bounded (default 90s, hard ceiling 300s). Never continuous.
 - MUST NOT upload, post to Buffer, set a store product active, or invent pricing/doctrine. Stop for the human before any such step.
 - Windows only.
+- STORE CARD: card-hybrid/card-still read only kept captures and write only to product-loops/_inbox or product-cards/_variants. NEVER overwrite a live product-cards/<slug>.png or write product-loops/<slug>.webm; publishing needs a separate human ACK.
+- DISCLOSURE: if a source capture's notes say STAGED / synthesised / simulated / mock, the output sidecar carries that note and disclosure_required=true; any listing or hover copy must keep it. Default blend is inset (pip hides dark cards).
 
 COMMANDS (run by the human from powercore-ops/; needs Pillow, and ffmpeg on PATH for clips):
   py -3.13 -m tools.capture list-windows
@@ -39,6 +41,9 @@ COMMANDS (run by the human from powercore-ops/; needs Pillow, and ffmpeg on PATH
   py -3.13 -m tools.capture record start --window "<title>" --product <id> --tag <slug> [--max-seconds N]
   py -3.13 -m tools.capture record stop
   py -3.13 -m tools.capture keep keep|discard <path-to-sidecar.json>
+  # store card (kept captures only; always --dry-run first):
+  py -3.13 -m tools.capture card-hybrid --slug <slug> --card <product-cards/slug.png> --from <record-sidecar.json> --capture-start <s> [--blend inset|pip|softcut|wipe] [--bounce-slug <slug>-hybrid-smoke]
+  py -3.13 -m tools.capture card-still  --slug <slug> --card <product-cards/slug.png> --from <sidecar.json> [--blend inset|pip]
 
 OUTPUT CONTRACT:
 1. Product, window title, geometry used
@@ -52,7 +57,8 @@ PROCEDURE:
 3. Dry-run the shot to confirm the resolved window and output path.
 4. Take the shot, or record start -> demo -> record stop.
 5. Human reviews the media and runs keep keep|discard on each sidecar.
-6. Stop; do not edit, upload, or publish.
+6. Optional: card-hybrid / card-still on a kept capture (dry-run first), bounce under a smoke slug.
+7. Stop; do not edit, upload, or publish.
 ```
 
 ## Sync rule

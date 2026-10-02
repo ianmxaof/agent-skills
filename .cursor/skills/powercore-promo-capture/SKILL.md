@@ -17,9 +17,10 @@ Get real-pixel screenshots and short (≤90s) window recordings of a running Pow
 
 | Piece | Path |
 |-------|------|
-| CLI | `cd powercore-ops; py -3.13 -m tools.capture {shot,record start|stop,keep,list-windows}` |
+| CLI | `cd powercore-ops; py -3.13 -m tools.capture {shot,record start|stop,keep,handoff-emit,card-hybrid,card-still,list-windows}` |
 | CLI doc | `powercore-ops/tools/capture/README.md` |
 | Library | `powercore-ops/promo-captures/<product>/<YYYY-MM-DD>/<HHMMSS>_<tag>.png|mp4` + `.json` sidecar |
+| Store-card recipe | `powercore-ops/design/powercore-store-card-promo.md` (code `tools/capture/store_card.py`) |
 | Needs | Windows, Pillow (shots), `ffmpeg` on PATH or `POWERCORE_FFMPEG` (records) |
 
 ## When to invoke
@@ -27,7 +28,8 @@ Get real-pixel screenshots and short (≤90s) window recordings of a running Pow
 - Trigger phrases: `/promo-capture`, `/powercore-promo-capture`, "promo shot", "promo clip", "capture the demo", "screenshot PowerPlayer for the store"
 - A product UI slice just landed and needs store/promo art
 - PPQ P6 media: optional 30–60s `demoVideo` (`design/powercore-product-qualification.md`)
-- **Skip:** TBCC island / always-on or continuous recording; Gemini card hover loops (use the store-media pipeline); anything that would upload, post to Buffer, or flip store `active`.
+- A kept capture should become a **store card still variant** or **~4s hover hybrid** (real UI on the chrome card) - see Store-card hybrid below
+- **Skip:** TBCC island / always-on or continuous recording; calling Gemini/Veo APIs (chrome-only card art still goes through the PPQ `media-prompt` route); anything that would upload, post to Buffer, or flip store `active`.
 
 ## Execution Profile
 
@@ -41,7 +43,7 @@ Get real-pixel screenshots and short (≤90s) window recordings of a running Pow
 | **MCP** | none |
 | **Hooks** | endgates on stop |
 | **Memory** | disk: `promo-captures/` sidecars |
-| **Compose** | → `powercore-product-qualify` (demoVideo row); ← `powercore-skill-gap` (scaffold/sync) |
+| **Compose** | → `powercore-product-qualify` (demoVideo row; store media pipeline, real-UI route = store-card hybrid); ← `powercore-skill-gap` (scaffold/sync) |
 
 ## Behavioral rules
 
@@ -79,3 +81,24 @@ py -3.13 -m tools.skill_gap.scaffold_surfaces --skill powercore-promo-capture --
 4. **Shot:** same command without `--dry-run`. For clips: `record start ... [--max-seconds N]`, perform the demo, then `record stop` (cap is 90s default, 300s ceiling; never record unbounded).
 5. **Review** the PNG/mp4. Then `py -3.13 -m tools.capture keep keep|discard <sidecar.json>`. Delete discarded media locally; sidecars stay.
 6. **Stop** for the operator before any edit, upload, or store step. For `demoVideo`, hand the kept clip to `powercore-product-qualify`.
+
+## Store-card hybrid (hover loop + still variant)
+
+Real UI pixels on the chrome packaging card, for any product slug. Needs a **kept** capture (`keep: true`); the hover hybrid needs a **record**, the still accepts a shot or a record frame.
+
+```powershell
+cd C:\Powercore-repo-main\powercore-ops
+# ~4s silent square hybrid -> product-loops/_inbox/<slug>-hybrid.mp4, then bounce to an 8s WebM under a SMOKE slug
+py -3.13 -m tools.capture card-hybrid --slug <slug> --card ..\powercore-store\public\images\product-cards\<slug>.png `
+  --from promo-captures\<product>\<date>\<stem>.json --capture-start <s> [--blend inset|pip|softcut|wipe] `
+  [--out-dir <dir>] [--bounce-slug <slug>-hybrid-smoke] [--dry-run]
+# still variant -> product-cards/_variants/<slug>-card-still.png
+py -3.13 -m tools.capture card-still --slug <slug> --card ..\powercore-store\public\images\product-cards\<slug>.png `
+  --from <shot-or-record.json> [--blend inset|pip] [--dry-run]
+```
+
+- **Default blend: `inset`** (small corner window over the plate; reads best on the dark portrait store cards, operator taste 2026-10-01). `pip` (large bottom overlay) stays available; it hides most of a dark card.
+- **Always `--dry-run` first**, then run. Bounce = existing `make-card-loop.ps1` (A-B-A, silent, square, WebM); the CLI refuses to overwrite an existing `<slug>.webm` without `--force`, so a live loop like `text-expander.webm` is safe.
+- **Disclosure:** if the source capture notes say STAGED / synthesised / simulated / mock, the card sidecar carries the note verbatim and sets `disclosure_required: true`. Any listing or hover copy using the output must keep that disclosure until a real-media recapture replaces it. Never edit it out.
+- **Never publish from this skill:** do not overwrite live `product-cards/<slug>.png` (`--publish-still` is refused) and do not write `product-loops/<slug>.webm`. Publishing the loop (`make-card-loop.ps1 -Slug <slug>` then `cardLoopVideo` in both products.json) or promoting a variant needs a separate operator ACK. Stop and hand over the `_inbox` / `_variants` paths.
+- Compose: PPQ store media pipeline (`powercore-product-qualify`, `design/powercore-product-qualification.md` § Store media pipeline) - this is its real-UI route; the Gemini `media-prompt` route stays for chrome-only art.
