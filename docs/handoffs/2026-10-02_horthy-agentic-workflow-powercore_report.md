@@ -143,3 +143,19 @@ Final: `pytest tests -q` → 54 passed.
 
 ### Least sure
 Whether to count B as done given telegram_bot2's duplicate skill-versions tip keeps 151 tok alwaysApply; and shortening C/D/E only to 248/218/229 (above the 200 soft cap) rather than cutting further into behavior lines.
+
+## Phase 3 — Planner ACK (2026-10-02)
+
+Verified: commits 704e8d4..8f90570 present; `measure_tip_budget` total_tok = 2080 (baseline 3063, -983, -32%); `git diff eeaf0cc -- powercore-endgates.mdc` = 0 bytes; rank evals 13/13 ok; `pytest tests -q` 54 passed. Read the three shortened tips: paste-bridge keeps fence names/blind-paste/skill pointer; token-hygiene keeps the endgates + rank-eval lines; chat-contract keeps the canonical pointer + behavior bullets; skill-versions is `alwaysApply: false` + globs.
+
+**Verdict: ACK Phase 3. H5 DONE (agent-skills scope). Phase 4 go (H7).**
+Inverse-prompt answers:
+1. B counts as done. The telegram_bot2 duplicate `powercore-skill-versions.mdc` (151 tok, alwaysApply) is outside this thread; add it to the Lane C handoff list next to tbcc-silent-fail (494) and tbcc-plain-language (388): 3 rows, ~1033 tok. Do not touch from here.
+2. C/D/E stay at 248/218/229 tok. Behavior-bearing lines beat the 200 cap; no further cuts.
+3. Check-(e) wording fix (canonical for this report/proposal): use a NON-trivial pair, `endgates --prompt "implemented the pending CLI and ran pytest" --response "<>=120 chars mentioning tools/skill_gap/gate.py and tests>" --auto --plain`, expect `open-skills:`. The old "compaction test" short pair legitimately prints `skip (trivial)`.
+
+Phase 4 facts / amendments (verified on disk):
+- No parent repo at `C:\Powercore-repo-main` (no `.git`), so `git rev-parse --show-toplevel` is a valid check; require toplevel == product root (strict), not merely "inside a work tree".
+- REGISTRY roots: several products share `powercore-ops`; dedupe by root. `github-presentation`'s root is `powercore-store/test-installs/.../extracted` (a staged buyer copy, not a dev repo) and `powercore-store` itself is not a registry product. Backfill list from a scripted scan of REGISTRY roots PLUS the forward's named roots: expect `powercore-store`, `text-expander`, `vlc-skin` (git, no origin), `github-presentation` (no canonical dev root; list as "find source first, no init"), and any others the scan finds (e.g. `prompt-library`, `powercore-browser-hub`, `llm-rag`). Report the scan output; do not init or create any remote.
+- Gate surfaces: PPQ doc P0 row (design/powercore-product-qualification.md, in powercore-ops — commit there by explicit path, repo is dirty), `tools/product_qualify` scaffold (check; init git only for a root that is already a plain dir AND `--init-git` passed; never create a remote; print exact `gh repo create`/`git remote add` commands), ship-gate pre_activate (refuse or warn; pick the smallest existing gate). Behavior default: WARN in lean/code stages, REFUSE only in pre_activate.
+- External stop: scaffold dry-run against a tmp product root without git (shows the warning + printed commands) and one with git+origin (clean), plus new pytest for each, `pytest tests -q`, `run_rank_evals --json`.
