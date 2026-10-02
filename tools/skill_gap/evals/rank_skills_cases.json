@@ -1,0 +1,27 @@
+[
+  {
+    "id": "doctrine-prune-crystallize",
+    "prompt": "apply the prune then improve skill calling heuristics",
+    "response": "Demoted fat always-on crystallize rules to thin tips. NTK need-to-know vault capture still runs via run_crystallize_gate.py. Canonical durable doctrine under agent-skills.",
+    "expect_top1": "tbcc-auto-crystallize"
+  },
+    {
+    "id": "silent-fail-ops",
+    "prompt": "/silent-fail second-pass before ACK",
+    "response": "Silent-fail protocol: external stops only, probe verdict ok stale idle blocked never_seen zombie. Use tbcc-silent-fail skill.",
+    "expect_top1": "tbcc-silent-fail"
+  },
+  {
+    "id": "ship-done-claim",
+    "prompt": "we are done and ready to deploy the store SKU",
+    "response": "Claiming done/deployed/sellable. Run PSG ship-gate before activate. pre_activate evidence required.",
+    "expect_top1": "powercore-ship-gate"
+  },
+  {
+    "id": "trivial-thanks",
+    "prompt": "thanks",
+    "response": "ok",
+    "expect_skip": true,
+    "max_score": 0.25
+  }
+]
