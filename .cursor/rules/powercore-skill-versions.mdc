@@ -3,10 +3,14 @@ description: >-
   PowerCore skill versioning — immutable snapshots for overnight-improved skills;
   pin favorites; rollback forks forward from a prior version. Use with
   skill_versions CLI and overnight_loop.
-alwaysApply: true
+globs:
+  - ".cursor/skills/*/evals/versions/**"
+  - "tools/skill_gap/skill_versions.py"
+  - "tools/skill_gap/overnight_loop.py"
+alwaysApply: false
 ---
 
-# PowerCore skill versions (always on when editing overnight skills)
+# PowerCore skill versions (applies when editing skill version history)
 
 Skills that overnight (or a human) may rewrite **must** keep immutable history.
 
