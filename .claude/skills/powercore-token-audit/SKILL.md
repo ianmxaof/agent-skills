@@ -6,7 +6,7 @@ description: >-
 
 # token audit — Claude Code twin
 
-Thin mirror of `agent-skills/.cursor/skills/powercore-token-audit/SKILL.md` (canonical).
+Thin mirror of `C:\Powercore-repo-main\agent-skills\.cursor\skills\powercore-token-audit\SKILL.md` (canonical).
 Drop Cursor-only Desktop Auto / Cloud lane wording. Keep the same Output Contract.
 GPT / chat-only twin: `agent-skills/docs/gpt-paste/POWERCORE_TOKEN_AUDIT_GPT_PASTE.md`.
 

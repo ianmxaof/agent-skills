@@ -154,3 +154,34 @@ Decisions:
 1. **Twin shape: keep thin stubs for the new twins; do not sync/overwrite the telegram_bot2 token-audit full-body twin.** Syncing touches another repo's live skill for no functional gain. Record the two-shape drift as a known item in the Phase 4 doc with the one-line fix path (regenerate telegram_bot2 twin from canonical on a future deliberate pass). Stubs must point to the canonical SKILL by absolute path so they cannot silently fork.
 2. **ops twins: commit, path-limited.** In powercore-ops, `git add` ONLY the three twin dirs (powercore-ship-gate, powercore-token-audit, powercore-ux-prefs under .claude/skills) and commit; the repo is otherwise dirty and unrelated changes must not be swept in. No push.
 Phase 4 scope unchanged: I6 prune proposal doc (list over-cap alwaysApply tips, split agent-skills-owned vs telegram_bot2-owned, recommended demote/shorten per tip, est. token savings; NOT applied) + I7 doctrine paragraph. I5 stays NO; revisit note: goldens now 13, so the precondition ">=12" is met, but Planner defers the decision until the operator asks.
+
+## Phase 4 — Grinder (2026-10-02)
+
+Proposal + doctrine only. **No rule/tip file edited, nothing pushed, no skill scaffolded.**
+
+### 0. powercore-ops twins
+Committed in `powercore-ops` as **`0176f1f`** — only `.claude/skills/{powercore-ship-gate,powercore-token-audit,powercore-ux-prefs}/SKILL.md` (verified `git diff --cached --name-only` = those 3 paths; ops' other ~79 dirty files untouched; not pushed).
+Process note: my first two attempts to rewrite the canonical path corrupted it (shell/regex backslash escapes, once embedding a BEL char) and I amended my own unpushed ops commit twice before landing a clean one. Final content verified with `cat -v` and a BEL grep.
+
+### 1. Twin → canonical path
+All six thin twins (3 in agent-skills, 3 in powercore-ops) said `agent-skills/.cursor/skills/<name>/SKILL.md` (relative). **Fixed** to the absolute `C:\Powercore-repo-main\agent-skills\.cursor\skills\<name>\SKILL.md`. (agent-skills copies are in this phase's commit.) The GPT-paste pointer inside them stays relative.
+
+### 2–3. I6 prune proposal + Known drift
+`agent-skills/docs/proposals/2026-10-02_tip-budget-prune.md`: 6 of 8 tips over the 200-tok cap (3063 tok total); agent-skills-owned: paste-bridge 739, skill-versions 448, token-hygiene 346, chat-contract 296; telegram_bot2-owned: tbcc-silent-fail 494, tbcc-plain-language 388. Est. savings ≈ −1800 tok (≈ −1300 agent-skills-owned). Includes the "do not touch telegram_bot2 rules from this repo" note and the token-audit two-twin-shapes Known drift with the regenerate-from-canonical fix path.
+
+### 4. I7 doctrine
+`tbcc-*` stays the namespace for TBCC ops skills; it is not renamed and is not minted for anything new. New cross-product skills are `powercore-*` and ship with Triple Surface (Cursor canonical + Claude twin + GPT paste), kept in sync in one change set. No mass rename, and every TBCC done-condition (silent-fail external stop, completion gates, Lane C rules) is preserved as-is.
+
+### 5. Scoreboard vs the Goal's 5 external stops (run fresh)
+| # | Stop | Result | Command → output |
+|---|------|--------|------------------|
+| 1 | Rank goldens ≥12 | **PASS** | `py -3.13 -m tools.skill_gap.run_rank_evals --json` → ok true, 13/13, hit_rate 1.0 |
+| 2 | Pending proposals queryable | **PASS** | `py -3.13 -m tools.skill_gap.pending --legacy` → powercore-eval 2/68, vault-feeds-models 1/51, paste-handoff 1/48 (structured-only run is `pending: none` until new rows are logged) |
+| 3 | ACK→scaffold path smoke-tested | **PASS (tmp-dir only)** | `pytest tests/test_skill_gap.py -k scaffold_surfaces` → 2 passed (triple scaffold + CLI `--check` in a temp repo; no real skill scaffolded) |
+| 4 | Three Triple Surface `--check` green | **PASS** | `scaffold_surfaces --skill powercore-{ship-gate,token-audit,ux-prefs} --check` → `ok` ×3 |
+| 5 | I5 `powercore-skill-improve` not scaffolded | **PASS** | no `skill-improve` dir in `.cursor/skills`, none tracked in git |
+Also: `pytest tests -q` → **52 passed**.
+Caveats: the new twins/pastes are thin stubs; the three structured-log pending rows are legacy-parsed, so structured logging is verified by test, not yet by live traffic.
+
+### Commits
+agent-skills: see the Phase 4 commit SHA in the PASTE INTO CC-PLANNER fence below (doc + report + 3 twin path fixes); powercore-ops: `0176f1f`.

@@ -6,7 +6,7 @@ description: >-
 
 # ux prefs — Claude Code twin
 
-Thin mirror of `agent-skills/.cursor/skills/powercore-ux-prefs/SKILL.md` (canonical).
+Thin mirror of `C:\Powercore-repo-main\agent-skills\.cursor\skills\powercore-ux-prefs\SKILL.md` (canonical).
 Drop Cursor-only Desktop Auto / Cloud lane wording. Keep the same Output Contract.
 GPT / chat-only twin: `agent-skills/docs/gpt-paste/POWERCORE_UX_PREFS_GPT_PASTE.md`.
 
