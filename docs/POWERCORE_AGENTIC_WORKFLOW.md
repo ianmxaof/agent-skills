@@ -7,13 +7,22 @@ Doctrine only. Every point maps to a surface that **already exists**; nothing he
 | Horthy point | PowerCore surface |
 |--------------|-------------------|
 | **Lights-off ban** — never ship diffs nobody read | `tbcc-silent-fail` (external stop, not self-report) + Planner peek in `powercore-cc-cc-relay` + "no done without an external stop" (`powercore-ship-gate` before done/deploy/active). |
-| **Four-stage gate** (product → architecture → program design → vertical slices) | entropy-scan → directive-generator → phase grind. The stage→skill table is added in a later phase. |
+| **Four-stage gate** (product → architecture → program design → vertical slices) | entropy-scan → directive-generator → phase grind. See the stage → skill table below. |
 | **Tracer bullet / vertical slice** | One phase = one thin end-to-end slice that names **one external verify command** and stops for the Planner/Cursor ACK (`tbcc-cc-run`, `powercore-cc-cc-relay`). |
 | **Dumb zone** — quality drops as context fills | Compaction: summarize → fresh session. Checklist + `tools.skill_gap.compact` below. Wires to `tbcc-auto-crystallize` and `*_report.md` handoffs. |
-| **Inverse prompt** — ask the model what it is unsure of | Planner ACK asks the Grinder (or itself) "which choices were low-confidence?"; the Grinder's STOP fence already ends with one. Template wording lands in a later phase. |
+| **Inverse prompt** — ask the model what it is unsure of | Planner ACK asks the Grinder (or itself) "which choices were low-confidence?"; the Grinder's STOP fence already ends with one. Wired into the `powercore-cc-cc-relay` v1.2 `Least sure:` fence line. |
 | **Bottleneck, not token-max** (The Goal) | Review/trust is the bottleneck. Spend tokens where a human check is scarce; the tip-budget prune (`docs/proposals/2026-10-02_tip-budget-prune.md`) cuts always-on cost. |
 
 Tip prune shortens or glob-scopes **tips**. It does **not** touch the skill catalog (`load_skill_catalog` / rank read `.cursor/skills/*/SKILL.md`, never tips); `powercore-endgates` stays alwaysApply as the selection backstop.
+
+## Four-stage gate: stage → skill
+
+| Stage | Existing skill |
+|-------|----------------|
+| Product | `tbcc-entropy-scan` |
+| Architecture | `tbcc-integration-scan`; directive Goal + Scope |
+| Program design | `tbcc-directive-generator` / `directive-generator` (issue cards, phases) |
+| Vertical slices | `tbcc-cc-run` / `powercore-cc-cc-relay` grind (one external stop per phase) |
 
 ## Reject list
 
