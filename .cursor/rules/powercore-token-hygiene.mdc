@@ -5,24 +5,11 @@ alwaysApply: true
 
 # PowerCore token hygiene
 
-Save tokens by default. Full audit only when asked (`/token-audit` → skill `powercore-token-audit`).
+Save tokens by default. Full audit only on request (`/token-audit` → skill `powercore-token-audit`, report only).
 End of substantive turns: `py -3.13 -m tools.skill_gap.endgates --auto --plain` (from agent-skills). Rank/miss metrics: `py -3.13 -m tools.skill_gap.run_rank_evals --json`.
 
-## Do
-
-- Keep each `CLAUDE.md` / always-on rule **short**. Prefer skills for long procedures.
-- Prefer **tool deferral** / fewer MCP servers over loading every tool schema every turn.
-- Subagents: **inherit** the session model unless a cheaper/faster model is explicitly set for that agent.
-- Shell/hooks: rewrite noisy commands to quieter output when a PreToolUse hook exists.
-- Scheduled / cron work: keep interval **≤ cache lifetime** so prompt cache can hit.
-
-## Do not
-
-- Paste giant docs into always-on memory (`CLAUDE.md`, alwaysApply rules) — soft caps: **~5k tokens per file**, **~10k cumulative** across layered CLAUDE.md + @imports.
-- Connect unused MCP servers “just in case.”
-- Auto-switch models mid-session unless the operator asked.
-- Dump full MCP catalogs, session logs, or audit tables unless the operator requested an audit.
-
-## On request
-
-Operator says `token audit` / `/token-audit` → follow **powercore-token-audit** (report only).
+- Keep `CLAUDE.md` / always-on rules short (~5k tok per file, ~10k cumulative); long procedures go in skills.
+- Prefer tool deferral and fewer MCP servers; no unused MCP "just in case".
+- Subagents inherit the session model; no mid-session model switch unless asked.
+- Quiet noisy shell output; keep scheduled/cron intervals ≤ cache lifetime.
+- No dumping MCP catalogs, session logs, or audit tables unless an audit was requested.
