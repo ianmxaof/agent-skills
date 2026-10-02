@@ -112,3 +112,35 @@ Verified: 0fb3d7d + 44ac844 present; 30 pytest pass; run_rank_evals reproduces 1
 Root cause confirmed: `_SKIP_RE` in rank_skills.py and endgates.py is anchored `^(word)\.?!?\s*$`, so "okay, got it" (compound ack) falls through. The regex is duplicated in both files, so fix once and share.
 Fix constraints: allow compound acks (ack-words joined by `,` / `and` / space), bounded to short prompts; must NOT skip substantive prompts that start with an ack ("okay, run the deploy", "yes, and also fix X"). Add positive + negative pytest cases. Do not touch scoring/boosts.
 Phase 3 (I4): proceed as amended in Phase 0 (agent-skills + powercore-ops Claude copies + GPT pastes via --skip-cursor; diff before touching existing twins; token-audit twin exists in telegram_bot2). Because only 3 skills are tracked, Phase 3 also commits the dependent untracked trees (ship_gate, product_qualify, ux_prefs + their tests/skills) in separate reviewable commits; after that, re-check the clean-checkout list from the Phase 2 report and cite what remains.
+
+## Phase 3 — Grinder (2026-10-02)
+
+### 0. Prelude — compound-ack skip (`b9aa9f1`)
+New `tools/skill_gap/trivial.py::is_trivial_ack` (token-based: whole prompt ≤40 chars made only of ack words incl. "and"). `rank_skills.py` and `endgates.py` import the same function (test asserts identity). Positive: thanks, thanks!, okay got it, ok thanks, yes and thanks, 👍. Negative: "okay, run the deploy", "yes, and also fix X", "thanks, now ship the store SKU", empty, long ack-spam. Scoring/boosts and the `near-miss-got-it` case untouched. `run_rank_evals --json` → **13/13, hit_rate 1.0, exit 0**.
+
+### 1–2. Triple Surface backfill (no commit — see divergence/ops note)
+Ran `scaffold_surfaces --skip-cursor` (no `--force`) for powercore-ship-gate / token-audit / ux-prefs with `--claude-root powercore-ops --claude-root agent-skills` (telegram_bot2 root deliberately excluded) and the Cursor description copied verbatim. `--check` → **ok** for all three:
+- ship-gate: Claude twins in powercore-ops + agent-skills; GPT paste present
+- token-audit: Claude twins in telegram_bot2 (pre-existing), powercore-ops, agent-skills; GPT paste present
+- ux-prefs: Claude twins in powercore-ops + agent-skills; GPT paste present
+
+**Divergence finding (Planner):** `telegram_bot2/.claude/skills/powercore-token-audit/SKILL.md` was NOT touched (scaffold never overwrites without `--force`). It is a *full-body* copy of the Cursor skill with small edits (adds a "Canonical Cursor twin" line; Claude-specific scope wording), whereas the new agent-skills/powercore-ops twins are the **thin stub** shape. So token-audit now has two twin shapes. Also: all new twins/pastes are thin stubs (description + pointer to canonical), not full mirrors. Decide: keep thin, or sync the telegram_bot2 shape.
+**Note:** `powercore-ops` is a separate git repo with a dirty tree; the 3 new twins there are written but **uncommitted** (not committed from this agent-skills session). telegram_bot2 `.claude/skills/powercore-token-audit/` was already untracked there, unchanged.
+
+### 3. Commits of dependent untracked trees (separate, reviewable)
+| SHA | Slice |
+|-----|-------|
+| `4e30ff1` | tools/ship_gate + tests/test_ship_gate.py + powercore-ship-gate Cursor/Claude/GPT |
+| `ef39fb5` | tools/product_qualify + tests/test_product_qualify.py + product-qualify Cursor/Claude/GPT |
+| `990d23d` | tools/ux_prefs + ux-prefs Cursor/Claude/GPT |
+| `5fd0d33` | token-audit (Cursor/Claude/GPT), tbcc-auto-crystallize, tbcc-silent-fail (+evals json), tbcc-sitrep, cc-report (+evals json/program/triggers) |
+
+Excluded: `__pycache__`, `.skill-gap/`, all `evals/versions/*` (generated snapshots, not just skill-gap's), `cc-report/evals/results.jsonl` (run data), and all other untracked trees (apps/, surfaces/, vendor/, other skills, .cursor/rules, powercore-cc-cc-relay Claude twin, scripts/). No secrets found.
+
+**Clean-checkout re-check:** fresh `git worktree` at HEAD: `pytest tests` → **52 passed**; `run_rank_evals` → 13/13. Nothing from the Phase 2 clean-checkout list still fails.
+
+### 4. Triple Surface sync rule
+Cursor `SKILL.md` is canonical; Claude twin(s) and the GPT paste must be updated in the **same change set** whenever triggers / Output Contract / fence rules change. Run `scaffold_surfaces --skill <name> --check` after any edit. Never `--force` over an existing richer twin; diff first.
+
+### Verify
+`pytest tests -q` all pass (52); `run_rank_evals --json` 13/13, exit 0.
