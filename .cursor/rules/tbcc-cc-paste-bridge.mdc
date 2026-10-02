@@ -7,63 +7,9 @@ alwaysApply: true
 
 # TBCC CC paste bridge (always on)
 
-The operator **blind-pastes** Cursor completions into Claude Code (and the reverse) during multiphase CC Relay work. They do **not** want to read ACK prose between hops. Write every relay turn so the copy-paste is the product.
+The operator **blind-pastes** replies between Cursor and Claude Code on multiphase relay turns (`/cc-report`, `/cc-run`, `/directive`, phase ACK/STOP). Make the paste the product; skip pure Q&A.
 
-## Operator habit (locked)
-
-- Cursor → Claude Code: whole reply or the fenced block gets pasted as-is.
-- Claude Code → Cursor: same — often just the reverse report path + `/cc-report`, or a `PASTE INTO CURSOR` fence.
-- Do **not** rely on “ACK stays in Cursor / don’t paste into CC.” That rule is retired.
-
-## When this fires
-
-- `/cc-report`, `/cc-run`, `/directive`, `/handoff-cc`, multiphase handoff ACK/STOP
-- Any reply that tells Claude Code to start Phase N+1, amend, stop, or fix
-- Any Claude Code phase completion meant to come back to Cursor
-
-Skip for pure operator Q&A with no other-agent hop (still keep plain language).
-
-## Cursor reply shape (required on relay turns)
-
-1. **One short plain line** for the human (what happened / what to do) — plain-language rule still applies here.
-2. **One fenced block** whose first line is exactly `PASTE INTO CLAUDE CODE` (or `PASTE INTO CLAUDE CODE — <short tag>`).
-3. Inside the fence, address **Claude Code**, not the operator:
-   - `Verdict:` ACK | fix | wait
-   - `Report:` path under `tbcc/docs/handoffs/`
-   - `Do:` exact next actions (phase, amend plan, stop conditions)
-   - `Do not:` push / start bots / touch `.env` / Phase N+1 unless listed
-4. Optional second fence only if Cursor also needs a human Tray smoke list — keep it after the paste fence, labeled clearly.
-
-Do **not** make the human-facing ACK the only payload. If they paste the whole message, the fence must still be unambiguous.
-
-### Template
-
-````markdown
-Topic wiring looks good.
-
-```text
-PASTE INTO CLAUDE CODE
-Verdict: ACK — go Phase 3
-Report: tbcc/docs/handoffs/YYYY-MM-DD_<topic>_report.md
-Do: Execute Phase 3 only. Append reverse report. STOP for Cursor /cc-report.
-Do not: push; start bots; apply island migration unless Do says so.
-```
-````
-
-## Claude Code reply shape (required on relay turns)
-
-After each phase (or when a pasted Cursor ACK arrives):
-
-1. Do the work / honor the ACK.
-2. Write/append `*_report.md`.
-3. End with a fence whose first line is `PASTE INTO CURSOR`.
-4. Inside: `/cc-report`, report path, phase status, HEAD hash if committed, one-line risks.
-
-Treat a pasted `PASTE INTO CLAUDE CODE` fence as the **go signal** — same authority as disk `CURRENT_DIRECTIVE.md` for the named next step. Prefer the fence’s `Do:` over chat vibes when they conflict.
-
-## Anti-patterns
-
-- Long “for your eyes only” ACKs with no paste fence
-- “Tell Claude to…” without a copy-ready block
-- Asking the operator to summarize between tools
-- Starting Phase N+1 from an ACK that said wait/fix
+- **Cursor →** one plain line for the human + one fence starting `PASTE INTO CLAUDE CODE` with `Verdict:` ACK|fix|wait, `Report:`, `Do:`, `Do not:` (addressed to Claude Code).
+- **Claude Code →** after each phase, append `*_report.md`, end with a fence starting `PASTE INTO CURSOR` (`/cc-report`, report path, status, HEAD).
+- A pasted `PASTE INTO CLAUDE CODE` fence is the go signal; its `Do:` beats chat vibes. Never start Phase N+1 from wait/fix.
+- Under `/cc-cc` use `PASTE INTO CC-PLANNER` / `CC-GRINDER` only: skill `powercore-cc-cc-relay`. Full procedure: `tbcc-cc-run`, `cc-report`.
