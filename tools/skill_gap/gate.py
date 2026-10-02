@@ -102,7 +102,9 @@ def _min_confidence() -> float:
 
 
 # Single generic words must not alone mint a skill name.
-_GENERIC_SLUG_KEYWORDS = frozenset({"gap", "vault", "report", "fail", "silent"})
+_GENERIC_SLUG_KEYWORDS = frozenset(
+    {"gap", "vault", "report", "fail", "silent", "ops", "store"}
+)
 _REJECTED_SLUGS = frozenset({"", "powercore-", "powercore-untitled", "powercore-gap"})
 
 

@@ -327,6 +327,8 @@ def test_run_gate_cli_json():
         "weekly report",
         "it will fail",
         "silent",
+        "ops",
+        "store",
     ],
 )
 def test_slugify_rejects_untitled_and_bare_generic(text: str):
@@ -344,6 +346,8 @@ def test_slugify_accepts_multi_keyword_and_explicit_name():
     assert _slugify_proposal("use powercore-foo-bar here") == "powercore-foo-bar"
     assert not is_valid_slug("powercore-untitled")
     assert not is_valid_slug("powercore-gap")
+    assert not is_valid_slug("powercore-ops")
+    assert not is_valid_slug("powercore-store")
     assert not is_valid_slug("tbcc-anything")
 
 
@@ -380,3 +384,50 @@ def test_pending_aggregates_structured_and_legacy(tmp_path: Path):
     assert cur[0]["last_seen"] == "2026-10-02T00:00:00"
     both = load_pending(log, legacy=True)
     assert {v["slug"] for v in both} == {"powercore-a-b", "powercore-old-one"}
+
+
+def test_rank_goldens_cover_required_cases():
+    cases = json.loads(
+        (_REPO / "tools" / "skill_gap" / "evals" / "rank_skills_cases.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    ids = {c["id"] for c in cases}
+    assert len(cases) >= 12
+    assert sum(1 for c in cases if c.get("expect_skip")) >= 2
+    tops = {c.get("expect_top1") for c in cases}
+    assert {"powercore-promo-capture", "powercore-product-qualify", "powercore-ux-prefs"} <= tops
+    assert any(i.startswith("tbcc-only") for i in ids)
+
+
+def test_utilization_histogram_and_limit_note(tmp_path: Path):
+    from tools.skill_gap.utilization import LIMIT_NOTE, summarize
+
+    log = tmp_path / "e.jsonl"
+    rows = [
+        {"ranked_top": "a", "skill_gap_suggest": True},
+        {"ranked_top": "a"},
+        {"ranked_top": "b"},
+        {"skipped": True},
+    ]
+    log.write_text("\n".join(json.dumps(r) for r in rows), encoding="utf-8")
+    s = summarize(log, last_n=10)
+    assert s["n"] == 4 and s["suggest_rate"] == 0.25 and s["skipped_trivial"] == 1
+    assert s["ranked_top_histogram"] == {"a": 2, "b": 1}
+    assert "not skills actually opened" in LIMIT_NOTE
+
+
+def test_rank_evals_cli_nonzero_on_miss(monkeypatch, tmp_path: Path):
+    from tools.skill_gap import metrics
+    from tools.skill_gap.run_rank_evals import main
+
+    monkeypatch.setattr(metrics, "_METRICS_DIR", tmp_path)
+    monkeypatch.setattr(metrics, "_MISS_LOG", tmp_path / "miss.jsonl")
+
+    bad = tmp_path / "c.json"
+    bad.write_text(
+        json.dumps([{"id": "x", "prompt": "/silent-fail", "response": "silent-fail zombie",
+                     "expect_top1": "no-such-skill"}]),
+        encoding="utf-8",
+    )
+    assert main(["--cases", str(bad)]) == 1

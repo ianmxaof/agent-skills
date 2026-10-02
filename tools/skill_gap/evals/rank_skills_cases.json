@@ -5,7 +5,7 @@
     "response": "Demoted fat always-on crystallize rules to thin tips. NTK need-to-know vault capture still runs via run_crystallize_gate.py. Canonical durable doctrine under agent-skills.",
     "expect_top1": "tbcc-auto-crystallize"
   },
-    {
+  {
     "id": "silent-fail-ops",
     "prompt": "/silent-fail second-pass before ACK",
     "response": "Silent-fail protocol: external stops only, probe verdict ok stale idle blocked never_seen zombie. Use tbcc-silent-fail skill.",
@@ -23,5 +23,63 @@
     "response": "ok",
     "expect_skip": true,
     "max_score": 0.25
+  },
+  {
+    "id": "promo-capture-shot",
+    "prompt": "/promo-capture grab a promo screenshot of the PowerPlayer window",
+    "response": "Capturing a real on-screen screenshot and short window recording into promo-captures/ with sidecars for the store listing and PPQ demoVideo.",
+    "expect_top1": "powercore-promo-capture"
+  },
+  {
+    "id": "product-qualify-ppq",
+    "prompt": "/ppq run product qualify on the installer checklist",
+    "response": "PPQ maturity ladder: audit products/<id>/QUALIFICATION.md for chrome, install, onboarding, Vault review before store readiness.",
+    "expect_top1": "powercore-product-qualify"
+  },
+  {
+    "id": "ux-prefs-wheel",
+    "prompt": "the wheel should scroll the sidebar list, Enter sends — add to /ux-prefs",
+    "response": "Appending the operator correction to the PowerCore UX interaction preferences (scroll, wheel, focus, composer) for Vault, Hub, Notes.",
+    "expect_top1": "powercore-ux-prefs"
+  },
+  {
+    "id": "store-preactivate",
+    "prompt": "flip the store listing to active:true for the new product",
+    "response": "Before store active:true run the PowerCore ship-gate pre_activate evidence check; claiming sellable requires PSG.",
+    "expect_top1": "powercore-ship-gate"
+  },
+  {
+    "id": "token-audit",
+    "prompt": "/token-audit",
+    "response": "Running the token-waste audit: CLAUDE.md memory, MCP tools, model choice, hooks, subagents, scheduled work, cache. Report only.",
+    "expect_top1": "powercore-token-audit"
+  },
+  {
+    "id": "skill-gap-ack",
+    "prompt": "scaffold the Claude twin and GPT paste for that new powercore skill, I ACK",
+    "response": "Triple Surface scaffold: Cursor + Claude twin + GPT paste via scaffold_surfaces after operator ACK. Skill gap suggestion accepted.",
+    "expect_top1": "powercore-skill-gap"
+  },
+  {
+    "id": "tbcc-only-sitrep",
+    "prompt": "/sitrep what just shipped across the parallel agents",
+    "response": "Mid-operation tactical reconstitution: collision board, CI/CD wire/close, vectors. TBCC revenue island agents.",
+    "expect_top1": "tbcc-sitrep"
+  },
+  {
+    "id": "near-miss-thanks-bang",
+    "prompt": "thanks!",
+    "response": "You're welcome.",
+    "expect_skip": true,
+    "max_score": 0.25,
+    "near_miss": true
+  },
+  {
+    "id": "near-miss-got-it",
+    "prompt": "okay, got it",
+    "response": "Great — let me know if anything else comes up.",
+    "expect_skip": true,
+    "max_score": 0.25,
+    "near_miss": true
   }
 ]
