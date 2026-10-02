@@ -1,0 +1,247 @@
+# PowerCore Ship Gate registry — Phase 3 (stress thresholds + 7d expiry)
+version: 3
+defaults:
+  budget_s: 90
+  lean_budget_s: 180
+  stress_max_age_days: 7
+
+roots:
+  - id: tbcc
+    root: C:/Powercore-repo-main/telegram_bot2
+    paths:
+      - tbcc/backend/app/**
+      - tbcc/backend/bots/**
+      - tbcc/backend/scripts/**
+      - tbcc/backend/tests/**
+    ignore:
+      - tbcc/docs/**
+      - "**/*.md"
+    watches:
+      - id: tbcc.money_path.unit
+        lane: lean
+        runs_where: local
+        cwd: tbcc/backend
+        when_paths:
+          - tbcc/backend/app/services/*payment*
+          - tbcc/backend/app/**/loot*
+          - tbcc/backend/app/services/money_path*
+          - tbcc/backend/tests/test_money_path*
+        stop_kind: pytest
+        cmd: "py -3.13 -m pytest tests/test_money_path_health.py -q --tb=no"
+        parse: exit_code
+        budget_s: 90
+      - id: tbcc.verdicts.unit
+        lane: lean
+        runs_where: local
+        cwd: tbcc/backend
+        when_paths:
+          - tbcc/backend/app/services/silent_fail*
+          - tbcc/backend/scripts/silent_fail*
+          - tbcc/backend/tests/test_silent_fail*
+        stop_kind: pytest
+        cmd: "py -3.13 -m pytest tests/test_silent_fail_verdicts.py -q --tb=no"
+        parse: exit_code
+        budget_s: 60
+      - id: tbcc.island.health
+        lane: live
+        runs_where: island
+        stop_kind: http
+        url: "https://api.powercore.app/health"
+        parse:
+          json_path: "$.status"
+          equals: ok
+        idle_flag: TBCC_REVENUE_ISLAND_ACTIVE
+        budget_s: 30
+      - id: tbcc.loot_cta.live
+        lane: live
+        runs_where: island
+        stop_kind: http
+        url: "https://telegram.me/aof_lootgod_bot"
+        parse:
+          status: 200
+        idle_flag: TBCC_REVENUE_ISLAND_ACTIVE
+        budget_s: 30
+      - id: tbcc.money_path.stress
+        lane: stress
+        runs_where: island
+        cwd: tbcc/backend
+        stop_kind: probe
+        cmd: "py -3.13 scripts/silent_fail_probe.py --json money-path --no-write"
+        idle_flag: TBCC_REVENUE_ISLAND_ACTIVE
+        budget_s: 120
+        threshold:
+          require_surface_ok:
+            - island_api_health
+            - loot_public_cta
+          min_ok_surfaces: 10
+          max_fail_surfaces: 0
+          max_blocked_surfaces: 0
+          allow_worst: ["ok", "idle", "stale"]
+
+  - id: text-expander
+    root: C:/Powercore-repo-main/text-expander
+    paths:
+      - extension/**
+      - scripts/**
+      - tests/**
+    ignore:
+      - docs/**
+    store_id: text-expander
+    artifact_zip_glob: "dist/text-expander-{version}.zip"
+    watches:
+      - id: te.unit
+        lane: lean
+        runs_where: local
+        stop_kind: node_test
+        cmd: "node tests/snippet-lib.test.mjs"
+        parse: exit_code
+        budget_s: 30
+      - id: te.pack
+        lane: lean
+        runs_where: local
+        stop_kind: cli_exit
+        cmd: "powershell -NoProfile -File scripts/pack.ps1"
+        parse: exit_code
+        budget_s: 60
+      - id: te.zip_manifest
+        lane: lean
+        runs_where: local
+        stop_kind: zip_manifest
+        path: "dist/text-expander-{version}.zip"
+        parse: builtin
+        budget_s: 30
+      - id: te.expand.stress
+        lane: stress
+        runs_where: local
+        stop_kind: node_test
+        cmd: "node tests/stress-expand.mjs"
+        parse: exit_code
+        budget_s: 60
+        threshold:
+          p95_ms_max: 50
+          min_iterations: 100
+
+  - id: pc-notes
+    root: C:/Powercore-repo-main/notes-app
+    paths:
+      - package.json
+      - pnpm-workspace.yaml
+      - PC-NOTES.md
+      - scripts/ship_smoke.mjs
+      - packages/desktop/package.json
+    ignore:
+      - docs/**
+      - node_modules/**
+      - dist/**
+      - packages/**/node_modules/**
+      - packages/**/out/**
+    store_id: pc-notes
+    watches:
+      - id: notes.ship_smoke
+        lane: lean
+        runs_where: local
+        stop_kind: node_test
+        cmd: "node scripts/ship_smoke.mjs"
+        parse: exit_code
+        budget_s: 30
+
+  - id: github-seo
+    root: C:/Powercore-repo-main/github-seo-repo-template
+    paths:
+      - PRODUCT_INTENT.md
+      - RULES.md
+      - pyproject.toml
+      - scripts/ship_smoke.py
+      - tests/test_analyzer.py
+    ignore:
+      - docs/**
+      - .venv/**
+      - node_modules/**
+    store_id: github-presentation
+    watches:
+      - id: ghs.ship_smoke
+        lane: lean
+        runs_where: local
+        stop_kind: cli_exit
+        cmd: "py -3.13 scripts/ship_smoke.py"
+        parse: exit_code
+        budget_s: 30
+
+  - id: powercore-ops
+    root: C:/Powercore-repo-main/powercore-ops
+    paths:
+      - "**/*.py"
+    ignore:
+      - docs/**
+      - .superpowers/**
+    watches:
+      - id: ops.pytest
+        lane: lean
+        runs_where: local
+        stop_kind: pytest
+        cmd: "py -3.13 -m pytest tests -q --tb=no"
+        parse: exit_code
+        budget_s: 120
+
+  - id: solo-ops-os
+    root: C:/Powercore-repo-main/powercore-store/products/solo-ops-os
+    paths:
+      - "**/*.py"
+      - solo_ops/web/**
+      - requirements.txt
+      - Start-Solo-Ops.ps1
+    ignore:
+      - .venv/**
+      - data/**
+      - "**/__pycache__/**"
+    store_id: solo-ops-os
+    watches:
+      - id: solo.pytest
+        lane: lean
+        runs_where: local
+        stop_kind: pytest
+        cmd: ".\\.venv\\Scripts\\python.exe -m pytest tests -q --tb=no"
+        parse: exit_code
+        budget_s: 120
+      - id: solo.buyer_zip
+        lane: lean
+        runs_where: local
+        stop_kind: cli_exit
+        cmd: ".\\.venv\\Scripts\\python.exe -c \"import zipfile; from pathlib import Path; p=Path('../../dist-releases/solo-ops-os.zip'); z=zipfile.ZipFile(p); n=z.namelist(); assert p.stat().st_size>1000; assert any(x.endswith('START_HERE.md') for x in n); assert any(x.endswith('setup.exe') for x in n)\""
+        parse: exit_code
+        budget_s: 30
+      - id: solo.pytest.stress
+        lane: stress
+        runs_where: local
+        stop_kind: pytest
+        cmd: ".\\.venv\\Scripts\\python.exe -m pytest tests -q --tb=no"
+        parse: exit_code
+        budget_s: 120
+
+  - id: store
+    root: C:/Powercore-repo-main/powercore-store
+    paths:
+      - data/products.json
+      - src/**
+      - scripts/**
+      - public/**
+    ignore:
+      - node_modules/**
+      - .wrangler/**
+    watches:
+      - id: store.catalog
+        lane: lean
+        runs_where: local
+        stop_kind: cli_exit
+        cmd: "npm run check:catalog"
+        parse: exit_code
+        budget_s: 30
+      - id: store.pre_activate
+        lane: pre_activate
+        runs_where: local
+        stop_kind: http
+        for_each_product: true
+        url: "https://<r2-public-host>/{artifact.r2Key}"
+        parse:
+          status: 200
+        budget_s: 30
