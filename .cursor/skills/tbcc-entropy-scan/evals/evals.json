@@ -57,6 +57,23 @@
       "assertions": [
         {"type": "regex", "value": "(?:^\\s*- ring:[^\\n]*\\?[^\\n]*\\n?){3}"}
       ]
+    },
+    {
+      "id": "vertex-cap-five-well-formed",
+      "expect_ok": false,
+      "prompt": "/entropy-scan devops — no-ascend check",
+      "output": "Literal ask: x. Lens: devops\n\nVertices:\n- [missed·high] a — c · ev: f.py:1\n- [covered·med] b — c · ev: f.py:2\n- [blocked(hard)] c — c · wall: w\n- [blocked(soft)·low] d — c · ev: inferred · pressure: p\n- [missed·low] e — c · ev: inferred\n\nAscend?: no — literal is the yield\n\nFence: in scope - x; out of scope - y\n",
+      "assertions": [
+        {"type": "regex", "value": "(?:^- \\[(?:missed|covered|blocked)(?:\\((?:hard|soft)\\))?[^\\n]*$[\\s\\S]*?){6}"}
+      ]
+    },
+    {
+      "id": "vertex-cap-six-caught",
+      "prompt": "/entropy-scan devops — no-ascend check",
+      "output": "Literal ask: x. Lens: devops\n\nVertices:\n- [missed·high] a — c · ev: f.py:1\n- [covered·med] b — c · ev: f.py:2\n- [blocked(hard)] c — c · wall: w\n- [blocked(soft)·low] d — c · ev: inferred · pressure: p\n- [missed·low] e — c · ev: inferred\n\n- [covered·high] f — c · ev: f.py:6\n\nAscend?: no — literal is the yield\n\nFence: in scope - x; out of scope - y\n",
+      "assertions": [
+        {"type": "regex", "value": "(?:^- \\[(?:missed|covered|blocked)(?:\\((?:hard|soft)\\))?[^\\n]*$[\\s\\S]*?){6}"}
+      ]
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "current": "v0003_20261001-234811_6-6-8-8",
+  "current": "v0004_20261002-000815_8-8-8-8",
   "entries": [
     {
       "id": "v0001_20261001-234339_1-1-1",
@@ -28,6 +28,16 @@
       "score": "evals 6/6, body 8/8",
       "note": "S5: brainstorm mode (second-ring <=2, checkpoint-write deferred)",
       "parent": "v0002_20261001-234605_4-4-6-6",
+      "source": "manual",
+      "pinned": false
+    },
+    {
+      "id": "v0004_20261002-000815_8-8-8-8",
+      "file": "v0004_20261002-000815_8-8-8-8.md",
+      "ts": "2026-10-02T00:08:15Z",
+      "score": "evals 8/8, body 8/8",
+      "note": "S5 fix: v1.2 header (was left uncommitted at f836d08) + cap(<=5) violation eval",
+      "parent": "v0003_20261001-234811_6-6-8-8",
       "source": "manual",
       "pinned": false
     }

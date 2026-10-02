@@ -6,9 +6,9 @@ description: >-
   /entropy-scan marketing, /entropy-scan brainstorm, scour vertices.
 ---
 
-# TBCC Entropy Scan (v1.2-dev)
+# TBCC Entropy Scan (v1.2)
 
-Changelog: v1.2 (in progress) — S1: evidence + confidence per vertex, self-correct step. S2: blocked hard/soft pressure. S3: Freedom + Harness attach, evals scaffold, third-person description. S5: brainstorm mode (second-ring, ≤2, no checkpoint-write). v1.1 — lens registry via `tbcc/docs/entropy-lenses.json`; compose Exit. v1.0 — initial conversion scan.
+Changelog: v1.2 — depth per vertex (evidence + confidence), blocked(hard)/blocked(soft) pressure, Freedom + Self-correct + Harness attach, brainstorm mode (second-ring ≤2, no checkpoint-write), evals + body_assertions, third-person description. v1.1 — lens registry via `tbcc/docs/entropy-lenses.json`; compose Exit. v1.0 — initial conversion scan.
 
 ## Purpose
 
