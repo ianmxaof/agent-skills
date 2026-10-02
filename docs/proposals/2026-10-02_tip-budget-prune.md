@@ -1,6 +1,6 @@
 # Proposal — alwaysApply tip-budget prune (2026-10-02)
 
-**Status: OPERATOR APPROVED — IMPLEMENT (agent-skills-owned tips).** Authority: Cursor operator ACK embedded in `docs/handoffs/2026-10-02_horthy-agentic-workflow-powercore.md` (OPERATOR ACK — tip prune). Grinder Phase 3 applies; do not re-ask. telegram_bot2 rows remain proposal/handoff only.
+**Status: IMPLEMENTED (agent-skills-owned tips), 2026-10-02.** Operator-approved; applied in Horthy Phase 3 (commits 34dfc57, 9e2f3ea, 8373648, db9364f; baseline eeaf0cc). Total 3063 → 2080 tok. `tbcc-silent-fail` + `tbcc-plain-language` remain **handoff to Lane C** (telegram_bot2-owned, not touched). Note: telegram_bot2 carries its own `powercore-skill-versions.mdc` (151 tok, alwaysApply) that the budget now counts in place of the glob-scoped agent-skills copy.
 Source: `agent-skills/.skill-gap/metrics/tip_budget.json` (measured 2026-10-02T09:31Z).
 
 ## Budget snapshot
