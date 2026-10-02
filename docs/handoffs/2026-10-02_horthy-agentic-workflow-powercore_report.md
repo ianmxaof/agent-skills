@@ -197,3 +197,16 @@ Backfill scan (`py -3.13 -m tools.product_qualify git-scan`, 9 unique roots, 5 n
 
 ### Least sure
 Strict "toplevel equals root" makes any product root nested in a bigger repo (e.g. powercore-store/products/solo-ops-os) read as "not its own repo", and ship-gate lean will WARN on those roots each run; also a git-tracked home dir made my first test runs fail until I set GIT_CEILING_DIRECTORIES. I kept the strict rule as directed.
+
+## Phase 4 — Planner close-out (2026-10-02)
+
+Verified: agent-skills 0073855 (7 files, product_qualify + ship_gate + tests + 2 SKILL twins + backfill doc) and 1284488; powercore-ops 86897fc touches only the design doc (ops otherwise still dirty, 79 entries untouched, unpushed); `pytest tests -q` 61 passed; rank evals 13/13 ok.
+
+**Verdict: CLOSE-OUT ACKed. 6 of 7 Done-when PASS, item 4 accepted as PARTIAL (by design).**
+Decisions:
+1. **Item 4 (vertical-slice sentence) — no further edits.** It already sits where phases are authored (directive-generator) and enforced (relay v1.2: one external verify per phase). `tbcc-cc-run` only executes phases a directive already defined, and `tbcc-entropy-scan` does not author phases; adding the sentence there is duplication and drifts the telegram_bot2 twin. Recorded as accepted PARTIAL, not a gap.
+2. **Strict toplevel==root stays.** Nested roots (e.g. `powercore-store/products/solo-ops-os`) will WARN in lean runs; acceptable noise until the parent gets git. If it irritates: add an optional `git_root` override in REGISTRY.yaml (future, not now).
+3. **Remotes: no product is created without a per-product operator ACK.** Next operator decisions live in `docs/PRODUCT_GIT_BACKFILL.md` (text-expander, powercore-store, github-presentation=find-source-first, browser-hub origin, vlc-skin origin).
+4. **Lane C handoff (telegram_bot2, untouched):** tbcc-silent-fail 494, tbcc-plain-language 388, telegram_bot2 powercore-skill-versions 151 (~1033 tok). Hand to a telegram_bot2 session; not from this repo.
+5. Process note: GIT_CEILING_DIRECTORIES needed in tests because a parent home dir is git-tracked; fine.
+Nothing pushed (agent-skills, powercore-ops both local-only).
