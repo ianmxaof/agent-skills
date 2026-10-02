@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -152,6 +153,7 @@ _SCAFFOLD = """# PPQ — {id}
 |----|------:|--------|------|---------|----------|
 | Q-001 | P0 | missed | auto | yes | registry row |
 | Q-002 | P0 | missed | manual | no | root + entrypoint |
+| Q-010 | P0 | missed | auto | yes | root is its own git repo with `origin` remote |
 | Q-003 | P1 | missed | manual | yes | smoke path |
 | Q-004 | P2 | missed | manual | yes | chrome / ux-prefs audit |
 | Q-005 | P3 | missed | manual | yes | vault/tray or n/a |
@@ -220,6 +222,80 @@ def cmd_scaffold(ns: argparse.Namespace) -> int:
     path.write_text(body, encoding="utf-8")
     print(f"wrote {path}")
     print(f"PPQ {pid} stage=P0 | blockers=see checklist | next=fill evidence")
+    return _git_gate(pid, root, ns)
+
+
+def _git_gate(pid: str, root: str, ns: argparse.Namespace) -> int:
+    """P0 git gate: warn + print commands; init/create only when explicitly asked."""
+    from tools.product_qualify.gitcheck import commands_for, ensure_gitignore, git_status
+
+    st = git_status(root)
+    if st["ok"]:
+        print(f"git: ok ({st['toplevel']} -> origin {st['origin']})")
+        return 0
+    print(f"WARNING git gate (Q-010 blocker): {pid} root {root}: {st['reason']}", file=sys.stderr)
+    if getattr(ns, "init_git", False):
+        if st["exists"] and st["toplevel"] is None:
+            code = subprocess.run(["git", "-C", root, "init", "-b", "main"], check=False).returncode
+            made = ensure_gitignore(Path(root))
+            print(f"git: init exit={code}; .gitignore {'created' if made else 'already present'}")
+            st = git_status(root)
+        else:
+            print("git: --init-git skipped (root missing or already inside a repo)", file=sys.stderr)
+    if st["ok"]:
+        return 0
+    cmds = commands_for(st, Path(root).name or pid)
+    print("Operator ACK required. Commands (NOT run):")
+    for c in cmds:
+        print(f"  {c}")
+    slug = getattr(ns, "create_remote", None)
+    if slug:
+        if not st["is_repo_root"]:
+            print("git: refusing --create-remote: root is not its own git repo (use --init-git first)", file=sys.stderr)
+            return 0
+        cmd = ["gh", "repo", "create", slug, "--private", "--source", root, "--remote", "origin"]
+        print("--create-remote explicit; running: " + " ".join(cmd))
+        subprocess.run(cmd, check=False)
+    return 0
+
+
+EXTRA_SCAN_ROOTS = {"powercore-store": r"C:\Powercore-repo-main\powercore-store"}
+
+
+def _root_key(root: str) -> str:
+    return root.replace("\\", "/").rstrip("/").lower()
+
+
+def scan_git_roots() -> list[dict]:
+    """One row per UNIQUE root (several products share powercore-ops)."""
+    from tools.product_qualify.gitcheck import commands_for, git_status
+
+    by_root: dict[str, dict] = {}
+    for p in load_registry():
+        root = p.get("root", "")
+        by_root.setdefault(_root_key(root), {"root": root, "products": []})["products"].append(p["id"])
+    for name, root in EXTRA_SCAN_ROOTS.items():
+        by_root.setdefault(_root_key(root), {"root": root, "products": []})["products"].append(name)
+    rows = []
+    for v in by_root.values():
+        st = git_status(v["root"])
+        cmds = [] if st["ok"] else commands_for(st, Path(v["root"]).name)
+        rows.append({**v, "status": st, "cmds": cmds})
+    return rows
+
+
+def cmd_git_scan(_: argparse.Namespace) -> int:
+    rows = scan_git_roots()
+    print("| products | root | git? | origin? | manual command(s) |")
+    print("|----------|------|------|---------|-------------------|")
+    for r in rows:
+        st = r["status"]
+        git = "yes" if st["is_repo_root"] else ("inside other repo" if st["toplevel"] else "NO")
+        origin = st["origin"] or ("-" if not st["is_repo_root"] else "NO")
+        cmds = "<br>".join(f"`{c}`" for c in r["cmds"]) or "none"
+        print(f"| {', '.join(r['products'])} | `{r['root']}` | {git} | {origin} | {cmds} |")
+    bad = sum(1 for r in rows if not r["status"]["ok"])
+    print(f"\n{bad}/{len(rows)} roots need operator action", file=sys.stderr)
     return 0
 
 
@@ -317,8 +393,20 @@ def main(argv: list[str] | None = None) -> int:
     p_sc = sub.add_parser("scaffold", help="create QUALIFICATION.md (+ registry stub)")
     p_sc.add_argument("--id", required=True)
     p_sc.add_argument("--force", action="store_true")
+    p_sc.add_argument(
+        "--init-git", action="store_true",
+        help="git init a PLAIN root dir (+ .gitignore); never creates a remote",
+    )
+    p_sc.add_argument(
+        "--create-remote", metavar="OWNER/NAME", default=None,
+        help="explicit gh repo create (command printed first); needs an own-repo root",
+    )
     _add_plain(p_sc)
     p_sc.set_defaults(func=cmd_scaffold)
+
+    p_git = sub.add_parser("git-scan", help="scan registry roots for git + origin (markdown table)")
+    _add_plain(p_git)
+    p_git.set_defaults(func=cmd_git_scan)
 
     p_media = sub.add_parser(
         "media-prompt",

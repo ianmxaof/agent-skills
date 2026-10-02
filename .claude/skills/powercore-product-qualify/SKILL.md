@@ -49,3 +49,7 @@ PPQ <id> stage=P# · blockers=<n> · next=<one line>
 ```
 
 Then ≤10 loose ends. Stop for pick unless ADVANCE was explicit.
+## P0 git gate (Q-010)
+
+PPQ P0 needs the product root to be its own git repo with an `origin` remote. `scaffold` checks it, warns, and prints the exact commands; it only inits with `--init-git` and never creates a remote without operator ACK. `py -3.13 -m tools.product_qualify git-scan` lists every root; ship-gate `pre_activate` refuses without it.
+

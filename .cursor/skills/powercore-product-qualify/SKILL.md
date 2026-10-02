@@ -108,6 +108,10 @@ Then ≤10 loose ends. Stop for pick unless ADVANCE was explicit.
 
 → `/ux-prefs` (P2) → packaging/product-template (P4) → `/ship-gate` (P6) → store activate → `media-prompt` + `make-card-loop.ps1` (hover loop)
 
+## P0 git gate (Q-010)
+
+PPQ P0 needs the product root to be its own git repo with an `origin` remote. `scaffold` checks it, warns, and prints the exact commands; it only inits with `--init-git` and never creates a remote without operator ACK. `py -3.13 -m tools.product_qualify git-scan` lists every root; ship-gate `pre_activate` refuses without it.
+
 ## Triple Surface
 
 | Surface | Path |

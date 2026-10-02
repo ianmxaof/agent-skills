@@ -79,6 +79,12 @@ def run_root(
     product_filter: str | None = None,
 ) -> dict[str, Any]:
     root = Path(str(root_cfg.get("root")))
+    if lane == "lean":  # lean/code stages only WARN; pre_activate refuses (cmd_pre_activate)
+        from tools.product_qualify.gitcheck import git_status
+
+        _g = git_status(str(root))
+        if not _g["ok"]:
+            print(f"PSG warn: root {root} lacks own git repo + origin ({_g['reason']})", file=sys.stderr)
     path_globs = list(root_cfg.get("paths") or [])
     ignore = list(root_cfg.get("ignore") or [])
     th = tree_hash(root, path_globs, ignore)
@@ -277,6 +283,19 @@ def cmd_pre_activate(args: argparse.Namespace) -> int:
     if not product_root:
         print(f"PSG: no registry root for product {product}", file=sys.stderr)
         return 2
+
+    from tools.product_qualify.gitcheck import git_status
+
+    gst = git_status(str(product_root.get("root")))
+    if not gst["ok"]:
+        print(
+            f"PSG pre_activate blocked: product root {gst['root']} needs its own git repo "
+            f"with `origin` ({gst['reason']}). See docs/PRODUCT_GIT_BACKFILL.md",
+            file=sys.stderr,
+        )
+        if args.json:
+            print(json.dumps({"git_gate": gst}, indent=2))
+        return 1
 
     lean = run_root(
         product_root,
