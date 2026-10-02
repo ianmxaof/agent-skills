@@ -103,3 +103,12 @@ Commit `0fb3d7d`. Files: tools/skill_gap/gate.py (ops/store generic), tools/skil
 - **Utilization CLI:** `py -3.13 -m tools.skill_gap.utilization --last 50` → skipped=24, suggest=3 (rate 0.06); top ranked: cc-report 4, powercore-product-qualify 4, tbcc-auto-crystallize 4, powercore-skill-gap 4, powercore-ux-prefs 3, … Output states it shows what was *ranked*, not skills actually opened.
 - **pytest:** tests/test_skill_gap.py 30 passed.
 - **Clean-checkout caveat:** tracked skills in git are only powercore-promo-capture, powercore-skill-gap, tbcc-entropy-scan. Depending on untracked skill dirs: 11 of the 13 goldens' skills (tbcc-auto-crystallize, tbcc-silent-fail, powercore-ship-gate, powercore-product-qualify, powercore-ux-prefs, powercore-token-audit, tbcc-sitrep, + trivial cases rely on catalog), test_catalog_loads_skills (cc-report), test_evals_cc_report_pass, test_body_assertions_cc_report, test_evals_silent_fail_pass, test_gap_skips_strong_near_miss (silent-fail), plus any rank test run via run_rank_evals. Untracked trees NOT committed this phase.
+
+## Phase 2 — Planner ACK (2026-10-02)
+
+Verified: 0fb3d7d + 44ac844 present; 30 pytest pass; run_rank_evals reproduces 12/13, hit_rate 0.923, exit 1; sole miss is near-miss-got-it (top1 tbcc-auto-crystallize, score 0.0691).
+
+**Verdict: ACK Phase 2. Failing golden is a real bug, not a bad case — keep the case unchanged and fix the skip logic as a Phase 3 prelude.**
+Root cause confirmed: `_SKIP_RE` in rank_skills.py and endgates.py is anchored `^(word)\.?!?\s*$`, so "okay, got it" (compound ack) falls through. The regex is duplicated in both files, so fix once and share.
+Fix constraints: allow compound acks (ack-words joined by `,` / `and` / space), bounded to short prompts; must NOT skip substantive prompts that start with an ack ("okay, run the deploy", "yes, and also fix X"). Add positive + negative pytest cases. Do not touch scoring/boosts.
+Phase 3 (I4): proceed as amended in Phase 0 (agent-skills + powercore-ops Claude copies + GPT pastes via --skip-cursor; diff before touching existing twins; token-audit twin exists in telegram_bot2). Because only 3 skills are tracked, Phase 3 also commits the dependent untracked trees (ship_gate, product_qualify, ux_prefs + their tests/skills) in separate reviewable commits; after that, re-check the clean-checkout list from the Phase 2 report and cite what remains.
