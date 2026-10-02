@@ -144,3 +144,13 @@ Cursor `SKILL.md` is canonical; Claude twin(s) and the GPT paste must be updated
 
 ### Verify
 `pytest tests -q` all pass (52); `run_rank_evals --json` 13/13, exit 0.
+
+## Phase 3 — Planner ACK (2026-10-02)
+
+Verified: commits b9aa9f1..6668f96 present; full `pytest tests` 52 passed; run_rank_evals 13/13 hit_rate 1.0; `scaffold_surfaces --check` ok for ship-gate, token-audit, ux-prefs. (The 0.94 / 6 misses in the rank-eval output is the cumulative miss log including the pre-fix near-miss-got-it rows, not a current failure.)
+
+**Verdict: ACK Phase 3. Phase 4 go (proposal + doctrine only).**
+Decisions:
+1. **Twin shape: keep thin stubs for the new twins; do not sync/overwrite the telegram_bot2 token-audit full-body twin.** Syncing touches another repo's live skill for no functional gain. Record the two-shape drift as a known item in the Phase 4 doc with the one-line fix path (regenerate telegram_bot2 twin from canonical on a future deliberate pass). Stubs must point to the canonical SKILL by absolute path so they cannot silently fork.
+2. **ops twins: commit, path-limited.** In powercore-ops, `git add` ONLY the three twin dirs (powercore-ship-gate, powercore-token-audit, powercore-ux-prefs under .claude/skills) and commit; the repo is otherwise dirty and unrelated changes must not be swept in. No push.
+Phase 4 scope unchanged: I6 prune proposal doc (list over-cap alwaysApply tips, split agent-skills-owned vs telegram_bot2-owned, recommended demote/shorten per tip, est. token savings; NOT applied) + I7 doctrine paragraph. I5 stays NO; revisit note: goldens now 13, so the precondition ">=12" is met, but Planner defers the decision until the operator asks.
