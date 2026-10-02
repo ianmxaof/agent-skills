@@ -65,7 +65,7 @@ Required sections (all):
    - Constraints & gotchas (include judgment ceiling)
    - Verification (≥1 exact command or observable check)
    - Working agreement (commit/push/branch; reverse report + STOP for ACK if multiphase/grind)
-   - Phases (only if >1; each ends verify + reverse when grind)
+   - Phases (only if >1; each ends verify + reverse when grind; each phase is a thin end-to-end tracer-bullet slice with ONE external stop command, not a horizontal layer)
    - Target profile (short: mode + must-not-decide)
 3. **Paste line** — `Paste into <TARGET>.` If TARGET is Claude Code: `Feeds /handoff-cc — or paste as-is if sections match.`
 4. **Reverse path** — name `tbcc/docs/handoffs/YYYY-MM-DD_<topic>_report.md` when TBCC grind; else “structured reverse reply” fields

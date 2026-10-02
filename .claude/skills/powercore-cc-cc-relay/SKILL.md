@@ -7,7 +7,7 @@ description: >-
   Invoke with /cc-cc, /cc-pair, two Claude sessions, Cursor usage gone.
 ---
 
-# PowerCore CC↔CC Relay — Claude Code twin (v1.1)
+# PowerCore CC↔CC Relay — Claude Code twin (v1.2)
 
 Canonical: `agent-skills/.cursor/skills/powercore-cc-cc-relay/SKILL.md`.
 
@@ -18,6 +18,11 @@ While `/cc-cc` is active, **do not emit** `PASTE INTO CURSOR` or `PASTE INTO CLA
 
 - Grinder STOP → `PASTE INTO CC-PLANNER`
 - Planner ACK → `PASTE INTO CC-GRINDER`
+
+## Inverse confidence + vertical slice (v1.2)
+
+- Every Planner ACK asks "which choices are you least sure of?" — put it to the Grinder (its STOP carries a `Least sure:` line) or answer it yourself in the ACK.
+- Each Grinder phase names ONE external verify command, runs it, cites its output, then stops (`Verify:` line in the STOP fence).
 
 ## Sticky roles
 

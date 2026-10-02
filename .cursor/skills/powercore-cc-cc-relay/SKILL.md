@@ -10,9 +10,9 @@ description: >-
   Never emit PASTE INTO CURSOR while this skill is active.
 ---
 
-# PowerCore CC↔CC Relay (v1.1)
+# PowerCore CC↔CC Relay (v1.2)
 
-Changelog: v1.1 — forbid emitting `PASTE INTO CURSOR` under this skill; sticky roles; operator courier checklist; mid-switch from Cursor clarified. v1.0 — Planner/Grinder failover.
+Changelog: v1.2 — Planner ACK asks the inverse-confidence question; each Grinder phase names ONE external verify command. v1.1 — forbid emitting `PASTE INTO CURSOR` under this skill; sticky roles; operator courier checklist; mid-switch from Cursor clarified. v1.0 — Planner/Grinder failover.
 
 ## Purpose
 
@@ -94,6 +94,8 @@ Agents do not share chat memory. Pickup is **disk report + fence Do:**, not “c
 - Reason by: file + git
 - Planner falsifies; Grinder executes `Do:`
 - Override: this skill’s fence labels **win** over `tbcc-cc-run` / CLAUDE.md `PASTE INTO CURSOR` while `/cc-cc` is active
+- Inverse confidence: every Planner ACK asks "which choices are you least sure of?" — put it to the Grinder (its STOP carries a `Least sure:` line) or, if absent, answer it yourself in the ACK
+- Vertical slice: each Grinder phase names ONE external verify command, runs it, cites its output, then stops
 - Avoid: role flip on legacy fences; dual implementers; chat-only continuity after Cursor→CC switch
 
 ## Output contract
@@ -106,6 +108,8 @@ PASTE INTO CC-PLANNER
 Report: tbcc/docs/handoffs/<stem>_report.md
 Status: Phase N complete | blocked
 HEAD: <hash or uncommitted>
+Verify: <the one external command + its output>
+Least sure: <low-confidence choice made this phase>
 Do: review + ACK (paste PASTE INTO CC-GRINDER back into Grinder window)
 Do not: assume Phase N+1 started
 ```
@@ -116,6 +120,7 @@ Do not: assume Phase N+1 started
 PASTE INTO CC-GRINDER
 Verdict: ACK | fix | wait
 Report: tbcc/docs/handoffs/<stem>_report.md
+Least sure: <Grinder's answer, or Planner's own if none given>
 Do: <exact next>
 Do not: push; start bots; touch .env; Phase N+2 unless listed
 ```
@@ -133,7 +138,7 @@ Do not: push; start bots; touch .env; Phase N+2 unless listed
 ```
 - [ ] 1. State Role: Planner (once)
 - [ ] 2. Read *_report.md + git vs HEAD
-- [ ] 3. Verdict ACK | fix | wait
+- [ ] 3. Verdict ACK | fix | wait; ask/answer "which choices are you least sure of?"
 - [ ] 4. Emit PASTE INTO CC-GRINDER only
 - [ ] 5. Stop
 ```
@@ -143,7 +148,7 @@ Do not: push; start bots; touch .env; Phase N+2 unless listed
 ```
 - [ ] 1. State Role: Grinder (once)
 - [ ] 2. Honor PASTE INTO CC-GRINDER Do/Do not
-- [ ] 3. One phase only
+- [ ] 3. One phase only; name ONE external verify command, run it, cite output
 - [ ] 4. Append *_report.md
 - [ ] 5. STOP with PASTE INTO CC-PLANNER (never PASTE INTO CURSOR)
 ```
