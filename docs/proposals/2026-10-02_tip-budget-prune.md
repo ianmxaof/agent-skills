@@ -1,6 +1,6 @@
 # Proposal — alwaysApply tip-budget prune (2026-10-02)
 
-**Status: PROPOSAL ONLY. Nothing here has been applied. No rule file was edited.**
+**Status: OPERATOR APPROVED — IMPLEMENT (agent-skills-owned tips).** Authority: Cursor operator ACK embedded in `docs/handoffs/2026-10-02_horthy-agentic-workflow-powercore.md` (OPERATOR ACK — tip prune). Grinder Phase 3 applies; do not re-ask. telegram_bot2 rows remain proposal/handoff only.
 Source: `agent-skills/.skill-gap/metrics/tip_budget.json` (measured 2026-10-02T09:31Z).
 
 ## Budget snapshot
