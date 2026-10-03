@@ -1,0 +1,14 @@
+{
+  "id": "example-pack",
+  "version": "0.1.0",
+  "min_manager": "0.1.0",
+  "name": "Example PowerCore Skill Pack",
+  "description": "Forward-compatible pack manifest. Future Manager versions will import zips containing this file at the root plus one folder per skill (each with SKILL.md).",
+  "skills": [
+    "example-skill-id"
+  ],
+  "notes": [
+    "User-submitted plugins will use this same format plus trust/signature later.",
+    "v1 Manager ships a bundled starter library; pack import is reserved for a follow-on."
+  ]
+}

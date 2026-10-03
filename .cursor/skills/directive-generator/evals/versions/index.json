@@ -1,0 +1,25 @@
+{
+  "current": "v0002_20261001-211139_4-4",
+  "entries": [
+    {
+      "id": "v0001_20261001-205318_na",
+      "file": "v0001_20261001-205318_na.md",
+      "ts": "2026-10-01T20:53:18Z",
+      "score": "",
+      "note": "initial seed",
+      "parent": null,
+      "source": "seed",
+      "pinned": false
+    },
+    {
+      "id": "v0002_20261001-211139_4-4",
+      "file": "v0002_20261001-211139_4-4.md",
+      "ts": "2026-10-01T21:11:39Z",
+      "score": "4/4",
+      "note": "harness attach + first evals",
+      "parent": "v0001_20261001-205318_na",
+      "source": "manual",
+      "pinned": false
+    }
+  ]
+}

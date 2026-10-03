@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "incoming_dir": "vendor/incoming",
+  "sorted_dir": "vendor/sorted",
+  "catalog_path": "vendor/catalog.json",
+  "library_cursor": ".cursor/skills",
+  "library_warp": "skills",
+  "live_install": {
+    "cursor_user_skills": "~/.cursor/skills",
+    "claude_user_skills": "~/.claude/skills",
+    "default_live": false
+  },
+  "kinds": [
+    "cursor-skill",
+    "claude-skill",
+    "rule",
+    "command",
+    "warp-skill",
+    "plugin",
+    "other"
+  ],
+  "importance": {
+    "promote_at": 60,
+    "review_at": 40,
+    "weights": {
+      "structure": 25,
+      "description_quality": 20,
+      "uniqueness": 20,
+      "operator_boost": 20,
+      "usage": 10,
+      "recency": 5
+    }
+  }
+}

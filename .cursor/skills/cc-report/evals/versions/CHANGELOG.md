@@ -1,0 +1,43 @@
+# Skill versions changelog
+
+Immutable snapshots. Rollback forks forward (does not rewrite history).
+
+- `v0001_20260923-062317_na` · snapshot · score=- · source=seed · parent=- · auto-seed before overnight
+- `v0002_20260923-062317_20-20` · snapshot · score=20/20 · source=overnight · parent=v0001_20260923-062317_na · overnight keep:repair_placeholder
+- `v0003_20260923-062318_20-20` · snapshot · score=20/20 · source=overnight · parent=v0002_20260923-062317_20-20 · overnight keep:repair_placeholder
+- `v0001_20260923-062317_na` · pin · score=- · source=seed · parent=- · auto-seed before overnight
+- `v0004_20260923-062353_20-20` · snapshot · score=20/20 · source=overnight · parent=v0003_20260923-062318_20-20 · overnight keep:repair_placeholder
+- `v0005_20260926-060818_20-20` · snapshot · score=20/20 · source=overnight · parent=v0004_20260923-062353_20-20 · overnight keep:repair_placeholder
+- `v0006_20260926-062340_20-20` · snapshot · score=20/20 · source=overnight · parent=v0005_20260926-060818_20-20 · overnight keep:repair_placeholder
+- `v0007_20260926-062430_20-20` · snapshot · score=20/20 · source=overnight · parent=v0006_20260926-062340_20-20 · overnight keep:repair_placeholder
+- `v0008_20261001-205256_8-8` · snapshot · score=8/8 · source=manual · parent=v0007_20260926-062430_20-20 · v1.4 Freedom low + review checklist + fence self-correct
+- `v0009_20261001-211139_11-11` · snapshot · score=11/11 · source=manual · parent=v0008_20261001-205256_8-8 · harness attach + expanded evals
+- `v0010_20261002-010114_24-24` · snapshot · score=24/24 · source=overnight · parent=v0009_20261001-211139_11-11 · overnight keep:repair_placeholder
+- `v0011_20261002-091416_24-24` · snapshot · score=24/24 · source=overnight · parent=v0010_20261002-010114_24-24 · overnight keep:repair_placeholder
+- `v0012_20261002-091428_24-24` · snapshot · score=24/24 · source=overnight · parent=v0011_20261002-091416_24-24 · overnight keep:repair_placeholder
+- `v0013_20261002-091436_24-24` · snapshot · score=24/24 · source=overnight · parent=v0012_20261002-091428_24-24 · overnight keep:repair_placeholder
+- `v0014_20261002-091442_24-24` · snapshot · score=24/24 · source=overnight · parent=v0013_20261002-091436_24-24 · overnight keep:repair_placeholder
+- `v0015_20261002-091450_24-24` · snapshot · score=24/24 · source=overnight · parent=v0014_20261002-091442_24-24 · overnight keep:repair_placeholder
+- `v0016_20261002-091457_24-24` · snapshot · score=24/24 · source=overnight · parent=v0015_20261002-091450_24-24 · overnight keep:repair_placeholder
+- `v0017_20261002-091605_24-24` · snapshot · score=24/24 · source=overnight · parent=v0016_20261002-091457_24-24 · overnight keep:repair_placeholder
+- `v0018_20261002-091829_24-24` · snapshot · score=24/24 · source=overnight · parent=v0017_20261002-091605_24-24 · overnight keep:repair_placeholder
+- `v0019_20261002-091836_24-24` · snapshot · score=24/24 · source=overnight · parent=v0018_20261002-091829_24-24 · overnight keep:repair_placeholder
+- `v0020_20261002-091928_24-24` · snapshot · score=24/24 · source=overnight · parent=v0019_20261002-091836_24-24 · overnight keep:repair_placeholder
+- `v0021_20261002-092510_24-24` · snapshot · score=24/24 · source=overnight · parent=v0020_20261002-091928_24-24 · overnight keep:repair_placeholder
+- `v0022_20261002-092524_24-24` · snapshot · score=24/24 · source=overnight · parent=v0021_20261002-092510_24-24 · overnight keep:repair_placeholder
+- `v0023_20261002-092641_24-24` · snapshot · score=24/24 · source=overnight · parent=v0022_20261002-092524_24-24 · overnight keep:repair_placeholder
+- `v0024_20261002-093123_24-24` · snapshot · score=24/24 · source=overnight · parent=v0023_20261002-092641_24-24 · overnight keep:repair_placeholder
+- `v0025_20261002-093338_24-24` · snapshot · score=24/24 · source=overnight · parent=v0024_20261002-093123_24-24 · overnight keep:repair_placeholder
+- `v0026_20261002-093514_24-24` · snapshot · score=24/24 · source=overnight · parent=v0025_20261002-093338_24-24 · overnight keep:repair_placeholder
+- `v0027_20261002-095632_24-24` · snapshot · score=24/24 · source=overnight · parent=v0026_20261002-093514_24-24 · overnight keep:repair_placeholder
+- `v0028_20261002-100957_24-24` · snapshot · score=24/24 · source=overnight · parent=v0027_20261002-095632_24-24 · overnight keep:repair_placeholder
+- `v0029_20261002-101739_24-24` · snapshot · score=24/24 · source=overnight · parent=v0028_20261002-100957_24-24 · overnight keep:repair_placeholder
+- `v0030_20261002-101925_24-24` · snapshot · score=24/24 · source=overnight · parent=v0029_20261002-101739_24-24 · overnight keep:repair_placeholder
+- `v0031_20261002-102745_24-24` · snapshot · score=24/24 · source=overnight · parent=v0030_20261002-101925_24-24 · overnight keep:repair_placeholder
+- `v0032_20261002-103031_24-24` · snapshot · score=24/24 · source=overnight · parent=v0031_20261002-102745_24-24 · overnight keep:repair_placeholder
+- `v0033_20261002-103616_24-24` · snapshot · score=24/24 · source=overnight · parent=v0032_20261002-103031_24-24 · overnight keep:repair_placeholder
+- `v0034_20261002-103626_24-24` · snapshot · score=24/24 · source=overnight · parent=v0033_20261002-103616_24-24 · overnight keep:repair_placeholder
+- `v0035_20261002-103720_24-24` · snapshot · score=24/24 · source=overnight · parent=v0034_20261002-103626_24-24 · overnight keep:repair_placeholder
+- `v0036_20261002-104524_24-24` · snapshot · score=24/24 · source=overnight · parent=v0035_20261002-103720_24-24 · overnight keep:repair_placeholder
+- `v0037_20261003-210515_24-24` · snapshot · score=24/24 · source=overnight · parent=v0036_20261002-104524_24-24 · overnight keep:repair_placeholder
+- `v0038_20261003-210908_24-24` · snapshot · score=24/24 · source=overnight · parent=v0037_20261003-210515_24-24 · overnight keep:repair_placeholder

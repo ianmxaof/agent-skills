@@ -1,0 +1,27 @@
+---
+description: PowerCore typography — Inter-class UI fonts by default
+globs: "**/*.{py,css,ps1,html,vue,tsx,ts,jsx}"
+alwaysApply: true
+---
+
+# PowerCore Chrome fonts
+
+Primary UI type for PowerCore branded products is **Inter-class**.
+
+## Locked stack
+
+- UI: `Inter` → `DM Sans` → `Roboto` → `system-ui`
+- Mono: `Cascadia Code` → `JetBrains Mono` → `Consolas`
+
+## Do
+
+- CSS: `var(--pc-font-ui)` from PowerCore Chrome tokens
+- Tk: `ui_font()` / `mono_font()` from `tray.powercore_chrome`
+- Web: load Inter (or DM Sans); body stack starts with `Inter`
+
+## Do not
+
+- Default new PowerCore screens to Segoe-first / IBM Plex-first stacks
+- Hardcode font families in widgets — use the shared resolver / tokens
+
+Canonical detail: `powercore-ops/design/powercore-chrome.fonts.md`

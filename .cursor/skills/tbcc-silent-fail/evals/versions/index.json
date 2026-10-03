@@ -1,0 +1,25 @@
+{
+  "current": "v0002_20261001-211139_5-5",
+  "entries": [
+    {
+      "id": "v0001_20261001-205318_2-2",
+      "file": "v0001_20261001-205318_2-2.md",
+      "ts": "2026-10-01T20:53:18Z",
+      "score": "2/2",
+      "note": "initial seed",
+      "parent": null,
+      "source": "seed",
+      "pinned": false
+    },
+    {
+      "id": "v0002_20261001-211139_5-5",
+      "file": "v0002_20261001-211139_5-5.md",
+      "ts": "2026-10-01T21:11:39Z",
+      "score": "5/5",
+      "note": "harness attach + expanded evals",
+      "parent": "v0001_20261001-205318_2-2",
+      "source": "manual",
+      "pinned": false
+    }
+  ]
+}

@@ -1,6 +1,8 @@
 # Proposal — alwaysApply tip-budget prune (2026-10-02)
 
-**Status: IMPLEMENTED (agent-skills-owned tips), 2026-10-02.** Operator-approved; applied in Horthy Phase 3 (commits 34dfc57, 9e2f3ea, 8373648, db9364f; baseline eeaf0cc). Total 3063 → 2080 tok. `tbcc-silent-fail` + `tbcc-plain-language` remain **handoff to Lane C** (telegram_bot2-owned, not touched). Note: telegram_bot2 carries its own `powercore-skill-versions.mdc` (151 tok, alwaysApply) that the budget now counts in place of the glob-scoped agent-skills copy.
+**Status: IMPLEMENTED (agent-skills + telegram_bot2 Lane C), 2026-10-03.**  
+- agent-skills Horthy Phase 3: 3063 → 2080 tok.  
+- telegram_bot2 Lane C (Cursor): shortened `tbcc-silent-fail` + `tbcc-plain-language`; demoted `powercore-skill-versions` mirror to glob-only (`alwaysApply: false`). Budget **2080 → ~1470–1520** (re-measure). telegram_bot2 tip edits are local until committed in that repo.
 Source: `agent-skills/.skill-gap/metrics/tip_budget.json` (measured 2026-10-02T09:31Z).
 
 ## Budget snapshot

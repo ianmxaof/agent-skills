@@ -1,6 +1,6 @@
 # Product git backfill (H7)
 
-Every PowerCore product root must be its own git repo with an `origin` remote (PPQ P0, Q-010; ship-gate `pre_activate` refuses without it). **Nothing here has been run.** Init a repo or create a remote only after the operator ACKs that specific product. Replace `<owner>` with the GitHub account/org.
+Every PowerCore product root must be its own git repo with an `origin` remote (PPQ P0, Q-010; ship-gate `pre_activate` refuses without it). Remote ACK 2026-10-03: browser-hub and powerplayer origins created (private, no push). Init a repo or create a remote only after the operator ACKs that specific product. Replace `<owner>` with the GitHub account/org.
 
 Regenerate: `py -3.13 -m tools.product_qualify git-scan` (strict: `git rev-parse --show-toplevel` must equal the root).
 

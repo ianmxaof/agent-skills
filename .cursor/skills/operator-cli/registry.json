@@ -1,0 +1,63 @@
+{
+  "_comment": "Operator capability-bus v0 registry — machine-readable list of skills operator_cli.py can dispatch to. status: live = runs directly under this hub's own process control; delegate = forwarded as-is to an existing engine (tbcc_cli.py) that already owns the logic — do not reimplement a delegate's behavior here. corpora: local files worth reading for context on that skill, not a live API — see tbcc/docs/OPERATOR_CAPABILITY_BUS.md for why this is local transferable context rather than a Context7-style cloud doc source.",
+  "skills": [
+    {
+      "id": "semantic-scan",
+      "description": "Docs-vs-behavior mismatch / hidden-Unicode / injection-bait scanner for a local path or URL (GitHub repo/tree/blob, gist, pastebin raw).",
+      "entry": "semantic-deception-detector/scripts/semantic_scan.py",
+      "corpora": ["semantic-deception-detector/SKILL.md", "semantic-deception-detector/scripts/scan.py"],
+      "status": "live"
+    },
+    {
+      "id": "research",
+      "description": "RSS/Atom research scanner + feed source registry — fetch, dedupe, SPRINT_STATE match, and feed-add/feed-list for the source list itself.",
+      "entry": "tbcc/backend/scripts/tbcc_cli.py research",
+      "corpora": [
+        "tbcc/backend/app/data/research_scanner_sources.json",
+        "tbcc/docs/hermes-skills/tbcc-research-scanner/SKILL.md"
+      ],
+      "status": "delegate"
+    },
+    {
+      "id": "llm",
+      "description": "Local LLM provider/model index and sticky rotator — status, next, ask, keys, models. Do not rebuild; forward to the existing engine.",
+      "entry": "tbcc/backend/scripts/tbcc_cli.py llm",
+      "corpora": ["tbcc/backend/app/services/llm_model_index.py"],
+      "status": "delegate"
+    },
+    {
+      "id": "slots",
+      "description": "API Pocket — PC-local REST service-slot registry (add/list/show/call/remove/suggest). The operator's \"mechanical arm\" for ad-hoc API calls. Do not rebuild; forward to the existing engine.",
+      "entry": "tbcc/backend/scripts/tbcc_cli.py slots",
+      "corpora": ["tbcc/backend/app/services/api_slot_registry.py"],
+      "status": "delegate"
+    },
+    {
+      "id": "tui",
+      "description": "Unified operator terminal (Textual) — one persistent multi-tab app over the LLM index, API Pocket key paste-register+test, affiliate-link upload, and semantic-scan. `operator tui` from anywhere.",
+      "entry": "tbcc/backend/scripts/tbcc_cli.py operator tui",
+      "corpora": ["tbcc/backend/scripts/operator_tui.py"],
+      "status": "delegate"
+    },
+    {
+      "id": "wifi",
+      "description": "Pause/restore local bandwidth hogs (OneDrive, MEGAsync, Dropbox, Drive, iCloud, Steam downloads, Windows Update/DO, Discord/Spotify updaters, download managers) and show a WiFi snapshot. Until-restore. Desktop right-click via tbcc/tools/register-wifi-focus-context-menu.ps1.",
+      "entry": "tbcc/tools/wifi-focus.ps1",
+      "corpora": [
+        "tbcc/tools/wifi-focus.ps1",
+        "tbcc/tools/register-wifi-focus-context-menu.ps1"
+      ],
+      "status": "live"
+    },
+    {
+      "id": "silent-fail",
+      "description": "Readonly class-2 silent-fail probes (intake last_run, storage-hub R2 export, enrich-backlog last_success). Verdicts: ok|stale|never_seen|idle|blocked. No Start bots.",
+      "entry": "tbcc/backend/scripts/tbcc_cli.py silent-fail",
+      "corpora": [
+        "tbcc/backend/app/services/silent_fail_probes.py",
+        "tbcc/backend/scripts/silent_fail_probe.py"
+      ],
+      "status": "delegate"
+    }
+  ]
+}

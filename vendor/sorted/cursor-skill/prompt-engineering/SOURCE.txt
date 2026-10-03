@@ -1,0 +1,4 @@
+source: https://github.com/spencerpauly/awesome-cursor-skills/tree/main/resources/prompt-engineering
+ingested_at: 2026-09-09T19:20:02Z
+owner: spencerpauly
+repo: awesome-cursor-skills

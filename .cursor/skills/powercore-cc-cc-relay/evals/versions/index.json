@@ -1,0 +1,25 @@
+{
+  "current": "v0002_20261002-014717_4-4",
+  "entries": [
+    {
+      "id": "v0001_20261002-012050_3-3",
+      "file": "v0001_20261002-012050_3-3.md",
+      "ts": "2026-10-02T01:20:50Z",
+      "score": "3/3",
+      "note": "initial seed",
+      "parent": null,
+      "source": "seed",
+      "pinned": false
+    },
+    {
+      "id": "v0002_20261002-014717_4-4",
+      "file": "v0002_20261002-014717_4-4.md",
+      "ts": "2026-10-02T01:47:17Z",
+      "score": "4/4",
+      "note": "v1.1 sticky roles forbid PASTE INTO CURSOR emit",
+      "parent": "v0001_20261002-012050_3-3",
+      "source": "manual",
+      "pinned": false
+    }
+  ]
+}

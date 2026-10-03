@@ -210,3 +210,18 @@ Decisions:
 4. **Lane C handoff (telegram_bot2, untouched):** tbcc-silent-fail 494, tbcc-plain-language 388, telegram_bot2 powercore-skill-versions 151 (~1033 tok). Hand to a telegram_bot2 session; not from this repo.
 5. Process note: GIT_CEILING_DIRECTORIES needed in tests because a parent home dir is git-tracked; fine.
 Nothing pushed (agent-skills, powercore-ops both local-only).
+
+## Remote ACK (2026-10-03, Grinder under /cc-cc)
+
+Operator ACK scope: powercore-browser-hub, then vlc-skin (powerplayer). Horthy Phases 1–4 not re-run.
+
+| product | .git | action | result |
+|---------|------|--------|--------|
+| powercore-browser-hub | yes | private repo `ianmxaof/powercore-browser-hub` + `origin` added | origin=yes |
+| vlc-skin | yes | private repo `ianmxaof/vlc-skin` + `origin` added | origin=yes |
+
+- `gh repo create --source` failed (HTTP 404 on `users/ianmxaof`, though `gh api user` and auth are fine). Worked around with `gh api -X POST user/repos -F private=true`, then `git remote add origin`. First vlc-skin POST hit a network timeout; verified the repo did not exist, retried once, created.
+- Nothing pushed, no force, no history rewrite. Both working trees untouched (browser-hub has pre-existing uncommitted edits).
+- `git-scan` (GIT_CEILING_DIRECTORIES=C:/Users): browser-hub and powerplayer flipped origin NO → yes. Roots needing action 5/9 → 3/9 (remaining: text-expander, github-presentation, powercore-store).
+- Note: `powercore-store` now reads git=yes in the scan (was NO on 2026-10-02) — unexplained, not touched.
+- Not done: first push of either repo (needs a separate ACK).
