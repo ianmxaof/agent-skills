@@ -56,8 +56,31 @@ def summarize(path: Path | None = None, *, last_n: int = 50) -> dict[str, Any]:
     }
 
 
+NEVER_TOP_KEY = "never_top_ranked"
+NEVER_TOP_LABEL = (
+    "never the top pick in the window (catalog skills not ranked_top in last N rows; "
+    "NOT 'unused')"
+)
+_NEVER_TOP_CAP = 20
+
+
+def never_top_ranked(histogram: dict[str, int], catalog_root: Path | None = None) -> dict[str, Any]:
+    """Catalog skills whose name or alias never appears as ranked_top (case-insensitive)."""
+    from tools.skill_gap.catalog import load_skill_catalog
+
+    ranked = {str(k).lower() for k in histogram}
+    names = sorted(
+        e.name
+        for e in load_skill_catalog(catalog_root)
+        if e.name.lower() not in ranked and not any(a.lower() in ranked for a in e.aliases)
+    )
+    return {"count": len(names), "shown": min(len(names), _NEVER_TOP_CAP),
+            "names": names[:_NEVER_TOP_CAP]}
+
+
 def build_report(last_n: int = 50, rules_roots: list[Path] | None = None,
-                 log_path: Path | None = None) -> dict[str, Any]:
+                 log_path: Path | None = None,
+                 catalog_root: Path | None = None) -> dict[str, Any]:
     """summarize() + measure_tip_budget() joined; `limit` carries both honesty notes."""
     from tools.skill_gap.metrics import measure_tip_budget
 
@@ -68,6 +91,8 @@ def build_report(last_n: int = 50, rules_roots: list[Path] | None = None,
         for f in budget.get("files", [])
     ]
     out["total_tok"] = budget.get("total_tok", 0)
+    out["soft_cap_single"] = budget.get("soft_cap_single")
+    out[NEVER_TOP_KEY] = never_top_ranked(out["ranked_top_histogram"], catalog_root)
     out["limit"] = f"{LIMIT_NOTE} {TIP_NOTE}"
     return out
 
@@ -79,10 +104,14 @@ def format_report(r: dict[str, Any]) -> str:
                  f"suggest={r['suggest_count']} (rate={rate})")
     for name, c in r["ranked_top_histogram"].items():
         lines.append(f"  {c:>3}  {name}")
-    lines += ["", "alwaysApply tips (name | tok | over_single | path):"]
+    lines += ["", f"alwaysApply tips, largest first (name | tok | over_single | path; "
+                  f"soft cap/tip = {r.get('soft_cap_single')} tok):"]
     for t in r["tips"]:
         lines.append(f"  {t['name']} | {t['tok']} | {t['over_single']} | {t['path']}")
     lines.append(f"total alwaysApply tok: {r['total_tok']}")
+    nt = r[NEVER_TOP_KEY]
+    lines += ["", f"{NEVER_TOP_LABEL}: {nt['count']} (showing {nt['shown']})"]
+    lines += [f"  {n}" for n in nt["names"]]
     return "\n".join(lines)
 
 

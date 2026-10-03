@@ -453,6 +453,47 @@ def test_utilization_report_banner_plain_and_json(tmp_path: Path):
     assert plain.startswith(LIMIT_NOTE) and TIP_NOTE in plain.splitlines()[1]
 
 
+NL = "\n"
+
+
+def _tmp_catalog(tmp_path: Path, names: list[str]) -> Path:
+    root = tmp_path / "cat"
+    for n in names:
+        d = root / "skills" / n
+        d.mkdir(parents=True)
+        (d / "SKILL.md").write_text(f"---{NL}name: {n}{NL}description: d {n}{NL}---{NL}body", encoding="utf-8")
+    return root
+
+
+def test_never_top_ranked_alias_match(tmp_path: Path):
+    from tools.skill_gap.utilization import build_report
+
+    log = tmp_path / "e.jsonl"
+    log.write_text(json.dumps({"ranked_top": "TBCC-Foo"}), encoding="utf-8")
+    cat = _tmp_catalog(tmp_path, ["powercore-foo", "powercore-bar"])
+    r = build_report(10, _tmp_rules(tmp_path), log_path=log, catalog_root=cat)
+    assert r["never_top_ranked"]["names"] == ["powercore-bar"]
+
+
+def test_never_top_ranked_cap(tmp_path: Path):
+    from tools.skill_gap.utilization import build_report
+
+    cat = _tmp_catalog(tmp_path, [f"skill-{i:02d}" for i in range(25)])
+    r = build_report(10, _tmp_rules(tmp_path), log_path=tmp_path / "none.jsonl", catalog_root=cat)
+    nt = r["never_top_ranked"]
+    assert nt["count"] == 25 and nt["shown"] == 20 and len(nt["names"]) == 20
+
+
+def test_never_top_ranked_empty_log_lists_all_and_plain(tmp_path: Path):
+    from tools.skill_gap.utilization import NEVER_TOP_LABEL, build_report, format_report
+
+    cat = _tmp_catalog(tmp_path, ["a-one", "b-two"])
+    r = build_report(10, _tmp_rules(tmp_path), log_path=tmp_path / "none.jsonl", catalog_root=cat)
+    assert r["never_top_ranked"]["names"] == ["a-one", "b-two"]
+    plain = format_report(r)
+    assert NEVER_TOP_LABEL in plain and "soft cap/tip = 200" in plain
+
+
 def test_rank_evals_cli_nonzero_on_miss(monkeypatch, tmp_path: Path):
     from tools.skill_gap import metrics
     from tools.skill_gap.run_rank_evals import main

@@ -137,6 +137,7 @@ py -3.13 -m tools.skill_gap.endgates --prompt "..." --response "..." --auto --pl
 py -3.13 -m tools.skill_gap.run_gate --prompt "..." --response "..." --json
 py -3.13 -m tools.skill_gap.rank_skills --prompt "..." --response "..." --json
 py -3.13 -m tools.skill_gap.run_rank_evals --json
+py -3.13 -m tools.skill_gap.utilization --report --last 100 --plain   # rank ≠ open; tips = exposure/cost
 py -3.13 -m tools.skill_gap.run_evals --skill cc-report
 py -3.13 -m tools.skill_gap.improve_once --skill cc-report
 py -3.13 -m tools.skill_gap.scaffold_surfaces --skill powercore-<slug> --title "…" --description "…"
