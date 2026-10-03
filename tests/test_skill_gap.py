@@ -414,7 +414,43 @@ def test_utilization_histogram_and_limit_note(tmp_path: Path):
     s = summarize(log, last_n=10)
     assert s["n"] == 4 and s["suggest_rate"] == 0.25 and s["skipped_trivial"] == 1
     assert s["ranked_top_histogram"] == {"a": 2, "b": 1}
-    assert "not skills actually opened" in LIMIT_NOTE
+    assert "not skills opened" in LIMIT_NOTE
+
+
+def _tmp_rules(tmp_path: Path) -> list[Path]:
+    rules = tmp_path / "rules"
+    rules.mkdir()
+    (rules / "t.mdc").write_text("---\nalwaysApply: true\n---\n" + "x" * 400, encoding="utf-8")
+    (rules / "n.mdc").write_text("---\nalwaysApply: false\n---\nskip", encoding="utf-8")
+    return [rules]
+
+
+def test_utilization_report_happy_path(tmp_path: Path):
+    from tools.skill_gap.utilization import build_report
+
+    log = tmp_path / "e.jsonl"
+    log.write_text(json.dumps({"ranked_top": "a", "skill_gap_suggest": True}), encoding="utf-8")
+    r = build_report(10, _tmp_rules(tmp_path), log_path=log)
+    assert r["n"] == 1 and r["ranked_top_histogram"] == {"a": 1}
+    assert [t["name"] for t in r["tips"]] == ["t.mdc"]
+    assert set(r["tips"][0]) == {"name", "tok", "over_single", "path"}
+    assert r["total_tok"] == r["tips"][0]["tok"] > 0
+
+
+def test_utilization_report_empty_log(tmp_path: Path):
+    from tools.skill_gap.utilization import build_report
+
+    r = build_report(10, _tmp_rules(tmp_path), log_path=tmp_path / "missing.jsonl")
+    assert r["n"] == 0 and r["suggest_rate"] is None and r["ranked_top_histogram"] == {}
+
+
+def test_utilization_report_banner_plain_and_json(tmp_path: Path):
+    from tools.skill_gap.utilization import LIMIT_NOTE, TIP_NOTE, build_report, format_report
+
+    r = build_report(10, _tmp_rules(tmp_path), log_path=tmp_path / "missing.jsonl")
+    assert LIMIT_NOTE in r["limit"] and TIP_NOTE in r["limit"]
+    plain = format_report(r)
+    assert plain.startswith(LIMIT_NOTE) and TIP_NOTE in plain.splitlines()[1]
 
 
 def test_rank_evals_cli_nonzero_on_miss(monkeypatch, tmp_path: Path):

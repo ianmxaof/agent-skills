@@ -1,7 +1,7 @@
 """Thin endgates utilization view: ranked_top histogram + suggest rate.
 
   cd agent-skills
-  py -3.13 -m tools.skill_gap.utilization [--last N] [--json]
+  py -3.13 -m tools.skill_gap.utilization [--last N] [--json] [--report [--plain]]
 
 LIMIT: this reads what endgates *ranked/suggested*, not what agents actually
 opened. There is no "skill opened" counter; do not read it as usage.
@@ -22,8 +22,12 @@ if str(_REPO) not in sys.path:
 
 _LOG = _REPO / ".skill-gap" / "metrics" / "endgates.jsonl"
 LIMIT_NOTE = (
-    "ranked_top = what endgates RANKED, not skills actually opened "
+    "ranked_top = what endgates RANKED, not skills opened "
     "(no opened-skill counter exists)."
+)
+TIP_NOTE = (
+    "Tips = exposure/cost (alwaysApply token estimate, chars/4), "
+    "not fires or call counts."
 )
 
 
@@ -52,11 +56,47 @@ def summarize(path: Path | None = None, *, last_n: int = 50) -> dict[str, Any]:
     }
 
 
+def build_report(last_n: int = 50, rules_roots: list[Path] | None = None,
+                 log_path: Path | None = None) -> dict[str, Any]:
+    """summarize() + measure_tip_budget() joined; `limit` carries both honesty notes."""
+    from tools.skill_gap.metrics import measure_tip_budget
+
+    out = summarize(log_path, last_n=last_n)
+    budget = measure_tip_budget(rules_roots)
+    out["tips"] = [
+        {k: f[k] for k in ("name", "tok", "over_single", "path")}
+        for f in budget.get("files", [])
+    ]
+    out["total_tok"] = budget.get("total_tok", 0)
+    out["limit"] = f"{LIMIT_NOTE} {TIP_NOTE}"
+    return out
+
+
+def format_report(r: dict[str, Any]) -> str:
+    lines = [LIMIT_NOTE, TIP_NOTE, ""]
+    rate = r["suggest_rate"]
+    lines.append(f"last {r['n']} endgates rows: skipped={r['skipped_trivial']} "
+                 f"suggest={r['suggest_count']} (rate={rate})")
+    for name, c in r["ranked_top_histogram"].items():
+        lines.append(f"  {c:>3}  {name}")
+    lines += ["", "alwaysApply tips (name | tok | over_single | path):"]
+    for t in r["tips"]:
+        lines.append(f"  {t['name']} | {t['tok']} | {t['over_single']} | {t['path']}")
+    lines.append(f"total alwaysApply tok: {r['total_tok']}")
+    return "\n".join(lines)
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description="Endgates ranked_top histogram + suggest rate")
     p.add_argument("--last", type=int, default=50)
     p.add_argument("--json", action="store_true")
+    p.add_argument("--report", action="store_true", help="join histogram with tip exposure")
+    p.add_argument("--plain", action="store_true", help="plain text output (default)")
     args = p.parse_args(argv)
+    if args.report:
+        r = build_report(args.last)
+        print(json.dumps(r, indent=2) if args.json else format_report(r))
+        return 0
     s = summarize(last_n=args.last)
     if args.json:
         print(json.dumps(s, indent=2))
