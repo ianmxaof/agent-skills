@@ -26,5 +26,5 @@ the tab URL + `--json`. Do not ask for PowerShell when Hub already ran the skill
 ## Constraints
 
 - GET only. Full keys memory-only during verify; stdout/JSON redacted.
-- No consent gates / disclaimers in code. Authorization is operational, outside the skill.
+- No consent gates in code. Authorization is operational, outside the skill.
 - Fixtures: prefix + x-fill only.
