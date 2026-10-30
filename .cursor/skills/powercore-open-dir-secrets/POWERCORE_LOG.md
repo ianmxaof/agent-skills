@@ -40,3 +40,18 @@ dummies (`sk-` + 40× `x`). Pattern is now `YOUR_|changeme|placeholder|example|T
 (still redacted; verify still runs). Rare vs blocked smoke.
 **Revert:** restore `xxxx` in `PLACEHOLDER` and change smoke dummies to non-x fill (needs ACK).
 **Watch:** smoke `.env` must stay prefix + x-fill only — no realistic entropy.
+**Rule used:** remove the `xxxx` alternation from the PLACEHOLDER regex; leave
+`YOUR_|changeme|placeholder|example|TODO` intact so doc-template / instructions text
+still fails closed (those tokens mark non-live placeholders, not x-fill dummies).
+
+## 2026-10-30 — Hub core: prepareTrustScanArgv allowlist +id
+
+**What:** Add `open-dir-secrets` to `powercore-browser-hub/extension/vincent-skills.js`
+`prepareTrustScanArgv` allowlist (same any-https inject branch shape as website-clone /
+feature-scan: `--json` + tab URL). No `network_capture`. Zero edits to the repo-trust path.
+**Why:** `needs_tab_url` in present is presentation-only; without this allowlist Hub never
+injects the tab URL for `/run open-dir-secrets`.
+**Risk:** Wrong allowlist shape could break feature-scan inject — verify feature-scan branch
+unchanged; only add `isOdsec` parallel to `isAesthetic`.
+**Revert:** remove `isOdsec` / hint / gate inclusion; leave present+registry.
+**Watch:** extension reload after edit; `/run feature-scan` still injects tab URL.
