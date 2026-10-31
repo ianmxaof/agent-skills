@@ -76,3 +76,13 @@ anchor missed `admin,jira2026\r`. Smoke must fail loud on empty findings.
 **Revert:** remove fixtures/ + assert script; restore platform-year `$` only (breaks Win CRLF).
 **Watch:** handoff claim `finding_count==8` undercounts (actual composition **11** =
 3 PROVIDERS + npm + pypi + env(password) + 3 csv + docker-auth + registry).
+
+## 2026-10-31 — LIVE mock seam (Diplomat 3/3)
+**What:** `assert_odsec_phase2_smoke.py` patches `verify_liveness` via `unittest.mock`:
+openai → True (LIVE), other PROVIDERS → False (stale); assert ≥1 `live=True`.
+Real-provider GET retired as required — optional only (`ODSEC_SMOKE_LIVE_NET=1`),
+never blocks green. No `odsec.py` / PROVIDERS / verify-stage product change.
+**Why:** Audit 1.1 — LIVE was uncovered; committed-and-2/3 looked finished.
+**Risk:** low — test-only; 407c15c untouched (second commit).
+**Revert:** drop mock seam / LIVE assert from smoke; restore real-GET-as-required (flake).
+**Watch:** composition gate stays 11; LIVE is tag-aware (≥1), not count-aware.
