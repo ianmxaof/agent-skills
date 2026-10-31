@@ -55,3 +55,13 @@ injects the tab URL for `/run open-dir-secrets`.
 unchanged; only add `isOdsec` parallel to `isAesthetic`.
 **Revert:** remove `isOdsec` / hint / gate inclusion; leave present+registry.
 **Watch:** extension reload after edit; `/run feature-scan` still injects tab URL.
+
+## Phase 2 — pattern table v2 (registry tokens + platform-year creds)
+**What:** identify-stage additions per handoff (registry/npm/PyPI/Docker/GitHub/AWS
+patterns, platform-year CSV rows, .npmrc/.pypirc inventory, ordering registry > AWS);
+no-PROVIDERS findings tag `unverified`.
+**Why:** CISA/Nightwing (Krebs 2026-05): registry creds are the supply-chain crown
+jewels; plaintext creds are CSV columns. History lane deferred to Phase 3.
+**Risk:** low — additive patterns; verify surface and dual-use gate untouched.
+**Revert:** drop the Phase 2 pattern block; ordering reverts with it.
+**Watch:** FP rate on generic user:token + platform-year rows; sk-/SG. regression.

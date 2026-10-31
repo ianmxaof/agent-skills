@@ -40,6 +40,32 @@ ENV_PATTERNS = [
     rb"-----BEGIN (?:RSA |EC )?PRIVATE KEY-----[\s\S]{40,}?-----END [A-Z ]*PRIVATE KEY-----",
 ]
 
+# Phase 2 pattern table v2 — (kind, pattern). Same classify yield shape as
+# PROVIDERS/ENV: (label, value). Kinds are NOT in PROVIDERS → unverified, no probe.
+# Capture group = secret when the match is wider than the token itself.
+# Rank for report: registry/package (0) > aws (1) > generic (2).
+IDENTIFY_PATTERNS_V2: list[tuple[str, bytes]] = [
+    ("basic-auth", rb"(?i)\b([A-Za-z0-9_.-]{2,32}:[A-Za-z0-9+/=]{40,})\b"),
+    ("npm", rb"(?i)\b_?authToken[=:]\s*[\"']?([A-Za-z0-9_-]{30,})"),
+    ("pypi", rb"(pypi-[A-Za-z0-9\-_]{60,})"),
+    ("docker", rb"(dckr_pat_[A-Za-z0-9\-_]{30,})"),
+    ("github", rb"(ghp_[A-Za-z0-9]{40,})"),
+    (
+        "registry",
+        rb"(?im)(?:artifactory|nexus|harbor|registry)[^\r\n]{0,120}([A-Za-z0-9+/]{44,})",
+    ),
+    ("docker-auth", rb"\"auth\"\s*:\s*\"([A-Za-z0-9+/=]{40,})\""),
+    ("aws", rb"\b((?:AKIA|ASIA|ABIA|ACCA)[0-9A-Z]{16})\b"),
+    (
+        "platform-year",
+        rb"(?im)^([^,\r\n]{1,64},(?:aws|vault|jira|nexus|artifactory|github|gitlab|jenkins|dso)\d{2,4})$",
+    ),
+]
+
+_REGISTRY_KINDS = frozenset(
+    {"basic-auth", "npm", "pypi", "docker", "github", "registry", "docker-auth"}
+)
+
 PROBE_PATHS = [
     "/",
     "/.well-known/",
@@ -66,7 +92,11 @@ LISTING_MARKERS = (
 )
 # Maverick: dropped bare `xxxx` — it blocked prefix+x-fill smoke dummies. See POWERCORE_LOG.
 PLACEHOLDER = re.compile(rb"YOUR_|changeme|placeholder|example|TODO", re.I)
-FILE_EXT = re.compile(r"\.(env|json|ya?ml|txt|pem|cfg|ini|bak|sql|php|dist)$", re.I)
+# Phase 2: .npmrc / .pypirc inventory; csv for platform-year creds rows.
+FILE_EXT = re.compile(
+    r"\.(env|json|ya?ml|txt|pem|cfg|ini|bak|sql|php|dist|npmrc|pypirc|csv)$",
+    re.I,
+)
 HREF = re.compile(r'href="([^"?]+)"')
 # Dot is intentional — spans SendGrid SG.<segment>.<segment> tokens.
 _TOKEN_CHARS = re.compile(rb"[A-Za-z0-9_.\-]+")
@@ -152,6 +182,32 @@ def classify(body: bytes):
             val = m.decode(errors="ignore") if isinstance(m, bytes) else m
             if val and not PLACEHOLDER.search(val.encode()):
                 yield "env", val
+    for kind, pat in IDENTIFY_PATTERNS_V2:
+        for m in re.findall(pat, body):
+            val = m.decode(errors="ignore") if isinstance(m, (bytes, bytearray)) else m
+            if isinstance(val, tuple):
+                val = next((x for x in val if x), "")
+                if isinstance(val, (bytes, bytearray)):
+                    val = val.decode(errors="ignore")
+            if val and not PLACEHOLDER.search(val.encode()):
+                yield kind, val
+
+
+def _report_rank(provider: str) -> int:
+    """registry/package (0) > aws (1) > generic / PROVIDERS / env (2)."""
+    if provider in _REGISTRY_KINDS:
+        return 0
+    if provider == "aws":
+        return 1
+    return 2
+
+
+def _sort_findings(findings: list[dict]) -> list[dict]:
+    # LIVE first (existing), then registry > aws > generic within each live bucket.
+    return sorted(
+        findings,
+        key=lambda x: (x["live"] is not True, _report_rank(x["provider"]), x["provider"]),
+    )
 
 
 def _auth_headers(provider: str, key: str) -> dict[str, str]:
@@ -208,15 +264,19 @@ def scan(host: str, max_files: int = MAX_FILES, delay: float = DELAY) -> list[di
             except (urllib.error.URLError, OSError):
                 continue
             for provider, key in classify(body):
+                # No PROVIDERS row → unverified; skip verify (no outbound probe).
+                live = (
+                    verify_liveness(provider, key) if provider in PROVIDERS else None
+                )
                 findings.append(
                     {
                         "path": f,
                         "provider": provider,
                         "key": redact(key),
-                        "live": verify_liveness(provider, key),
+                        "live": live,
                     }
                 )
-    return findings
+    return _sort_findings(findings)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -243,7 +303,7 @@ def main(argv: list[str] | None = None) -> int:
     elif not found:
         print("no findings")
     else:
-        for f in sorted(found, key=lambda x: (x["live"] is not True, x["provider"])):
+        for f in found:  # already registry > aws > generic via _sort_findings
             tag = {True: "LIVE", False: "stale", None: "unverified"}[f["live"]]
             print(f"[{tag:10}] {f['provider']:11} {f['key']}  {f['path']}")
     return 0
