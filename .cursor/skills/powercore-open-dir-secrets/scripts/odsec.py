@@ -50,6 +50,8 @@ IDENTIFY_PATTERNS_V2: list[tuple[str, bytes]] = [
     ("pypi", rb"(pypi-[A-Za-z0-9\-_]{60,})"),
     ("docker", rb"(dckr_pat_[A-Za-z0-9\-_]{30,})"),
     ("github", rb"(ghp_[A-Za-z0-9]{40,})"),
+    # ghcr_ dropped — no such prefix; GHCR push uses ghp_ / github_pat_.
+    ("github", rb"(github_pat_[A-Za-z0-9_]{50,})"),
     (
         "registry",
         rb"(?im)(?:artifactory|nexus|harbor|registry)[^\r\n]{0,120}([A-Za-z0-9+/]{44,})",
@@ -57,8 +59,9 @@ IDENTIFY_PATTERNS_V2: list[tuple[str, bytes]] = [
     ("docker-auth", rb"\"auth\"\s*:\s*\"([A-Za-z0-9+/=]{40,})\""),
     ("aws", rb"\b((?:AKIA|ASIA|ABIA|ACCA)[0-9A-Z]{16})\b"),
     (
+        # \r?$ — Windows fixture CRLF must not leave a dangling CR before $.
         "platform-year",
-        rb"(?im)^([^,\r\n]{1,64},(?:aws|vault|jira|nexus|artifactory|github|gitlab|jenkins|dso)\d{2,4})$",
+        rb"(?im)^([^,\r\n]{1,64},(?:aws|vault|jira|nexus|artifactory|github|gitlab|jenkins|dso)\d{2,4})\r?$",
     ),
 ]
 

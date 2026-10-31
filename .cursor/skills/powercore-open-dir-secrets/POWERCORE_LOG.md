@@ -65,3 +65,14 @@ jewels; plaintext creds are CSV columns. History lane deferred to Phase 3.
 **Risk:** low — additive patterns; verify surface and dual-use gate untouched.
 **Revert:** drop the Phase 2 pattern block; ordering reverts with it.
 **Watch:** FP rate on generic user:token + platform-year rows; sk-/SG. regression.
+
+## 2026-10-31 — Phase 2 fixture rig + CRLF / github_pat_
+**What:** Committed `fixtures/listing/` + `assert_odsec_phase2_smoke.py`; platform-year
+pattern accepts `\r?$` (Windows CRLF); add `github_pat_` twin under kind `github`;
+drop `ghcr_` (no such prefix). No PROVIDERS / verify-stage changes.
+**Why:** Diplomat audit — TEMP/utf8NoBOM flake; paste fixtures must be on disk; `$`
+anchor missed `admin,jira2026\r`. Smoke must fail loud on empty findings.
+**Risk:** low — additive fixtures + one regex anchor tweak.
+**Revert:** remove fixtures/ + assert script; restore platform-year `$` only (breaks Win CRLF).
+**Watch:** handoff claim `finding_count==8` undercounts (actual composition **11** =
+3 PROVIDERS + npm + pypi + env(password) + 3 csv + docker-auth + registry).
