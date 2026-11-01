@@ -37,6 +37,13 @@
       "status": "live"
     },
     {
+      "id": "site-map",
+      "description": "Full origin site map (robots/sitemap + BFS) or GitHub repo tree — Mermaid visual, evidence-tagged flow/nav, compose hops. Inventory + IA only — not trust, docs-vs-code, or aesthetics.",
+      "entry": "powercore-site-map-tree/scripts/site_map.py",
+      "corpora": ["powercore-site-map-tree/SKILL.md"],
+      "status": "live"
+    },
+    {
       "id": "open-dir-secrets",
       "description": "Probes a host for open directory listings, inventories config/secret files, reports verified exposures (LIVE/stale/unverified). Read-only GET; redacted output. Run on the target site tab — not a social post about it.",
       "entry": "powercore-open-dir-secrets/scripts/odsec.py",
