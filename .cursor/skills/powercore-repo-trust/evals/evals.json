@@ -1,0 +1,15 @@
+{
+  "skill_name": "powercore-repo-trust",
+  "evals": [
+    {
+      "id": "mentions-triple-surface",
+      "prompt": "Invoke /powercore-repo-trust and confirm surfaces.",
+      "assertions": [
+        {
+          "type": "contains",
+          "value": "Triple Surface"
+        }
+      ]
+    }
+  ]
+}

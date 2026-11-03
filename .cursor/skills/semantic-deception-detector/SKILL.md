@@ -1,12 +1,27 @@
 ---
 name: semantic-deception-detector
-description: >-
-  Scans a local codebase for docs-vs-behavior mismatches, hidden Unicode in
-  agent rule files, and comment text that looks like prompt-injection bait.
-  Use for semantic deception detection, obfuscated-intent reviews,
-  TrapDoor-style CLAUDE.md / .cursorrules hiding, or /semantic-scan.
+description: Scans a local codebase for docs-vs-behavior mismatches, hidden Unicode in agent
+  rule files, and comment text that looks like prompt-injection bait. Use for semantic deception
+  detection, obfuscated-intent reviews, TrapDoor-style CLAUDE.md / .cursorrules hiding, or
+  /semantic-scan.
+purpose: Scans a local codebase for docs-vs-behavior mismatches, hidden Unicode in agent rule
+  files, and comment text that looks like prompt-injection bait
+trigger_phrases:
+- /semantic-deception-detector
+- semantic deception detector
+- /semantic-scan
+- /class
+inputs:
+- operator paste or focused context
+outputs:
+- skill Output Contract markdown
+jev_hints:
+  lane: chat
+  cost: cheap
+  needs_context: true
+if_stumped: Ask once for the missing input or context; do not invent results.
+example_invocation: /semantic-deception-detector on the current paste
 ---
-
 # Semantic Deception Detector (v1.0.2)
 
 Changelog:
@@ -14,6 +29,7 @@ Changelog:
 - v1.0.1 — fixed cross-file false pairing (a denial in one file could be paired with a capability in an unrelated file) and a docstring line-number attribution bug (function/class docstring claims were reported at line 1 instead of their real line). Both `direct_contradiction`/`side_effect_contradiction` pairing and the `undocumented_capability` omission check are now scoped per file.
 - v1.0.2 — every finding now carries a `confidence` field (`high` | `heuristic`, fixed per category — see table below). Report adds `structural_score`/`structural_level`, computed from `high`-confidence findings only. `--json` and text-mode exit codes now gate on `structural_level`, not the total `risk_level` — so heuristic-only findings (`undocumented_capability`, non-rule `hidden_unicode`) are still reported for human review but no longer trip unattended/Hermes gating on their own.
 - v1.0.3-cli — `semantic_scan.py` CLI accepts local paths **or** URLs (GitHub repo/tree/blob, gist, pastebin raw, generic raw URL). Fetch layer is stdlib-only; `scan.py` stays local-only. Hub: `operator-cli` → `operator semantic-scan`.
+- v1.1.0 — **Contract harden:** `smell_level` (`CLEAN|LOW|REVIEW|HIGH|BLOCK`) + `operator_action` (`IGNORE|SPOT_CHECK|HARVEST_OK|PIPELINE_FIT|STOP`) + `claim_ledger` + mandatory `next_step`. `--ask` question-aware verify (miss → SPOT_CHECK, never “fine”). Optional README feature-bullet ledger when `--ask` absent. Smell ≠ go-ahead. TrapDoor Unicode paths still owned by Threat Monitor B1 (wrap sanitizer later — do not fork).
 
 Reusable agent skill. Cursor and Hermes share the same scanner script.
 
@@ -36,7 +52,8 @@ For ad-hoc scans of repos/gists/pastes you find on the web:
 
 ```powershell
 python "$env:USERPROFILE\.cursor\skills\semantic-deception-detector\scripts\semantic_scan.py" --json "https://github.com/owner/repo"
-python "$env:USERPROFILE\.cursor\skills\operator-cli\operator_cli.py" semantic-scan --json "https://gist.github.com/user/id"
+python "$env:USERPROFILE\.cursor\skills\semantic-deception-detector\scripts\semantic_scan.py" --ask "does plan-edit-before-execute exist?" --json "https://github.com/owner/repo"
+python "$env:USERPROFILE\.cursor\skills\operator-cli\operator_cli.py" semantic-scan --ask "does X exist?" --json "https://gist.github.com/user/id"
 ```
 
 Supported URL shapes: GitHub repo root, `/tree/ref/subpath`, single-file `/blob/ref/path`, public gist, `pastebin.com/raw/…`, other raw text URLs (size-capped). Temp checkout is deleted after the scan unless you copy results first.
@@ -101,13 +118,14 @@ Exit code `1` means `structural_level` is REVIEW or HIGH — i.e. at least one `
 
 Required sections:
 
-1. **Verdict** — lead with `structural_level` | `structural_score` (high-confidence findings only — copy both from the script). Follow with total `risk_level` | `risk_score` (all confidence levels) as the fuller picture. One sentence: what to do (ignore / spot-check / human security review).
-2. **Evidence** — table or list: category, path:line, evidence, detail, **confidence** (`high` | `heuristic`, from the script's `confidence` field — do not invent or infer it). Cap at 25 rows; say how many were omitted.
-3. **Likely benign** — call out undocumented `eval` in tests, README lag, UTF-8 BOM. Do not drop HIGH categories here.
-4. **Not claimed** — explicit: this is not malware confirmation, not intent, not a legal opinion.
-5. **Next** — one question: deeper file review, or stop.
+1. **Verdict** — lead with `smell_level` + `operator_action` + script `next_step`. Then `structural_level`/`structural_score` and total `risk_level`/`risk_score`. **Never** say “Looks fine to keep exploring” for LOW smell when `operator_action` is SPOT_CHECK/STOP or claim ledger has misses.
+2. **Claim ledger** — each `--ask` / README claim with `hit|miss|unknown` + evidence path. Unknown/miss ≠ fine.
+3. **Evidence** — category, path:line, evidence, detail, **confidence** (`high` | `heuristic`). Cap at 25 rows.
+4. **Likely benign** — undocumented `eval` in tests, README lag, UTF-8 BOM. Do not drop HIGH categories here.
+5. **Not claimed** — not malware confirmation, not intent, not a legal opinion. Smell ≠ safe to vendor.
+6. **Next** — copy script `next_step` (`/pipeline-fit`, spot-check, or stop). Never leave empty on REVIEW+.
 
-Done means: scanner ran on a local path; report includes script score + evidence; no remote clone; no code execution of the target.
+Done means: scanner ran; contract fields present; no target code execution.
 
 Failure contract: if Python is missing, `scan.py` errors, or the path is a URL, halt. Report what completed. Do not hand-roll a replacement parser in-session.
 

@@ -22,6 +22,7 @@ from pathlib import Path
 SKILLS_ROOT = Path(__file__).resolve().parent.parent
 REGISTRY_PATH = Path(__file__).resolve().parent / "registry.json"
 SEMANTIC_SCAN = SKILLS_ROOT / "semantic-deception-detector" / "scripts" / "semantic_scan.py"
+REPO_TRUST = SKILLS_ROOT / "powercore-repo-trust" / "scripts" / "repo_trust.py"
 
 _DEFAULT_TBCC_REPO_ROOT = Path(r"C:\Powercore-repo-main\telegram_bot2")
 
@@ -121,7 +122,20 @@ def main(argv: list[str] | None = None) -> int:
     sem.add_argument("--json", action="store_true")
     sem.add_argument("--max-files", type=int, default=400)
     sem.add_argument("--max-bytes", type=int, default=512_000)
+    sem.add_argument("--ask", default=None, help="Question-aware claim ledger verify")
+    sem.add_argument("--no-readme-claims", action="store_true")
     sem.add_argument("--self-test", action="store_true")
+
+    trust = sub.add_parser("repo-trust", help="Repo trust triage (semantic + install/workflow heuristics)")
+    trust.add_argument("target", nargs="?", default=".", help="Local path or URL")
+    trust.add_argument("--json", action="store_true")
+    trust.add_argument("--max-files", type=int, default=400)
+    trust.add_argument("--max-bytes", type=int, default=512_000)
+    trust.add_argument("--ask", default=None, help="Question-aware claim ledger verify")
+    trust.add_argument("--no-readme-claims", action="store_true")
+    trust.add_argument("--deps", action="store_true", help="Opt-in typosquat dep names")
+    trust.add_argument("--meta", action="store_true", help="Opt-in local meta heuristics")
+    trust.add_argument("--self-test", action="store_true")
 
     research = sub.add_parser("research", help="RSS/Atom research scanner (delegates to tbcc_cli.py research)")
     research.add_argument("rest", nargs=argparse.REMAINDER, help="Forwarded to tbcc_cli.py research ...")
@@ -163,9 +177,32 @@ def main(argv: list[str] | None = None) -> int:
         else:
             if args.json:
                 forward.append("--json")
+            if args.ask:
+                forward.extend(["--ask", args.ask])
+            if args.no_readme_claims:
+                forward.append("--no-readme-claims")
             forward.extend(["--max-files", str(args.max_files), "--max-bytes", str(args.max_bytes)])
             forward.append(args.target)
         return _run_script(SEMANTIC_SCAN, forward)
+
+    if args.command == "repo-trust":
+        forward = []
+        if args.self_test:
+            forward.append("--self-test")
+        else:
+            if args.json:
+                forward.append("--json")
+            if args.ask:
+                forward.extend(["--ask", args.ask])
+            if args.no_readme_claims:
+                forward.append("--no-readme-claims")
+            if args.deps:
+                forward.append("--deps")
+            if args.meta:
+                forward.append("--meta")
+            forward.extend(["--max-files", str(args.max_files), "--max-bytes", str(args.max_bytes)])
+            forward.append(args.target)
+        return _run_script(REPO_TRUST, forward)
 
     if args.command == "wifi":
         forward = ["-Action", args.action]
