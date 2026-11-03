@@ -1,0 +1,26 @@
+{
+  "skill_name": "powercore-tool-index-harvest",
+  "evals": [
+    {
+      "id": "mentions-triple-surface",
+      "prompt": "Invoke /tool-index and confirm surfaces.",
+      "assertions": [
+        {"type": "contains", "value": "Triple Surface"}
+      ]
+    },
+    {
+      "id": "claims-column",
+      "prompt": "Harvest a free-tools page that says 100% free no watermark.",
+      "assertions": [
+        {"type": "contains", "value": "claims"}
+      ]
+    },
+    {
+      "id": "one-primary",
+      "prompt": "Directory has 50 tools; what is the next step after inventory?",
+      "assertions": [
+        {"type": "contains", "value": "Primary"}
+      ]
+    }
+  ]
+}
