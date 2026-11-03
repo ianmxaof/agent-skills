@@ -86,3 +86,56 @@ def test_make_record_defaults_summary() -> None:
     )
     assert rec["summary"] == ["js-1"]
     assert rec["mode"] == "deep"
+
+
+# ---- Phase 2: delta gate ---------------------------------------------------
+
+from evidence_envelope import all_pass, delta  # noqa: E402
+
+CANDIDATE = SKILL_ROOT / "evals" / "fixtures" / "evidence_candidate.json"
+
+
+def _rows_by_id(rows: list[dict]) -> dict[str, dict]:
+    return {r["id"]: r for r in rows}
+
+
+def test_delta_fixture_known_pass_and_fail() -> None:
+    rows = _rows_by_id(delta(load_record(FIXTURE), load_record(CANDIDATE)))
+    assert rows["layout-390"]["pass"] is True  # identical
+    assert rows["palette-primary"]["pass"] is False  # #1A1A1A vs #222222
+    assert "hex" in rows["palette-primary"]["note"]
+    assert rows["font-ui"]["pass"] is False  # absent in candidate
+    assert rows["font-ui"]["note"] == "missing in candidate"
+    assert rows["extra-spacing"] == {
+        "id": "extra-spacing", "pass": True, "note": "extra in candidate"
+    }
+
+
+def test_delta_self_is_all_pass() -> None:
+    base = load_record(FIXTURE)
+    rows = delta(base, base)
+    assert [r["id"] for r in rows] == ["layout-390", "palette-primary", "font-ui"]
+    assert all_pass(rows)
+
+
+def test_delta_mismatch_is_not_all_pass() -> None:
+    assert not all_pass(delta(load_record(FIXTURE), load_record(CANDIDATE)))
+    assert not all_pass([])
+
+
+def test_delta_tolerance_and_kind() -> None:
+    base = load_record(FIXTURE)
+    cand = load_record(FIXTURE)
+    cand["items"][0]["value"]["hero_height_px"] = 424
+    assert delta(base, cand)[0]["pass"] is False
+    assert delta(base, cand, tolerance=4)[0]["pass"] is True
+    cand["items"][1]["kind"] = "font"
+    assert "kind" in delta(base, cand, tolerance=4)[1]["note"]
+
+
+def test_delta_rejects_empty_baseline_and_bad_tolerance() -> None:
+    empty = make_record(source="x", items=[])
+    with pytest.raises(ValueError, match="no items"):
+        delta(empty, load_record(CANDIDATE))
+    with pytest.raises(ValueError, match="tolerance"):
+        delta(load_record(FIXTURE), load_record(CANDIDATE), tolerance=-1)

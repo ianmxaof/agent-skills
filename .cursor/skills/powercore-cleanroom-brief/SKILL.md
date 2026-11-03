@@ -90,9 +90,9 @@ Order matters.
 ## Procedure
 
 1. **Capture (per mode)** → evidence items: `id, kind, value, confidence, coverage, limits`.
-2. **Envelope** — load/dump via `scripts/evidence_envelope.py` (`load_record` / `dump_record` / `make_record`). Fixture: `evals/fixtures/evidence_baseline.json`. Summary-first: read `summary`, page `items` with `page_items`.
+2. **Envelope** — load/dump via `scripts/evidence_envelope.py` (`load_record` / `dump_record` / `make_record`). Fixtures: `evals/fixtures/evidence_baseline.json` (+ `evidence_candidate.json`, a known pass/fail/extra pair). Summary-first: read `summary`, page `items` with `page_items`.
 3. **Build brief** — what the agent must match; cite evidence ids.
-4. **Check** — re-capture at the same widths; list mismatches; pass/fail per item. (`delta()` lands in Phase 2 — not shipped yet.)
+4. **Check** — re-capture at the same widths; list mismatches; pass/fail per item via `delta(baseline, candidate, tolerance=0)` → rows `{id, pass, note}`: baseline item missing / kind differs / value differs (numbers within `tolerance`) = fail; candidate-only items pass as `extra`. Claim overall pass only with `all_pass(rows)` (false for empty). Structural only — no pixel scoring.
 5. **Page big records** — summary first, then detail on request.
 
 ```powershell
@@ -143,5 +143,5 @@ py -3.13 -m tools.skill_gap.scaffold_surfaces --skill powercore-cleanroom-brief 
 
 ## Status
 
-v0.1.1 — Phase 1 envelope on disk (`scripts/evidence_envelope.py`). Delta gate = Phase 2.
+v0.1.2 — Phase 1 envelope + Phase 2 `delta()` / `all_pass()` on disk (`scripts/evidence_envelope.py`).
 Hub `/run cleanroom-brief` not shipped.

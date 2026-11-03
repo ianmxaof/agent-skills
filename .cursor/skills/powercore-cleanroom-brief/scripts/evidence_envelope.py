@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-"""Evidence envelope for powercore-cleanroom-brief (Phase 1).
+"""Evidence envelope + check delta for powercore-cleanroom-brief (Phase 1-2).
 
 Locked item fields: id, kind, value, confidence, coverage, limits.
 Record carries optional mode (clean|deep). Summary-first: ``summary`` is a short
 list of item ids (or thin stubs); full items live in ``items`` and may be paged
 by callers via ``page_items``.
 
-Phase 2 adds ``delta(baseline, candidate)`` — not in this module yet.
+``delta(baseline, candidate)`` is the structural check gate: one result row per
+baseline item (``id, pass, note``), plus a row for each candidate-only item.
+No pixel/ML similarity — values are compared structurally.
 """
 from __future__ import annotations
 
@@ -18,6 +20,9 @@ VERSION = "0.1.0"
 
 Confidence = Literal["high", "medium", "low"]
 Mode = Literal["clean", "deep"]
+
+# One delta row: {"id": str, "pass": bool, "note": str}
+DeltaRow = dict[str, Any]
 
 
 class EvidenceItem(TypedDict):
@@ -130,3 +135,85 @@ def make_record(
             "items": items,
         }
     )
+
+
+def _is_num(x: Any) -> bool:
+    return isinstance(x, (int, float)) and not isinstance(x, bool)
+
+
+def _diff(a: Any, b: Any, tol: float, path: str = "value") -> str | None:
+    """Return first structural difference between a (baseline) and b, or None."""
+    if _is_num(a) and _is_num(b):
+        return None if abs(a - b) <= tol else f"{path}: {a!r} != {b!r}"
+    if isinstance(a, dict) and isinstance(b, dict):
+        for k in a:
+            if k not in b:
+                return f"{path}.{k}: missing in candidate"
+        for k in b:
+            if k not in a:
+                return f"{path}.{k}: unexpected in candidate"
+        for k in a:
+            d = _diff(a[k], b[k], tol, f"{path}.{k}")
+            if d:
+                return d
+        return None
+    if isinstance(a, list) and isinstance(b, list):
+        if len(a) != len(b):
+            return f"{path}: length {len(a)} != {len(b)}"
+        for i, (x, y) in enumerate(zip(a, b)):
+            d = _diff(x, y, tol, f"{path}[{i}]")
+            if d:
+                return d
+        return None
+    if type(a) is not type(b) or a != b:
+        return f"{path}: {a!r} != {b!r}"
+    return None
+
+
+def delta(
+    baseline: EvidenceRecord,
+    candidate: EvidenceRecord,
+    *,
+    tolerance: float = 0.0,
+) -> list[DeltaRow]:
+    """Per-item pass/fail of ``candidate`` against ``baseline``.
+
+    Rows follow baseline item order, then candidate-only items. A baseline item
+    passes when the candidate has the same id, the same kind, and a value equal
+    under structural comparison (numbers within ``tolerance``). Candidate-only
+    items pass with an "extra" note: the check gate only fails on what the
+    baseline recorded. Raises ValueError if either record is invalid or the
+    baseline is empty (an empty baseline cannot support a pass claim).
+    """
+    if tolerance < 0:
+        raise ValueError("tolerance must be >= 0")
+    base = validate_record(dict(baseline))
+    cand = validate_record(dict(candidate))
+    if not base["items"]:
+        raise ValueError("baseline has no items; cannot claim pass")
+    cand_by_id = {i["id"]: i for i in cand["items"]}
+    base_ids = {i["id"] for i in base["items"]}
+    rows: list[DeltaRow] = []
+    for b in base["items"]:
+        c = cand_by_id.get(b["id"])
+        if c is None:
+            rows.append({"id": b["id"], "pass": False, "note": "missing in candidate"})
+        elif c["kind"] != b["kind"]:
+            rows.append(
+                {"id": b["id"], "pass": False,
+                 "note": f"kind: {b['kind']!r} != {c['kind']!r}"}
+            )
+        else:
+            d = _diff(b["value"], c["value"], tolerance)
+            rows.append(
+                {"id": b["id"], "pass": d is None, "note": d if d else "match"}
+            )
+    for c in cand["items"]:
+        if c["id"] not in base_ids:
+            rows.append({"id": c["id"], "pass": True, "note": "extra in candidate"})
+    return rows
+
+
+def all_pass(rows: list[DeltaRow]) -> bool:
+    """True only for a non-empty delta with every row passing."""
+    return bool(rows) and all(r["pass"] for r in rows)

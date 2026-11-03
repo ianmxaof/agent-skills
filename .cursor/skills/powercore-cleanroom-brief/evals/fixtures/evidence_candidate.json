@@ -1,0 +1,32 @@
+{
+  "version": "0.1.0",
+  "source": "https://example.com/demo-rebuild",
+  "mode": "clean",
+  "summary": ["layout-390", "palette-primary", "extra-spacing"],
+  "items": [
+    {
+      "id": "layout-390",
+      "kind": "layout",
+      "value": {"width": 390, "hero_height_px": 420},
+      "confidence": "high",
+      "coverage": "above-fold hero at 390px",
+      "limits": "no scroll depth beyond fold"
+    },
+    {
+      "id": "palette-primary",
+      "kind": "color",
+      "value": {"hex": "#222222", "role": "primary-text"},
+      "confidence": "high",
+      "coverage": "computed style on h1",
+      "limits": "single node sample"
+    },
+    {
+      "id": "extra-spacing",
+      "kind": "spacing",
+      "value": {"section_gap_px": 48},
+      "confidence": "medium",
+      "coverage": "first two sections",
+      "limits": "no responsive variants"
+    }
+  ]
+}

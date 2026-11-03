@@ -47,7 +47,7 @@ PROCEDURE:
 1. Confirm mode + URL.
 2. From the page excerpt / human captures, build evidence items (fields: id, kind, value, confidence, coverage, limits). Repo agents use scripts/evidence_envelope.py for load/dump.
 3. Emit build brief citing evidence ids.
-4. If build result provided: compare and list pass/fail per item (structural delta — Phase 2 in-repo).
+4. If build result provided: compare and list pass/fail per item as {id, pass, note}: fail if a baseline item is missing, its kind differs, or its value differs (numbers within an agreed tolerance); candidate-only items are noted "extra". Overall pass only if every row passes. Repo agents use delta() in scripts/evidence_envelope.py.
 5. Stop for human ACK.
 ```
 
