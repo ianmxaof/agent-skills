@@ -1,0 +1,32 @@
+{
+  "version": "0.1.0",
+  "source": "https://example.com/demo",
+  "mode": "clean",
+  "summary": ["layout-390", "palette-primary", "font-ui"],
+  "items": [
+    {
+      "id": "layout-390",
+      "kind": "layout",
+      "value": {"width": 390, "hero_height_px": 420},
+      "confidence": "high",
+      "coverage": "above-fold hero at 390px",
+      "limits": "no scroll depth beyond fold"
+    },
+    {
+      "id": "palette-primary",
+      "kind": "color",
+      "value": {"hex": "#1A1A1A", "role": "primary-text"},
+      "confidence": "high",
+      "coverage": "computed style on h1",
+      "limits": "single node sample"
+    },
+    {
+      "id": "font-ui",
+      "kind": "font",
+      "value": {"family": "Inter", "stack": ["Inter", "system-ui"]},
+      "confidence": "medium",
+      "coverage": "body computed font-family",
+      "limits": "webfont file not hashed"
+    }
+  ]
+}

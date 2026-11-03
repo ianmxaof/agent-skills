@@ -45,11 +45,12 @@ OUTPUT CONTRACT:
 
 PROCEDURE:
 1. Confirm mode + URL.
-2. From the page excerpt / human captures, build evidence items.
+2. From the page excerpt / human captures, build evidence items (fields: id, kind, value, confidence, coverage, limits). Repo agents use scripts/evidence_envelope.py for load/dump.
 3. Emit build brief citing evidence ids.
-4. If build result provided: compare and list pass/fail per item.
+4. If build result provided: compare and list pass/fail per item (structural delta — Phase 2 in-repo).
 5. Stop for human ACK.
 ```
+
 
 ## Sync rule
 

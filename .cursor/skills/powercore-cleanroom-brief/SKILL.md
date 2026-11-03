@@ -90,9 +90,15 @@ Order matters.
 ## Procedure
 
 1. **Capture (per mode)** → evidence items: `id, kind, value, confidence, coverage, limits`.
-2. **Build brief** — what the agent must match; cite evidence ids.
-3. **Check** — re-capture at the same widths; list mismatches; pass/fail per item.
-4. **Page big records** — summary first, then detail on request.
+2. **Envelope** — load/dump via `scripts/evidence_envelope.py` (`load_record` / `dump_record` / `make_record`). Fixture: `evals/fixtures/evidence_baseline.json`. Summary-first: read `summary`, page `items` with `page_items`.
+3. **Build brief** — what the agent must match; cite evidence ids.
+4. **Check** — re-capture at the same widths; list mismatches; pass/fail per item. (`delta()` lands in Phase 2 — not shipped yet.)
+5. **Page big records** — summary first, then detail on request.
+
+```powershell
+cd C:\Powercore-repo-main\agent-skills
+py -3.13 -m pytest .cursor/skills/powercore-cleanroom-brief -x -q --tb=short
+```
 
 ## Output contract
 
@@ -137,5 +143,5 @@ py -3.13 -m tools.skill_gap.scaffold_surfaces --skill powercore-cleanroom-brief 
 
 ## Status
 
-v0.1 — chat foundation. Later: Hub `/run cleanroom-brief` once envelope + delta are
-deterministic scripts.
+v0.1.1 — Phase 1 envelope on disk (`scripts/evidence_envelope.py`). Delta gate = Phase 2.
+Hub `/run cleanroom-brief` not shipped.
