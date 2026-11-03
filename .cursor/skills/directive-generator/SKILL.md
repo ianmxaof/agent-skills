@@ -1,0 +1,167 @@
+---
+name: directive-generator
+description: >-
+  GSP v2.2 — turn a target model/agent + raw issue dump into a cold-start paste-ready
+  directive (issue cards, agent profile, fence, verification, reverse stop-gate).
+  Invoke with /directive, generate a directive, handoff prompt for, prompt for {model}.
+---
+
+# Directive Generator (v1.6)
+
+Changelog: v1.6 — Harness attach (MCP/hooks/memory/compose). v1.5 — Freedom medium + cold-start self-correct loop + tickable emit checklist. v1.4 — Goal line via `SYNTHESIS_COMPRESSION` chain. v1.3 — when TARGET is Claude Code, persist forward file + `CURRENT_DIRECTIVE.md` so `/cc-run` works.
+
+## Purpose
+
+- Replace the weak seed `generate a directive/prompt to {model/agent} that addresses these issues:` with a structured generator.
+- Produce a **self-contained** paste block a cold agent can execute with zero prior chat.
+- Stay **upstream** of Lane C: when TARGET is Claude Code, emit may feed `/handoff-cc` / `handoff-claude-code` (do not replace that skill).
+
+## When to Invoke
+
+- Trigger phrases: `/directive`, `generate a directive`, `handoff prompt for`, `prompt for {model/agent}`, `directive for Claude Code|Cursor|ChatGPT|Cloud`
+- Situational: operator pastes an unstructured issue list and names (or clearly implies) a receiving agent
+- **Skip:** operator already asked for `/handoff-cc` with scoped Goal/paths/verify — use `handoff-claude-code` directly; named file-level bugfix with “just fix it” and no handoff intent
+
+## Execution Profile
+
+- Freedom: **medium** (fixed emit template / Output Contract; some variation inside Goal/cards/phases)
+- Mode: **Agent** (emit only — do not implement the issues unless operator explicitly says to execute after paste)
+- Model lane: Desktop Auto for packing; if issues imply pricing/leak/doctrine judgment for the *receiving* agent, set judgment_ceiling MUST NOT and pull those phases back to Frontier Plan/Ask in Constraints
+- Parallelism: none
+- Mode inheritance: n/a
+
+## Delegation & Tooling
+
+- Skills: `handoff-claude-code` (when TARGET = Claude Code — after emit, offer reshape into CC template if sections diverge); `claude-code-report` (reverse path for TBCC grind); `tbcc-preflight` if scope unbounded after normalize
+- Browser paste twin: `tbcc/docs/DIRECTIVE_GENERATOR_GPT_PASTE.md`
+- MCP: none required
+
+## Harness attach
+
+| Surface | Value |
+|---------|--------|
+| **MCP** | none |
+| **Hooks** | none required mid-emit |
+| **Memory** | disk when TARGET=Claude Code: forward `tbcc/docs/handoffs/YYYY-MM-DD_<topic>.md` + `CURRENT_DIRECTIVE.md`; chat emit always |
+| **Compose** | → `/cc-run` (CC) \| `handoff-claude-code`; reverse via `cc-report` |
+
+## Behavioral Rules
+
+- Reason by: cold agent has **zero** chat context — every critical fact goes in the emit fence
+- Avoid: chat-only refs; emit without Verification; doctrine on grind TARGET; implementing instead of emitting; unbounded “fix everything” without Fence
+- Prioritize: Literal → issue cards → Target profile → Ascend/Fence → Emit → Stop
+- If TARGET missing: ask once. If ISSUES empty: ask once. Do not invent issues.
+
+## Output Contract
+
+Required sections (all):
+
+1. **Preface** (outside fence, short) — Literal; Ascend yes/no + one line; TARGET named
+2. **Emit** — single fenced code block, paste-ready, with:
+   - Goal
+   - Scope (in + **Out of scope**)
+   - Prior state (`none — greenfield` or continuity bullets: verified / do-not-re-litigate / not-deployed)
+   - Issue cards (≤8)
+   - Constraints & gotchas (include judgment ceiling)
+   - Verification (≥1 exact command or observable check)
+   - Working agreement (commit/push/branch; reverse report + STOP for ACK if multiphase/grind)
+   - Phases (only if >1; each ends verify + reverse when grind; each phase is a thin end-to-end tracer-bullet slice with ONE external stop command, not a horizontal layer)
+   - Target profile (short: mode + must-not-decide)
+3. **Paste line** — `Paste into <TARGET>.` If TARGET is Claude Code: `Feeds /handoff-cc — or paste as-is if sections match.`
+4. **Reverse path** — name `tbcc/docs/handoffs/YYYY-MM-DD_<topic>_report.md` when TBCC grind; else “structured reverse reply” fields
+
+Done means: emit is paste-ready and would survive a cold start (no chat-only refs; verify present; fence present) **and** self-correct passed.  
+Artifacts: chat emit; when TARGET is Claude Code / TBCC grind: also update `tbcc/docs/handoffs/CURRENT_DIRECTIVE.md` + the forward `YYYY-MM-DD_<topic>.md` (`ACTIVE for /cc-run` section) so CC can `/cc-run` without paste.  
+Failure contract: unbounded scope after normalize → one scoping question or `/preflight`; missing evidence on P0 → Phase 0 = locate or stop (do not fake paths).
+
+### Self-correct (cold-start emit)
+
+1. **Draft** the emit fence per Output Contract.
+2. **Check** cold-start criteria:
+   - No chat-only refs (“as discussed”, “above”, “this thread”)
+   - Verification section present with ≥1 exact command or observable
+   - Fence / Out of scope present
+   - Issue cards have evidence or explicit `unknown`
+3. **Revise** until all checks pass — do not finalize a soft emit.
+4. If a failure mode is uncovered by guidelines, suggest **one** new rule for operator ACK (do not auto-write).
+
+## Exit Conditions
+
+- Next: operator runs **`/cc-run`** in Claude Code (preferred) or pastes the fence
+- If Claude Code multiphase: reverse `_report.md` → Cursor `/cc-report` → ACK → next phase
+- Do not auto-implement the directive in this chat unless operator picks “execute here”
+
+## Agent procedure
+
+Copy this checklist and tick as you go (order matters):
+
+```
+- [ ] 1. Parse TARGET + ISSUES (+ optional repo/branch/sprint/do-not-touch)
+- [ ] 2. Run PROCEDURE from the paste twin (Literal → Normalize → Profile → Ascend/Fence → Emit)
+- [ ] 3. Run SYNTHESIS_COMPRESSION on normalized issues; use output as Goal (see tbcc-prompt-chains)
+- [ ] 4. Draft emit per Output Contract
+- [ ] 5. Self-correct cold-start checks — revise until pass
+- [ ] 6. If TARGET is Claude Code (TBCC): write/update CURRENT_DIRECTIVE.md + ACTIVE for /cc-run — then stop
+- [ ] 7. Optional: operator may invoke /handoff-cc next (/cc-run does not need it)
+```
+
+## Canonical procedure text
+
+Use the same rules as `tbcc/docs/DIRECTIVE_GENERATOR_GPT_PASTE.md` (DIRECTIVE GENERATOR v1.2 condensed paste). Full card/profile/failure-mode detail stays in this skill. Keep skill and paste twin in sync when version-bumping.
+
+Claude Code twin (project skill, third-person description frontmatter): `.claude/skills/tbcc-directive-generator/SKILL.md` — also pointed from `.claude/CLAUDE.md` Lane C so CC sessions load the habit.
+
+### Issue card schema
+
+| Field | Required | Notes |
+|-------|----------|--------|
+| id | yes | I1, I2, … |
+| symptom | yes | one line |
+| evidence | yes | path, log, repro, or `unknown` |
+| severity | yes | P0 / P1 / P2 |
+| depends_on | yes | I# or none |
+| acceptance | yes | testable |
+
+### Target profile schema
+
+| Field | Required | Notes |
+|-------|----------|--------|
+| mode | yes | Plan / Ask / Agent / grind |
+| tools | yes | shell/files/MCP/none — TARGET norms only |
+| judgment_ceiling | yes | MAY / MUST NOT |
+| context | implied | always ZERO prior chat |
+
+### Reverse stop-gate (grind / multiphase)
+
+TBCC in-repo:
+
+```
+After each phase write tbcc/docs/handoffs/YYYY-MM-DD_<topic>_report.md
+(structure: claude-code-report), then STOP for Cursor ACK. Do not start Phase N+1.
+```
+
+Elsewhere:
+
+```
+After each phase reply with: Done / Files touched / Verification / Risks / Do not continue until ACK.
+```
+
+## Dry-run fixture (tighten against these failure modes)
+
+Messy input example (for self-check when editing this skill):
+
+```
+TARGET: Claude Code
+ISSUES:
+- vision lane stuff broken on network?
+- tests failing maybe test_media_lane
+- also update sprint state
+- don't touch payment
+- need report back
+```
+
+A correct emit must: normalize into cards with evidence unknown or guessed paths marked; Fence out payment; Goal testable; Verification with exact pytest; Working agreement with `_report.md` + STOP; Target profile MUST NOT invent payment/loot doctrine; no “as we discussed”.
+
+Real continuity check (2026-08-20 vision-lane handoff): messy “deploy + migrate + ghost town posting” dumps must put shipped local work under **Prior state**, keep ghost-town as a separate Issue card (Fence: diagnose ≠ block migrate), and never re-open “do not re-litigate” tree triage. See `examples.md`.
+
+Changelog note when tightening: bump Cursor skill + Claude Code skill (.claude/skills/tbcc-directive-generator/) + paste twin together (v1.0 → v1.x).

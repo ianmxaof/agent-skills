@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "py -3.13 .cursor/hooks/endgates_hook.py sessionStart",
+        "timeout": 15
+      }
+    ],
+    "afterAgentResponse": [
+      {
+        "command": "py -3.13 .cursor/hooks/endgates_hook.py afterAgentResponse",
+        "timeout": 10
+      }
+    ],
+    "stop": [
+      {
+        "command": "py -3.13 .cursor/hooks/endgates_hook.py stop",
+        "timeout": 90,
+        "loop_limit": 0
+      }
+    ]
+  }
+}

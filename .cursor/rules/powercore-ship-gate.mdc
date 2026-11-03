@@ -1,0 +1,8 @@
+---
+description: DEPRECATED tip — superseded by powercore-endgates.mdc
+alwaysApply: false
+---
+
+# Deprecated — use powercore-endgates + powercore-ship-gate skill
+
+See `.cursor/rules/powercore-endgates.mdc`.

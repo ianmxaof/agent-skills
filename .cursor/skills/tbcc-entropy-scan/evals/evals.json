@@ -1,0 +1,79 @@
+{
+  "skill": "tbcc-entropy-scan",
+  "notes": "Legacy folder name; new skills use powercore-* naming. Fixtures use anchored whole-string regex (\\A...\\Z with a negative lookahead) so one bad line inside an otherwise-good fixture is still caught — a plain 'contains ev:' check is not (see S1 cases).",
+  "cases": [
+    {
+      "id": "vertex-evidence-well-formed",
+      "prompt": "/entropy-scan revenue — VIP Stars tier",
+      "output": "Literal ask: Add Stars pricing tier for VIP. Lens: revenue\n\nVertices:\n- [missed·high] CTA — no deep link on loot bot share card · ev: tbcc/backend/app/bots/loot.py:120\n- [covered·high] paywall/SKU — Stars SKU already wired · ev: tbcc/backend/app/api/tools_slots.py:40\n- [missed·med] attribution — source_ref not logged on VIP checkout · ev: tbcc/backend/app/services/checkout_list_hub.py:88\n- [blocked(hard)] friction-to-cash — raising VIP price · wall: CLAUDE.md \"Cursor owns pricing/doctrine\"\n\nAscend?: yes — add source_ref logging to VIP checkout. Done: pytest test_checkout_list_hub.py::test_source_ref passes\n\nFence: in scope - source_ref logging; out of scope - price change, new SKU\n",
+      "assertions": [
+        {"type": "regex", "value": "\\A(?!(?:[\\s\\S])*^- \\[(?:missed|covered)(?:(?!\\bev:)[^\\n])*$)(?:[\\s\\S])*\\Z"},
+        {"type": "not_contains", "value": "looks fine"}
+      ]
+    },
+    {
+      "id": "vertex-evidence-missing-line-caught",
+      "expect_ok": false,
+      "prompt": "/entropy-scan revenue — VIP Stars tier",
+      "output": "Literal ask: Add Stars pricing tier for VIP. Lens: revenue\n\nVertices:\n- [missed·high] CTA — no deep link on loot bot share card · ev: tbcc/backend/app/bots/loot.py:120\n- [covered·high] paywall/SKU — Stars SKU already wired · ev: tbcc/backend/app/api/tools_slots.py:40\n- [missed·med] attribution — source_ref not logged on VIP checkout\n- [blocked(hard)] friction-to-cash — raising VIP price · wall: CLAUDE.md \"Cursor owns pricing/doctrine\"\n\nAscend?: yes — add source_ref logging to VIP checkout. Done: pytest test_checkout_list_hub.py::test_source_ref passes\n\nFence: in scope - source_ref logging; out of scope - price change, new SKU\n",
+      "assertions": [
+        {"type": "regex", "value": "\\A(?!(?:[\\s\\S])*^- \\[(?:missed|covered)(?:(?!\\bev:)[^\\n])*$)(?:[\\s\\S])*\\Z"}
+      ]
+    },
+    {
+      "id": "blocked-pressure-well-formed",
+      "prompt": "/entropy-scan devops — harden VIP checkout",
+      "output": "Literal ask: Harden VIP checkout. Lens: devops\n\nVertices:\n- [missed·high] toil — manual Stars reconcile · ev: tbcc/backend/scripts/nut_wallet/run_daily.py:40\n- [blocked(hard)] fragility — swap Celery broker · wall: CLAUDE.md \"cloud-only runtime; no local Celery\"\n- [blocked(soft)·med] observability — no Beat heartbeat metric · ev: inferred · pressure: add a last_tick_ts gauge, reversible\n- [covered·high] reversibility — deploy script already idempotent · ev: tbcc/scripts/revenue-island/deploy-island-live.ps1:20\n\nAscend?: yes — add last_tick_ts gauge. Done: /health shows last_tick_ts\n\nFence: in scope - observability gauge; out of scope - broker swap\n",
+      "assertions": [
+        {"type": "regex", "value": "\\A(?!(?:[\\s\\S])*^- \\[blocked(?!\\((?:hard|soft)\\))[^\\n]*$)(?:[\\s\\S])*\\Z"},
+        {"type": "regex", "value": "\\A(?!(?:[\\s\\S])*^- \\[blocked\\(hard\\)(?:(?!\\bwall:)[^\\n])*$)(?:[\\s\\S])*\\Z"},
+        {"type": "regex", "value": "\\A(?!(?:[\\s\\S])*^- \\[blocked\\(soft\\)(?:(?!\\bpressure:)[^\\n])*$)(?:[\\s\\S])*\\Z"}
+      ]
+    },
+    {
+      "id": "blocked-tag-missing-caught",
+      "expect_ok": false,
+      "prompt": "/entropy-scan devops — harden VIP checkout",
+      "output": "Literal ask: Harden VIP checkout. Lens: devops\n\nVertices:\n- [missed·high] toil — manual Stars reconcile · ev: tbcc/backend/scripts/nut_wallet/run_daily.py:40\n- [blocked(hard)] fragility — swap Celery broker · wall: CLAUDE.md \"cloud-only runtime; no local Celery\"\n- [blocked] observability — no Beat heartbeat metric\n- [covered·high] reversibility — deploy script already idempotent · ev: tbcc/scripts/revenue-island/deploy-island-live.ps1:20\n\nAscend?: yes — add last_tick_ts gauge. Done: /health shows last_tick_ts\n\nFence: in scope - observability gauge; out of scope - broker swap\n",
+      "assertions": [
+        {"type": "regex", "value": "\\A(?!(?:[\\s\\S])*^- \\[blocked(?!\\((?:hard|soft)\\))[^\\n]*$)(?:[\\s\\S])*\\Z"},
+        {"type": "regex", "value": "\\A(?!(?:[\\s\\S])*^- \\[blocked\\(hard\\)(?:(?!\\bwall:)[^\\n])*$)(?:[\\s\\S])*\\Z"},
+        {"type": "regex", "value": "\\A(?!(?:[\\s\\S])*^- \\[blocked\\(soft\\)(?:(?!\\bpressure:)[^\\n])*$)(?:[\\s\\S])*\\Z"}
+      ]
+    },
+    {
+      "id": "brainstorm-second-ring-well-formed",
+      "expect_ok": false,
+      "prompt": "/entropy-scan brainstorm — Telethon userbot leverage",
+      "output": "Literal ask: What could AOF unlock with Telethon userbots. Lens: innovation. Mode: brainstorm\n\nVertices:\n- [missed·med] unexploited primitives — Telethon admin session only used for scrapes · ev: tbcc/backend/app/services/research_scanner.py:10\n\nAscend?: yes — prototype a read-only digest. Done: pytest smoke passes\n  - ring: could this feed the thread-digest skill too?\n  - ring: does Buffer fanout want the same digest?\n\nFence: in scope - digest prototype; out of scope - any auto-post\n",
+      "assertions": [
+        {"type": "regex", "value": "(?:^\\s*- ring:[^\\n]*\\?[^\\n]*\\n?){3}"}
+      ]
+    },
+    {
+      "id": "brainstorm-third-ring-caught",
+      "prompt": "/entropy-scan brainstorm — Telethon userbot leverage",
+      "output": "Literal ask: What could AOF unlock with Telethon userbots. Lens: innovation. Mode: brainstorm\n\nVertices:\n- [missed·med] unexploited primitives — Telethon admin session only used for scrapes · ev: tbcc/backend/app/services/research_scanner.py:10\n\nAscend?: yes — prototype a read-only digest. Done: pytest smoke passes\n  - ring: could this feed the thread-digest skill too?\n  - ring: does Buffer fanout want the same digest?\n  - ring: should this become a full crew?\n\nFence: in scope - digest prototype; out of scope - any auto-post\n",
+      "assertions": [
+        {"type": "regex", "value": "(?:^\\s*- ring:[^\\n]*\\?[^\\n]*\\n?){3}"}
+      ]
+    },
+    {
+      "id": "vertex-cap-five-well-formed",
+      "expect_ok": false,
+      "prompt": "/entropy-scan devops — no-ascend check",
+      "output": "Literal ask: x. Lens: devops\n\nVertices:\n- [missed·high] a — c · ev: f.py:1\n- [covered·med] b — c · ev: f.py:2\n- [blocked(hard)] c — c · wall: w\n- [blocked(soft)·low] d — c · ev: inferred · pressure: p\n- [missed·low] e — c · ev: inferred\n\nAscend?: no — literal is the yield\n\nFence: in scope - x; out of scope - y\n",
+      "assertions": [
+        {"type": "regex", "value": "(?:^- \\[(?:missed|covered|blocked)(?:\\((?:hard|soft)\\))?[^\\n]*$[\\s\\S]*?){6}"}
+      ]
+    },
+    {
+      "id": "vertex-cap-six-caught",
+      "prompt": "/entropy-scan devops — no-ascend check",
+      "output": "Literal ask: x. Lens: devops\n\nVertices:\n- [missed·high] a — c · ev: f.py:1\n- [covered·med] b — c · ev: f.py:2\n- [blocked(hard)] c — c · wall: w\n- [blocked(soft)·low] d — c · ev: inferred · pressure: p\n- [missed·low] e — c · ev: inferred\n\n- [covered·high] f — c · ev: f.py:6\n\nAscend?: no — literal is the yield\n\nFence: in scope - x; out of scope - y\n",
+      "assertions": [
+        {"type": "regex", "value": "(?:^- \\[(?:missed|covered|blocked)(?:\\((?:hard|soft)\\))?[^\\n]*$[\\s\\S]*?){6}"}
+      ]
+    }
+  ]
+}

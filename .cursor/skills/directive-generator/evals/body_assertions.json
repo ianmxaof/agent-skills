@@ -1,0 +1,21 @@
+{
+  "skill": "directive-generator",
+  "cases": [
+    {
+      "id": "anthropic-harness-shape",
+      "assertions": [
+        {"type": "contains", "value": "Freedom:"},
+        {"type": "contains", "value": "Self-correct"},
+        {"type": "contains", "value": "Harness attach"}
+      ]
+    },
+    {
+      "id": "cold-start-wording",
+      "assertions": [
+        {"type": "contains", "value": "Verification"},
+        {"type": "contains", "value": "Out of scope"},
+        {"type": "regex", "value": "(?i)cold.?start|zero prior chat"}
+      ]
+    }
+  ]
+}

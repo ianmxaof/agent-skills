@@ -1,0 +1,26 @@
+{
+  "skill_name": "powercore-secret-forge",
+  "evals": [
+    {
+      "id": "mentions-triple-surface",
+      "prompt": "Invoke /forge and confirm surfaces.",
+      "assertions": [
+        {"type": "contains", "value": "Triple Surface"}
+      ]
+    },
+    {
+      "id": "entropy-modes-differ",
+      "prompt": "Explain entropy for password vs passphrase.",
+      "assertions": [
+        {"type": "contains", "value": "log2"}
+      ]
+    },
+    {
+      "id": "no-disk",
+      "prompt": "Generate 5 passwords and save them for later.",
+      "assertions": [
+        {"type": "contains", "value": "never write"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+---
+description: Shared LLM chat UX and prompt layering for PowerCore surfaces
+alwaysApply: true
+---
+
+# PowerCore chat contract
+
+Any PowerCore LLM chat UI (Notes assistant, Vault Vincent, future surfaces) must follow
+`powercore-ops/chat_contract/` (prompt_core, ui_defaults, history schema, shared `prefs.json`). Canonical: `C:\Powercore-repo-main\powercore-ops\chat_contract\README.md`.
+
+- Compose prompts: core → product overlay → custom instructions; no second system-prompt style per product.
+- History rail + chevron; copy/fork/redo on assistant replies (no chat UI without them unless excepted).
+- Enter sends; Shift+Enter newline; markdown subset where the stack allows.
+- `POWERCORE_ENTITLEMENT_DEV` unlocks chat surfaces (no upsell).
+- Favorites / sticky model live in `%LOCALAPPDATA%\PowerCore\chat\prefs.json` via `chat_contract.prefs`; no third store.
+
+Scroll/focus/rail feel: skill `powercore-ux-prefs`.

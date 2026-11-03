@@ -1,0 +1,49 @@
+{
+  "skill": "directive-generator",
+  "version": 1,
+  "cases": [
+    {
+      "id": "cold-start-pass",
+      "prompt": "/directive TARGET Claude Code — vision lane tests flaky, do not touch payment",
+      "output": "Literal: pack a cold-start grind for Claude Code. Ascend: no. TARGET: Claude Code.\n\n```text\nGoal: Fix flaky vision-lane pytest and stop for Cursor ACK.\nScope:\n- in: test_media_lane / vision lane tests\n- Out of scope: payment, loot doctrine, Start bots\nPrior state: none — greenfield\nIssue cards:\n- I1 symptom: vision lane tests flaky; evidence: unknown; severity: P1; depends_on: none; acceptance: pytest -k vision pass\nConstraints: judgment_ceiling MUST NOT invent payment/loot doctrine\nVerification: cd tbcc/backend && py -3.13 -m pytest tests/ -x -q -k vision\nWorking agreement: write _report.md after phase; STOP for Cursor /cc-report\nTarget profile: grind; filesystem+shell; MUST NOT decide pricing\n```\n",
+      "assertions": [
+        {"type": "contains", "value": "Goal:"},
+        {"type": "contains", "value": "Verification:"},
+        {"type": "contains", "value": "Out of scope"},
+        {"type": "not_contains", "value": "as we discussed"},
+        {"type": "not_contains", "value": "as discussed above"},
+        {"type": "max_words", "value": 400}
+      ]
+    },
+    {
+      "id": "chat-ref-fails",
+      "expect_ok": false,
+      "prompt": "/directive for Claude Code",
+      "output": "```text\nGoal: Fix the vision stuff as discussed above.\nScope: in tests; Out of scope: payment\nVerification: pytest -k vision\n```\n",
+      "assertions": [
+        {"type": "not_contains", "value": "as discussed above"}
+      ]
+    },
+    {
+      "id": "missing-verification-fails",
+      "expect_ok": false,
+      "prompt": "/directive TARGET Claude Code",
+      "output": "```text\nGoal: Fix vision lane flakes.\nScope:\n- in: vision tests\n- Out of scope: payment\nPrior state: none — greenfield\nWorking agreement: STOP for ACK\n```\n",
+      "assertions": [
+        {"type": "contains", "value": "Verification"}
+      ]
+    },
+    {
+      "id": "payment-fenced",
+      "prompt": "TARGET: Claude Code\nISSUES:\n- vision lane stuff broken on network?\n- tests failing maybe test_media_lane\n- also update sprint state\n- don't touch payment\n- need report back",
+      "output": "Literal: cold-start directive for Claude Code. Ascend: no. TARGET: Claude Code.\n\n```text\nGoal: Stabilize vision/media lane tests and report back for Cursor ACK.\nScope:\n- in: vision lane / test_media_lane; sprint state note if required by verify\n- Out of scope: payment, Start bots, loot doctrine\nPrior state: none — greenfield\nIssue cards:\n- I1 symptom: vision lane broken?; evidence: unknown; P1; none; acceptance: diagnose or pytest pass\n- I2 symptom: test_media_lane failing; evidence: unknown; P1; I1; acceptance: pytest -k media_lane pass\nConstraints: MUST NOT invent payment changes\nVerification: py -3.13 -m pytest tbcc/backend/tests/ -x -q -k media_lane\nWorking agreement: write tbcc/docs/handoffs/YYYY-MM-DD_vision-lane_report.md; STOP for Cursor ACK\nTarget profile: grind; MUST NOT decide payment\n```\n",
+      "assertions": [
+        {"type": "contains", "value": "Out of scope"},
+        {"type": "regex", "value": "(?i)Out of scope:[\\s\\S]*payment"},
+        {"type": "contains", "value": "Verification:"},
+        {"type": "not_contains", "value": "as we discussed"},
+        {"type": "regex", "value": "(?m)^Goal:(?!.*payment).*$"}
+      ]
+    }
+  ]
+}

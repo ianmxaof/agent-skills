@@ -1,0 +1,20 @@
+{
+  "skill": "tbcc-silent-fail",
+  "cases": [
+    {
+      "id": "anthropic-harness-shape",
+      "assertions": [
+        {"type": "contains", "value": "Freedom:"},
+        {"type": "contains", "value": "Self-correct"},
+        {"type": "contains", "value": "Harness attach"}
+      ]
+    },
+    {
+      "id": "external-stop-language",
+      "assertions": [
+        {"type": "contains", "value": "external stop"},
+        {"type": "regex", "value": "(?i)never.?seen|stale|blocked"}
+      ]
+    }
+  ]
+}

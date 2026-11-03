@@ -1,0 +1,18 @@
+---
+description: PowerCore Product Qualify (PPQ) — maturity ladder; load when product enters scope / sellable
+globs: "**/products/**/QUALIFICATION.md,**/packaging/**/*,**/design/powercore-product-qualification.md"
+alwaysApply: false
+---
+
+# PowerCore Product Qualify (tip)
+
+When a PowerCore product enters scope, needs installer/onboarding/chrome/Vault
+review, or before claiming sellable / store-ready, load **powercore-product-qualify**
+and read:
+
+`powercore-ops/design/powercore-product-qualification.md`
+
+Checklists live under `powercore-ops/products/<id>/QUALIFICATION.md`.
+
+PPQ is product completeness. Ship Gate is build health. Both required for sellable.
+Do not invent checklist evidence; stop for operator pick after AUDIT.

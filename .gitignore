@@ -1,7 +1,30 @@
 # Skill execution logs (opt-in logging)
 .skill-usage/
 
+# Endgates / rank-skills metrics + hook cache
+.skill-gap/
+
+# Large raw clones (keep SOURCE cards + sorted units in git if you want)
+vendor/incoming/*
+!vendor/incoming/.gitkeep
+
 # OS files
 .DS_Store
 Thumbs.db
+__pycache__/
+*.pyc
+*.overnight.bak
 
+
+# PowerCore Ship Gate evidence
+.ship-gate/
+
+
+# Built packs / app deps (source stays tracked)
+/dist/
+apps/**/node_modules/
+apps/**/dist/
+apps/**/dist-inspect/
+apps/**/src-tauri/target/
+surfaces/**/*.zip
+scripts/__pycache__/

@@ -1,0 +1,37 @@
+{
+  "skill": "cc-report",
+  "cases": [
+    {
+      "id": "paste-fence-required",
+      "assertions": [
+        {"type": "contains", "value": "PASTE INTO CLAUDE CODE"},
+        {"type": "contains", "value": "PASTE INTO CURSOR"},
+        {"type": "not_contains", "value": "ACK stays in Cursor. Do not paste"}
+      ]
+    },
+    {
+      "id": "ack-fields-required",
+      "assertions": [
+        {"type": "contains", "value": "Verdict:"},
+        {"type": "contains", "value": "Report:"},
+        {"type": "contains", "value": "Do:"},
+        {"type": "contains", "value": "Do not:"}
+      ]
+    },
+    {
+      "id": "forbidden-actions",
+      "assertions": [
+        {"type": "regex", "value": "(?i)push"},
+        {"type": "contains", "value": "start bots"}
+      ]
+    },
+    {
+      "id": "anthropic-harness-shape",
+      "assertions": [
+        {"type": "contains", "value": "Freedom:"},
+        {"type": "contains", "value": "Self-correct"},
+        {"type": "contains", "value": "Harness attach"}
+      ]
+    }
+  ]
+}

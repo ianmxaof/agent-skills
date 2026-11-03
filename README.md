@@ -55,9 +55,60 @@ warp> Run project-structure-analyzer on this codebase
 cursor> Implement the recommendations from 2024-01-05_project-structure-analyzer_full-project.md
 ```
 
+## Vendor pipeline (dump → sort → promote)
+
+Found a skill / ruleset / command pack? Dump it here. It sorts by kind and importance over time. Nothing goes live until you promote.
+
+```powershell
+cd path\to\agent-skills
+py -3.13 scripts\pipeline.py https://github.com/spencerpauly/awesome-cursor-skills
+py -3.13 scripts\promote.py --list
+py -3.13 scripts\promote.py --name prompt-engineering          # library only
+py -3.13 scripts\promote.py --name prompt-engineering --live   # also ~/.cursor/skills
+```
+
+Or in chat: `/ingest-skills` + paste the URL (see `.cursor/commands/ingest-skills.md`).
+
+Details: [`vendor/README.md`](vendor/README.md).
+
+## PowerCore skill-gap (suggest missing skills)
+
+Detect repeatable how-we-work that is **not** already in `.cursor/skills/`. Suggest-only — never auto-writes `SKILL.md`. Prefer **`powercore-*`** names (no new `tbcc-*`).
+
+```powershell
+cd path\to\agent-skills
+py -3.13 -m tools.skill_gap.run_gate --prompt "..." --response "..." --json
+py -3.13 -m tools.skill_gap.run_evals --skill cc-report
+py -3.13 -m tools.skill_gap.overnight_loop --skill cc-report --until-perfect
+py -3.13 -m pytest tests/test_skill_gap.py -q
+```
+
+Skill: `powercore-skill-gap` · always-on rule: `.cursor/rules/powercore-skill-gap-gate.mdc`
+
+Shelves:
+
+| Path | Role |
+|------|------|
+| `vendor/incoming/` | Raw dumps from URLs / zips / local folders |
+| `vendor/sorted/` | Classified units + importance cards |
+| `.cursor/skills/` | Portable library (archive) |
+| `~/.cursor/skills/` | Live Cursor load (optional `--live`) |
+
 ## Skill Organization
 
-Skills are organized by category:
+Two library layouts live in this repo on purpose:
+
+- `skills/` — older Warp-style notes (`category/skill-name.md`)
+- `.cursor/skills/` — Cursor Agent Skills (`skill-name/SKILL.md`)
+
+Cursor does **not** load this repo just because it is open in a workspace. Live loading still comes from:
+
+1. `~/.cursor/skills/` on this machine (every Cursor project)
+2. A project's `.claude/skills/` for Claude Code
+
+Copy from `.cursor/skills/` into those live folders when a skill should run — or use `scripts/promote.py --live`.
+
+Warp-era categories under `skills/`:
 
 - **analysis/**: Discovery and mapping skills (e.g., `project-structure-analyzer`)
 - **architecture/**: Architecture review and design skills
@@ -202,7 +253,10 @@ agent-skills/
 ├── SKILL-SELECTOR.md         # Decision tree
 ├── SKILL-MAP.mmd             # Visual skill map
 ├── MIGRATION-GUIDE.md        # Refactoring procedures
-├── skills/                   # All skill definitions
+├── scripts/                  # ingest / sort / promote / pipeline
+├── vendor/                   # dump zone + catalog (see vendor/README.md)
+├── .cursor/skills/           # Cursor SKILL.md portable library
+├── skills/                   # Warp-era skill definitions
 ├── protocols/                # Handoff protocols
 ├── meta/                     # System rules and policies
 ├── skill-chains/             # Version-locked combinations
@@ -210,6 +264,10 @@ agent-skills/
 ├── tests/                    # Testing framework
 └── .skill-usage/             # Execution logs (git-ignored)
 ```
+
+## Portability
+
+Clone or copy this repo next to any project. Scripts resolve paths from the repo root only — no hard dependency on TBCC or a fixed drive letter. To carry skills into another machine: copy the repo, then `promote.py --live` (or copy `.cursor/skills/<name>` into that project's `.cursor/skills/`).
 
 ## Key Documents
 

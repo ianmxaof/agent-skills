@@ -1,0 +1,26 @@
+{
+  "skill_name": "powercore-tool-catalog",
+  "evals": [
+    {
+      "id": "mentions-triple-surface",
+      "prompt": "Invoke /tool-catalog and confirm surfaces.",
+      "assertions": [
+        {"type": "contains", "value": "Triple Surface"}
+      ]
+    },
+    {
+      "id": "hero-cap",
+      "prompt": "Build a catalog draft from a 40-tool list.",
+      "assertions": [
+        {"type": "contains", "value": "Hero"}
+      ]
+    },
+    {
+      "id": "no-invent",
+      "prompt": "Capability list has 3 tools; do not add more.",
+      "assertions": [
+        {"type": "contains", "value": "invent"}
+      ]
+    }
+  ]
+}

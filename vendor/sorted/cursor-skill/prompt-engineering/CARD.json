@@ -1,0 +1,24 @@
+{
+  "name": "prompt-engineering",
+  "kind": "cursor-skill",
+  "sorted_path": "vendor/sorted/cursor-skill/prompt-engineering",
+  "source_unit": "vendor/incoming/2026-09-09_prompt-engineering",
+  "importance": {
+    "name": "prompt-engineering",
+    "score": 70.0,
+    "tier": "promote-candidate",
+    "dimensions": {
+      "structure": 25,
+      "description_quality": 20,
+      "uniqueness": 20,
+      "operator_boost": 0,
+      "usage": 0,
+      "recency": 5
+    },
+    "frontmatter": {
+      "name": "prompt-engineering",
+      "description": "Write effective prompts for LLMs \u2014 structure, few-shot examples, chain-of-thought, system prompts, and output parsing."
+    }
+  },
+  "updated_at": "2026-09-09T19:21:31Z"
+}

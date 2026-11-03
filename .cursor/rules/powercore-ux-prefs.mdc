@@ -1,0 +1,18 @@
+---
+description: PowerCore UX prefs — scroll/focus/rail feel; load skill when building UI
+globs: "**/*.{py,css,ps1,html,vue,tsx,ts,jsx,md}"
+alwaysApply: false
+---
+
+# PowerCore UX prefs (tip)
+
+When building or fixing PowerCore UI (sidebars, scroll/wheel, focus, composers,
+history rails, panels), load **powercore-ux-prefs** and read:
+
+`powercore-ops/design/powercore-ux.preferences.md`
+
+On operator UX corrections (“wheel should always scroll X”), fix code **and**
+CAPTURE into that index (`PX-###`).
+
+Do not invent competing scroll/focus behavior when `PX-001` (pointer-over scroll
+host) already covers it.

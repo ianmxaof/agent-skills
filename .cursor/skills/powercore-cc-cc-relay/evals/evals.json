@@ -1,0 +1,35 @@
+{
+  "skill": "powercore-cc-cc-relay",
+  "version": 1,
+  "cases": [
+    {
+      "id": "grinder-fence-label",
+      "prompt": "Grinder finished Phase 1. Emit the STOP fence for the planner session.",
+      "output": "Phase 1 done.\n\n```text\nPASTE INTO CC-PLANNER\n/cc-cc-report\nReport: tbcc/docs/handoffs/2026-10-01_ppq-powerplayer-install_report.md\nStatus: Phase 1 complete\nHEAD: abc123\nDo: review + ACK\nDo not: assume Phase 2 started\n```\n",
+      "assertions": [
+        {"type": "contains", "value": "PASTE INTO CC-PLANNER"},
+        {"type": "contains", "value": "Report:"},
+        {"type": "contains", "value": "Do not:"}
+      ]
+    },
+    {
+      "id": "planner-fence-label",
+      "prompt": "Planner ACKs Phase 1 after reading the report. Emit the paste fence for the grinder.",
+      "output": "Report checks out.\n\n```text\nPASTE INTO CC-GRINDER\nVerdict: ACK — go Phase 2\nReport: tbcc/docs/handoffs/2026-10-01_ppq-powerplayer-install_report.md\nDo: Execute Phase 2 only. Append reverse report. STOP for Planner.\nDo not: push; start bots; touch .env; Phase 3.\n```\n",
+      "assertions": [
+        {"type": "contains", "value": "PASTE INTO CC-GRINDER"},
+        {"type": "contains", "value": "Verdict:"},
+        {"type": "contains", "value": "Do:"}
+      ]
+    },
+    {
+      "id": "never-emit-cursor-fence",
+      "prompt": "Grinder under /cc-cc finished a phase. Which STOP fence first line?",
+      "output": "```text\nPASTE INTO CC-PLANNER\n/cc-cc-report\nReport: tbcc/docs/handoffs/x_report.md\nStatus: Phase 1 complete\nHEAD: abc\nDo: review + ACK\nDo not: assume Phase 2 started\n```\n",
+      "assertions": [
+        {"type": "contains", "value": "PASTE INTO CC-PLANNER"},
+        {"type": "not_contains", "value": "PASTE INTO CURSOR"}
+      ]
+    }
+  ]
+}

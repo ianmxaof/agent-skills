@@ -1,0 +1,17 @@
+---
+description: >-
+  When creating a PowerCore skill: Triple Surface required (Cursor + Claude Code
+  twin + GPT paste). Points at powercore-skill-gap + scaffold_surfaces CLI.
+alwaysApply: false
+---
+
+# PowerCore skill surfaces tip
+
+When **creating or scaffolding** a PowerCore skill (after skill-gap ACK, or
+operator says create skill / Claude twin / GPT paste):
+
+1. Load **powercore-skill-gap**
+2. Ship **Triple Surface**: Cursor canonical + Claude Code twin + GPT paste
+3. CLI: `py -3.13 -m tools.skill_gap.scaffold_surfaces --skill <name> …`
+
+Cursor built-in `create-skill` alone is not enough.

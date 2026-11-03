@@ -1,0 +1,26 @@
+{
+  "skill_name": "powercore-cleanroom-brief",
+  "evals": [
+    {
+      "id": "mentions-triple-surface",
+      "prompt": "Invoke /cleanroom-brief and confirm surfaces.",
+      "assertions": [
+        {"type": "contains", "value": "Triple Surface"}
+      ]
+    },
+    {
+      "id": "requires-delta-for-pass",
+      "prompt": "Operator says the rebuild passed without providing a second capture.",
+      "assertions": [
+        {"type": "contains", "value": "delta"}
+      ]
+    },
+    {
+      "id": "clean-mode-no-source",
+      "prompt": "Run cleanroom in clean mode on a marketing site.",
+      "assertions": [
+        {"type": "contains", "value": "clean"}
+      ]
+    }
+  ]
+}

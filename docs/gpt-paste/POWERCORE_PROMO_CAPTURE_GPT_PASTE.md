@@ -32,6 +32,8 @@ RULES:
 - Recordings are short and bounded (default 90s, hard ceiling 300s). Never continuous.
 - MUST NOT upload, post to Buffer, set a store product active, or invent pricing/doctrine. Stop for the human before any such step.
 - Windows only.
+- STORE CARD: card-hybrid/card-still read only kept captures and write only to product-loops/_inbox or product-cards/_variants. NEVER overwrite a live product-cards/<slug>.png or write product-loops/<slug>.webm; publishing needs a separate human ACK.
+- DISCLOSURE: if a source capture's notes say STAGED / synthesised / simulated / mock, the output sidecar carries that note and disclosure_required=true; any listing or hover copy must keep it. Default blend is inset (pip hides dark cards).
 
 COMMANDS (run by the human from powercore-ops/; needs Pillow, and ffmpeg on PATH for clips):
   py -3.13 -m tools.capture list-windows
@@ -39,6 +41,11 @@ COMMANDS (run by the human from powercore-ops/; needs Pillow, and ffmpeg on PATH
   py -3.13 -m tools.capture record start --window "<title>" --product <id> --tag <slug> [--max-seconds N]
   py -3.13 -m tools.capture record stop
   py -3.13 -m tools.capture keep keep|discard <path-to-sidecar.json>
+  # store card (kept captures only; always --dry-run first):
+  py -3.13 -m tools.capture card-hybrid --slug <slug> --card <product-cards/slug.png> --from <record-sidecar.json> --capture-start <s> [--blend inset|pip|softcut|wipe] [--bounce-slug <slug>-hybrid-smoke]
+  py -3.13 -m tools.capture card-still  --slug <slug> --card <product-cards/slug.png> --from <sidecar.json> [--blend inset|pip]
+  # store listing copy (assembles sources + writes a skeleton only if STORE_COPY.md is absent; applies nothing):
+  py -3.13 -m tools.capture store-copy emit --product <id> [--out-dir <dir>] [--force] [--dry-run]
 
 OUTPUT CONTRACT:
 1. Product, window title, geometry used
@@ -46,13 +53,22 @@ OUTPUT CONTRACT:
 3. Keep/discard per capture
 4. Suggested next step (PPQ demoVideo or edit handoff); then stop and ask the human
 
+STORE LISTING COPY (extension; same skill, run once per milestone - not per commit):
+- Audience: a prospective buyer on the store page. Friendly, plain, factual. NO pricing, NO invented doctrine, do not call a clip tool an NLE.
+- Inputs the human provides: kept capture sidecars (keep=true) with their notes, products/<id>/QUALIFICATION.md, BUYER_START_HERE.md, the current products.json row.
+- Outputs: STORE_COPY.md (tagline, description, 5-8 verifiable feature bullets, 3-4 short story paragraphs, requirements, install note, privacy, listingDisclosure, FAQ, claims->evidence table) and store-copy.proposed.json (proposed patch for products.json + data/products.json: tagline/description/features/listingDisclosure/story, must_not_change, apply steps, any product-page.js diff DESCRIBED not made).
+- STOP BEFORE APPLY: never edit products.json/product-page.js unless the human says "apply copy". NEVER active:true; never touch price/artifact/cardLoopVideo/demoVideo.
+- DISCLOSURE: if any kept capture is STAGED/synthesised/simulated/mock (disclosure_required), include a buyer-worded listingDisclosure plus the verbatim source note; never edit it out until a real-media recapture replaces it.
+- HONESTY: say unsigned/SmartScreen and external prerequisites plainly; mark claims that depend on an unrun human check; every claim cites a file/test/report or is dropped.
+
 PROCEDURE:
 1. Human launches the product and confirms it appears in list-windows.
 2. Stage: real content playing, fixed window size (e.g. 1280x720), no overlapping windows, cursor out of frame.
 3. Dry-run the shot to confirm the resolved window and output path.
 4. Take the shot, or record start -> demo -> record stop.
 5. Human reviews the media and runs keep keep|discard on each sidecar.
-6. Stop; do not edit, upload, or publish.
+6. Optional: card-hybrid / card-still on a kept capture (dry-run first), bounce under a smoke slug.
+7. Stop; do not edit, upload, or publish.
 ```
 
 ## Sync rule

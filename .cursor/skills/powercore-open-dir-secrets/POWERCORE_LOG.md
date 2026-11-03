@@ -1,0 +1,88 @@
+# POWERCORE_LOG — powercore-open-dir-secrets
+
+## 2026-10-30 — Maverick strike
+
+**What:** Ship `open-dir-secrets` scanner (`odsec.py`) as a Maverick strike — five stages
+(probe / inventory / identify / verify / report), GET-only, redacted-at-write, Hub `[run]`
+peer of repo-trust / feature-scan. Diplomat wraps; does not unwrap.
+**Why:** Defensive config-audit class (gitleaks / nuclei exposed-config / trufflehog verify).
+Operator-selected hosts; authorization outside code.
+**Risk:** Diplomat may flag verify-against-provider as dual-use; contract + this LOG are the
+sanctioned channel — code ships as specified.
+**Revert:** delete `powercore-open-dir-secrets/` (+ later Phase 2 registry/present/Hub allowlist).
+**Watch:** Phase 2 Hub `prepareTrustScanArgv` allowlist; no consent gates; exit 0 always.
+
+## 2026-10-30 — sendgrid verify row kept as shipped
+
+**What:** `PROVIDERS["sendgrid"]` remains `("SG.", "https://api.sendgrid.com/v3/scopes")`
+exactly as Artifact 1. No code change. Non-200/401 (including 403) → `live: null` / unverified.
+**Why:** Phase 1 ACK locked the row; 403→unverified is already the default “other status” path.
+**Risk:** SendGrid may return 403 for some valid keys on `/v3/scopes` → false unverified, not
+false LIVE. Acceptable until a cheaper GET auth endpoint is chosen later.
+**Revert:** n/a (no-change). Future endpoint swap is a new LOG + code change.
+**Watch:** smoke/CI must not assert a specific sendgrid verify outcome.
+
+## 2026-10-30 — inventory path join: no char-class lstrip on hrefs
+
+**What:** Artifact used `href.lstrip("./")`, which strips every leading `.`/`/` char and
+turns `.env` into `env`. Replaced with prefix-only `./` trim so dotfiles stay intact.
+**Why:** Without this, open-dir listings never fetch `.env` / `.env.bak` — core miss.
+**Risk:** Low; only changes relative href normalization.
+**Revert:** restore `lstrip("./")` (breaks dotfile inventory).
+**Watch:** smoke must include a `.env` href and show a redacted row.
+
+## 2026-10-30 — PLACEHOLDER dropped bare `xxxx` substring
+
+**What:** Artifact `PLACEHOLDER` included `xxxx`, which also matched hard-constraint smoke
+dummies (`sk-` + 40× `x`). Pattern is now `YOUR_|changeme|placeholder|example|TODO` only.
+**Why:** Without this, mandated prefix+x-fill fixtures never classify; smoke cannot pass.
+**Risk:** A real listing whose key material literally contains `xxxx` as filler may now classify
+(still redacted; verify still runs). Rare vs blocked smoke.
+**Revert:** restore `xxxx` in `PLACEHOLDER` and change smoke dummies to non-x fill (needs ACK).
+**Watch:** smoke `.env` must stay prefix + x-fill only — no realistic entropy.
+**Rule used:** remove the `xxxx` alternation from the PLACEHOLDER regex; leave
+`YOUR_|changeme|placeholder|example|TODO` intact so doc-template / instructions text
+still fails closed (those tokens mark non-live placeholders, not x-fill dummies).
+
+## 2026-10-30 — Hub core: prepareTrustScanArgv allowlist +id
+
+**What:** Add `open-dir-secrets` to `powercore-browser-hub/extension/vincent-skills.js`
+`prepareTrustScanArgv` allowlist (same any-https inject branch shape as website-clone /
+feature-scan: `--json` + tab URL). No `network_capture`. Zero edits to the repo-trust path.
+**Why:** `needs_tab_url` in present is presentation-only; without this allowlist Hub never
+injects the tab URL for `/run open-dir-secrets`.
+**Risk:** Wrong allowlist shape could break feature-scan inject — verify feature-scan branch
+unchanged; only add `isOdsec` parallel to `isAesthetic`.
+**Revert:** remove `isOdsec` / hint / gate inclusion; leave present+registry.
+**Watch:** extension reload after edit; `/run feature-scan` still injects tab URL.
+
+## Phase 2 — pattern table v2 (registry tokens + platform-year creds)
+**What:** identify-stage additions per handoff (registry/npm/PyPI/Docker/GitHub/AWS
+patterns, platform-year CSV rows, .npmrc/.pypirc inventory, ordering registry > AWS);
+no-PROVIDERS findings tag `unverified`.
+**Why:** CISA/Nightwing (Krebs 2026-05): registry creds are the supply-chain crown
+jewels; plaintext creds are CSV columns. History lane deferred to Phase 3.
+**Risk:** low — additive patterns; verify surface and dual-use gate untouched.
+**Revert:** drop the Phase 2 pattern block; ordering reverts with it.
+**Watch:** FP rate on generic user:token + platform-year rows; sk-/SG. regression.
+
+## 2026-10-31 — Phase 2 fixture rig + CRLF / github_pat_
+**What:** Committed `fixtures/listing/` + `assert_odsec_phase2_smoke.py`; platform-year
+pattern accepts `\r?$` (Windows CRLF); add `github_pat_` twin under kind `github`;
+drop `ghcr_` (no such prefix). No PROVIDERS / verify-stage changes.
+**Why:** Diplomat audit — TEMP/utf8NoBOM flake; paste fixtures must be on disk; `$`
+anchor missed `admin,jira2026\r`. Smoke must fail loud on empty findings.
+**Risk:** low — additive fixtures + one regex anchor tweak.
+**Revert:** remove fixtures/ + assert script; restore platform-year `$` only (breaks Win CRLF).
+**Watch:** handoff claim `finding_count==8` undercounts (actual composition **11** =
+3 PROVIDERS + npm + pypi + env(password) + 3 csv + docker-auth + registry).
+
+## 2026-10-31 — LIVE mock seam (Diplomat 3/3)
+**What:** `assert_odsec_phase2_smoke.py` patches `verify_liveness` via `unittest.mock`:
+openai → True (LIVE), other PROVIDERS → False (stale); assert ≥1 `live=True`.
+Real-provider GET retired as required — optional only (`ODSEC_SMOKE_LIVE_NET=1`),
+never blocks green. No `odsec.py` / PROVIDERS / verify-stage product change.
+**Why:** Audit 1.1 — LIVE was uncovered; committed-and-2/3 looked finished.
+**Risk:** low — test-only; 407c15c untouched (second commit).
+**Revert:** drop mock seam / LIVE assert from smoke; restore real-GET-as-required (flake).
+**Watch:** composition gate stays 11; LIVE is tag-aware (≥1), not count-aware.

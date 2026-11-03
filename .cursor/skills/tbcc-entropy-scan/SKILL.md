@@ -1,0 +1,94 @@
+---
+name: tbcc-entropy-scan
+description: >-
+  Runs a capped leftover-yield scan with evidence-scored vertices across a lens
+  rolodex (revenue, innovation, devops, marketing). Invoke with /entropy-scan,
+  /entropy-scan marketing, /entropy-scan brainstorm, scour vertices.
+---
+
+# TBCC Entropy Scan (v1.2)
+
+Changelog: v1.2 — depth per vertex (evidence + confidence), blocked(hard)/blocked(soft) pressure, Freedom + Self-correct + Harness attach, brainstorm mode (second-ring ≤2, no checkpoint-write), evals + body_assertions, third-person description. v1.1 — lens registry via `tbcc/docs/entropy-lenses.json`; compose Exit. v1.0 — initial conversion scan.
+
+## Purpose
+
+- Surface missed yield **before** locking a plan — then stop for a pick.
+- Lenses change the vertex axes only; the four-section contract stays the same.
+- Not an always-on executive for every bug fix.
+
+## When to Invoke
+
+- Trigger phrases: `/entropy-scan`, `/entropy-scan <lens>`, `/entropy-scan brainstorm [lens]`, `entropy scan`, `scour vertices`, `max yield this request`, `conversion vertices`, `/tbcc-entropy-scan`
+- Situational: product/funnel/pricing/CTA; or topic matches a lens `when_hints` in the JSON (e.g. notification tone → `marketing`); a greenfield/idea ask (`what if`, `brainstorm`, `new product idea`, `underexploited`) → `brainstorm` mode, lens defaults to `innovation`
+- **Skip:** named file-level bug fix; docs/lint/pytest only; tray / Telethon / `.env` / bot spawn; island deploy mechanics; “just the bug” / “literal only”
+
+## Execution Profile
+
+- Freedom: **medium-low** on the contract (four-section format, `missed|covered|blocked(hard)|blocked(soft)` enum, ≤5 cap are fixed); **medium** on which axes light up inside the resolved lens; **high** on axis pick only in `brainstorm` mode (cap still ≤5)
+- Mode: **Plan / Ask**; no code edits during the scan
+- Model lane: Frontier Plan/Ask when judgment gate fires; Auto for small copy/CTA; never Cloud for the scan itself
+- Parallelism: optional one readonly cheap explore
+- Mode inheritance: explore stays readonly
+
+## Delegation & Tooling
+
+- **Required read:** `tbcc/docs/entropy-lenses.json` (axes + infer_rules) — single source of truth; do not inline the per-lens axis lists here
+- Also: `tbcc/docs/SPRINT_STATE.md`
+- After pick: `tbcc-preflight` if ≥3 files; else implement / `directive-generator` per chains
+- Optional text lens (Plan only): `tbcc-prompt-chains` → `ENTROPY_AUDIT` on a pasted docs/handoff excerpt when vertices flag stale assumptions — not a replacement for this scan
+- MCP: none; do not Start bots
+
+## Harness attach
+
+| Surface | Value |
+|---------|-------|
+| **MCP** | none |
+| **Hooks** | none mid-scan — this skill stops before any hook-worthy action (Plan-only) |
+| **Memory** | chat-ok; reading prior scan notes / inbox thinktank bullets as an evidence source is fine — **never** write to the inbox mid-scan (checkpoint-write deferred, see Prior state) |
+| **Compose** | → `tbcc-preflight` (≥3-file pick) \| `directive-generator` (Lane C) \| `tbcc-prompt-chains` (`ENTROPY_AUDIT` / `LEVERAGE_MATRIX`) |
+
+## Behavioral Rules
+
+- Resolve lens: explicit `/entropy-scan <lens>` → else infer from `infer_rules` → else default `revenue` only for funnel/money asks; if topic is clearly non-revenue, **ask once** or use inferred lens (do not force monetization axes on devops/marketing threads)
+- **Brainstorm mode** — `/entropy-scan brainstorm [lens]`, or auto-detected on a greenfield/idea ask: lens defaults to `innovation` unless named explicitly; inside **Ascend?**, add ≤2 indented `- ring: <question>?` lines (second-ring follow-on questions, never implemented, never a 6th vertex); outside brainstorm mode, do not add ring lines
+- Reason by: literal → ≤5 vertices on that lens’s `vertex_axes` → one slice or no-ascend
+- **Blocked pressure** — every `blocked` vertex is `blocked(hard)` or `blocked(soft)`, never bare `blocked`:
+  - `blocked(hard)` — a live-ops/doctrine/do-not-touch wall. Cite the wall source inline (`wall: <SPRINT_STATE.md line | CLAUDE.md policy | doctrine>`) and stop expanding — never propose unblocking a hard wall.
+  - `blocked(soft)` — missing data / unbuilt dependency / unread file. Add one reversible unblock hypothesis inline (`pressure: <...>`) — a hypothesis only, never implemented in-scan.
+- Avoid: fake FOMO; dark patterns; rewriting Do not touch; unbounded implementation; proposing a workaround for a hard wall
+- Prioritize: operator done-condition; sprint goal; reversible slices
+
+## Output Contract
+
+- Required (dense), still exactly **four** sections — depth lives inside the Vertices lines, never as a fifth section:
+  1. **Literal ask** — one sentence (+ **Lens:** name, + **Mode:** `scan` | `brainstorm` when brainstorm is active)
+  2. **Vertices** — ≤5 lines, one of:
+     - `- [missed·<high|med|low>] <axis> — <claim> · ev: <path:line | cmd output | "inferred">`
+     - `- [covered·<high|med|low>] <axis> — <claim> · ev: <...>`
+     - `- [blocked(hard)] <axis> — <claim> · wall: <source>`
+     - `- [blocked(soft)·<high|med|low>] <axis> — <claim> · ev: <...> · pressure: <reversible unblock hypothesis>`
+     - `ev: inferred` (no file/cmd evidence) forces `conf: low` — never `high`/`med` on a vibe
+  3. **Ascend?** — yes + one slice + done-condition **or** no + why literal; in `brainstorm` mode only, ≤2 `  - ring: <question>?` lines may follow (not implemented this pass)
+  4. **Fence** — in / out
+- Done means: operator picked or said literal only; **no code** in this protocol
+- Failure: blocked vertex → tag and stop expanding
+
+### Self-correct
+
+1. **Draft** the four sections.
+2. **Check**: every `missed`/`covered` line has `ev:`; `ev: inferred` lines are `conf: low`; every `blocked` line is tagged `(hard)` with `wall:` or `(soft)` with `pressure:`; ≤5 vertex lines total; if `brainstorm` mode, ≤2 `ring:` lines and none implemented.
+3. **Revise** once if any check fails — fix the line, don't drop the section.
+
+## Exit Conditions
+
+- Next: pick → `/preflight` if ≥3 files, else implement on Desktop Auto; or `/directive` for Lane C
+- Composes: → `preflight` | `directive-generator` | `tbcc-prompt-chains` (ENTROPY_AUDIT / LEVERAGE_MATRIX on option sets) | implement
+- Follows into: Bottom line **Compose:** when a chain edge is obvious
+
+## Agent procedure
+
+1. Read sprint state + `entropy-lenses.json`. Resolve mode (`scan` default, `brainstorm` if flagged/inferred) and lens.
+2. If skip matches: one line, do literal ask.
+3. Draft four sections per Output Contract (brainstorm adds ring lines inside Ascend? only).
+4. Self-correct per above — revise once if any check fails.
+5. Emit. Stop for pick.

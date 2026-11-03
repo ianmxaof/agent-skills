@@ -1,0 +1,14 @@
+---
+description: >-
+  When Cursor usage is dark and two Claude Code sessions must ACK/handoff:
+  load powercore-cc-cc-relay (/cc-cc, Planner/Grinder fences).
+alwaysApply: false
+---
+
+# PowerCore CC↔CC relay tip
+
+Cursor dry + multiphase grind → **powercore-cc-cc-relay**:
+
+- Grinder STOP: `PASTE INTO CC-PLANNER`
+- Planner ACK: `PASTE INTO CC-GRINDER`
+- Disk `*_report.md` still wins over chat

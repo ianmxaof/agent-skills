@@ -1,0 +1,15 @@
+---
+description: >-
+  CC Relay blind-paste bridge — Cursor and Claude Code talk through
+  PASTE INTO fences; operator copies without reading ACKs.
+alwaysApply: true
+---
+
+# TBCC CC paste bridge (always on)
+
+The operator **blind-pastes** replies between Cursor and Claude Code on multiphase relay turns (`/cc-report`, `/cc-run`, `/directive`, phase ACK/STOP). Make the paste the product; skip pure Q&A.
+
+- **Cursor →** one plain line for the human + one fence starting `PASTE INTO CLAUDE CODE` with `Verdict:` ACK|fix|wait, `Report:`, `Do:`, `Do not:` (addressed to Claude Code).
+- **Claude Code →** after each phase, append `*_report.md`, end with a fence starting `PASTE INTO CURSOR` (`/cc-report`, report path, status, HEAD).
+- A pasted `PASTE INTO CLAUDE CODE` fence is the go signal; its `Do:` beats chat vibes. Never start Phase N+1 from wait/fix.
+- Under `/cc-cc` use `PASTE INTO CC-PLANNER` / `CC-GRINDER` only: skill `powercore-cc-cc-relay`. Full procedure: `tbcc-cc-run`, `cc-report`.

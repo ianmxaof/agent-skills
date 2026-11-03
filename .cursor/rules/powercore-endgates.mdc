@@ -1,0 +1,17 @@
+---
+description: >-
+  Single end-of-turn tip — run endgates CLI after substantive turns (crystallize,
+  skill-gap, rank_skills). Replaces separate crystallize/skill-gap/ship tips.
+alwaysApply: true
+---
+
+# Endgates tip
+
+After **substantive** turns (not thanks/lint/Ask trivia):
+
+```powershell
+cd C:\Powercore-repo-main\agent-skills
+py -3.13 -m tools.skill_gap.endgates --prompt "USER" --response "ASSISTANT" --auto --plain
+```
+
+Before **done/deployed/sellable** on a PowerCore root: also ship-gate (`powercore-ship-gate` skill). Load skill bodies only when debugging scores. Hook runs endgates on stop (metrics; followup off by default).

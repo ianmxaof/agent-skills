@@ -1,0 +1,57 @@
+{
+  "skill": "tbcc-silent-fail",
+  "notes": "Legacy folder name; new skills use powercore-* naming.",
+  "cases": [
+    {
+      "id": "external-stop-line",
+      "prompt": "/silent-fail after rotator refresh",
+      "output": "Refresh finished.\n\nSilent-fail: rotator refresh · ok · POST /v1/rotator/refresh elapsed 8.7s deepinfra_models=192\n",
+      "assertions": [
+        {"type": "regex", "value": "(?i)silent-fail:"},
+        {"type": "not_contains", "value": "looks fine"},
+        {"type": "not_contains", "value": "should work"},
+        {"type": "max_words", "value": 200}
+      ]
+    },
+    {
+      "id": "self-attest-forbidden",
+      "expect_ok": false,
+      "prompt": "/silent-fail",
+      "output": "Silent-fail: models · ok · I checked and it looks fine",
+      "assertions": [
+        {"type": "not_contains", "value": "looks fine"},
+        {"type": "not_contains", "value": "I checked"}
+      ]
+    },
+    {
+      "id": "ok-without-stop-fails",
+      "expect_ok": false,
+      "prompt": "/silent-fail after deploy",
+      "output": "Deploy done.\n\nSilent-fail: post-queue · ok\n",
+      "assertions": [
+        {"type": "regex", "value": "(?i)(POST |GET |http|pytest|elapsed|probe|Invoke-WebRequest|redis)"}
+      ]
+    },
+    {
+      "id": "blocked-with-error-pass",
+      "prompt": "/silent-fail — Redis down",
+      "output": "Cannot reach Redis.\n\nSilent-fail: intake · blocked · redis.ConnectionError: Error 10061 connecting to localhost:6379\n",
+      "assertions": [
+        {"type": "regex", "value": "(?i)silent-fail:"},
+        {"type": "contains", "value": "blocked"},
+        {"type": "regex", "value": "(?i)(error|ConnectionError|10061)"},
+        {"type": "not_contains", "value": "looks fine"},
+        {"type": "not_contains", "value": "should work"}
+      ]
+    },
+    {
+      "id": "looks-fine-in-ok-fails",
+      "expect_ok": false,
+      "prompt": "/silent-fail",
+      "output": "Silent-fail: beat · ok · looks fine, no probe needed",
+      "assertions": [
+        {"type": "not_contains", "value": "looks fine"}
+      ]
+    }
+  ]
+}

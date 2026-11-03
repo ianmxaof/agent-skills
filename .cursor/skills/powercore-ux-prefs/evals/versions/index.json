@@ -1,0 +1,25 @@
+{
+  "current": "v0002_20260929-111933_na",
+  "entries": [
+    {
+      "id": "v0001_20260929-111358_na",
+      "file": "v0001_20260929-111358_na.md",
+      "ts": "2026-09-29T11:13:58Z",
+      "score": "",
+      "note": "seed: APPLY/CAPTURE/AUDIT + PX index pointer",
+      "parent": null,
+      "source": "manual",
+      "pinned": false
+    },
+    {
+      "id": "v0002_20260929-111933_na",
+      "file": "v0002_20260929-111933_na.md",
+      "ts": "2026-09-29T11:19:33Z",
+      "score": "",
+      "note": "SEED mode: mine agent-transcripts",
+      "parent": "v0001_20260929-111358_na",
+      "source": "manual",
+      "pinned": false
+    }
+  ]
+}
