@@ -139,3 +139,33 @@ def test_delta_rejects_empty_baseline_and_bad_tolerance() -> None:
         delta(empty, load_record(CANDIDATE))
     with pytest.raises(ValueError, match="tolerance"):
         delta(load_record(FIXTURE), load_record(CANDIDATE), tolerance=-1)
+
+
+# ---- Phase 3: dry brief card -----------------------------------------------
+
+EXAMPLE = SKILL_ROOT / "evals" / "fixtures" / "example_brief.md"
+
+
+def test_example_brief_matches_renderer() -> None:
+    from render_brief import render_brief
+
+    text = render_brief(load_record(FIXTURE), load_record(CANDIDATE), date="2026-11-02")
+    assert EXAMPLE.read_text(encoding="utf-8").replace("\r\n", "\n") == text
+
+
+def test_brief_without_candidate_does_not_score() -> None:
+    from render_brief import render_brief
+
+    text = render_brief(load_record(FIXTURE))
+    assert "Awaiting build" in text
+    assert "Overall:" not in text
+    for heading in ("## Source", "## Evidence summary", "## Build brief",
+                    "## Check delta (after build)", "## Next"):
+        assert heading in text
+
+
+def test_compose_mapping_note_names_all_sources() -> None:
+    note = (SKILL_ROOT / "references" / "compose-mapping.md").read_text(encoding="utf-8")
+    for name in ("powercore-website-clone", "powercore-website-feature-scan",
+                 "powercore-site-map-tree"):
+        assert name in note

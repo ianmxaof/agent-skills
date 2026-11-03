@@ -25,7 +25,8 @@ Evidence-gated rebuild check — not aesthetics-only clone or feature inventory 
 2. Envelope module (Cursor canonical): `agent-skills/.cursor/skills/powercore-cleanroom-brief/scripts/evidence_envelope.py`
 3. Emit build brief (must-match list)
 4. After build: re-capture → `delta(baseline, candidate, tolerance=0)` → `[{id, pass, note}]` (same module; claim pass only if `all_pass(rows)`)
-5. Big records: summary first
+5. Compose mapping (clone / feature-scan / site-map → items): `agent-skills/.cursor/skills/powercore-cleanroom-brief/references/compose-mapping.md`; render card: `scripts/render_brief.py baseline.json [candidate.json]`
+6. Big records: summary first
 
 ## Output contract
 

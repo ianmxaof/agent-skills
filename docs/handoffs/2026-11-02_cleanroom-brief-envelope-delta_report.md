@@ -101,3 +101,57 @@ surfaces powercore-cleanroom-brief: ok
 ### STOP
 
 Await Cursor `/cc-report` ACK before Phase 3 (compose mapping + dry brief card).
+
+---
+
+## Phase 3 — DONE (directive complete)
+
+### Done
+
+- **Compose mapping note:** `references/compose-mapping.md` maps `powercore-website-clone` (BRIEF/TOKENS/MOTION), `powercore-website-feature-scan` (FEATURES/STACK) and `powercore-site-map-tree` (tree/flow-nav card) into envelope items: `kind`, `id` pattern, `value` shape, clean-vs-deep gate, confidence mapping (observed→high, inferred→medium/low, unknown→no item). No scrapers added or touched.
+- **Dry brief:** `evals/fixtures/example_brief.md`, generated from the baseline + candidate fixtures by new `scripts/render_brief.py` (pure, deterministic; follows the Output Contract headings; Check delta only when a candidate is supplied, otherwise "Awaiting build — Not scoring"). Result for the fixtures: **FAIL, 2/4 rows pass**.
+- **Drift guard:** a test regenerates the example and compares (CRLF-normalized), so the example cannot silently rot.
+- **Locked semantics untouched:** `evidence_envelope.py` has zero diff this phase — extras still pass, only `kind` + `value` compared. The mapping note restates both as ground rules.
+- Surfaces: Cursor SKILL (Procedure steps 5–7, status v0.1.3), Claude twin, GPT paste step 5 carry the mapping/render pointers.
+- Hub `/run`, craft-anything, push, bots, `.env`, TBCC `CURRENT_DIRECTIVE.md`: not touched.
+
+### Files touched (agent-skills)
+
+| Path | Change |
+|------|--------|
+| `.cursor/skills/powercore-cleanroom-brief/references/compose-mapping.md` | add |
+| `.cursor/skills/powercore-cleanroom-brief/scripts/render_brief.py` | add |
+| `.cursor/skills/powercore-cleanroom-brief/evals/fixtures/example_brief.md` | add (generated) |
+| `.cursor/skills/powercore-cleanroom-brief/tests/test_evidence_envelope.py` | +3 tests (13 total) |
+| `.cursor/skills/powercore-cleanroom-brief/SKILL.md` | Procedure + status |
+| `.claude/skills/powercore-cleanroom-brief/SKILL.md` | steps 5–6 |
+| `docs/gpt-paste/POWERCORE_CLEANROOM_BRIEF_GPT_PASTE.md` | step 5 mapping |
+| `docs/handoffs/CURRENT_DIRECTIVE.md` | Cursor's Phase 3 pointer |
+
+Out-of-repo, uncommitted (same edit as Phase 2): identical Claude twins in `telegram_bot2/.claude/skills/powercore-cleanroom-brief/SKILL.md` and `powercore-ops/.claude/skills/powercore-cleanroom-brief/SKILL.md` — both now carry Phase 2 + Phase 3 twin edits.
+
+### Verification
+
+```text
+py -3.13 -m pytest .cursor/skills/powercore-cleanroom-brief -x -q --tb=short
+.............                                                            [100%]
+13 passed
+
+py -3.13 -m tools.skill_gap.scaffold_surfaces --skill powercore-cleanroom-brief --check
+surfaces powercore-cleanroom-brief: ok
+```
+
+### Judgment calls for Cursor to confirm (mapping policy, not delta semantics)
+
+- **Deep-only gate** for stack rows, DOM-id/API-evidenced features, and sitemap/robots/BFS routes — conservative reading of "clean = no source/JS reads"; written as "operator may relax".
+- **Item id/kind vocabulary** (`layout, structure, color, font, spacing, motion, feature, stack, nav, route`) is a convention in the note, not enforced by `validate_item` (kind remains free-form).
+- Brief's "Stack / structure notes" is a fixed placeholder; nothing infers a stack from evidence.
+
+### Risks
+
+- Mapping is documentation only: no code converts `TOKENS.md`/`FEATURES.md` into records yet — the brief agent does it by hand per the note.
+- `render_brief` shows values as sorted-key JSON, so large values make wide table cells.
+
+### STOP
+
+Directive complete after Cursor `/cc-report` ACK. Pending on the operator's side only: committing the two out-of-repo twin copies, and any push.

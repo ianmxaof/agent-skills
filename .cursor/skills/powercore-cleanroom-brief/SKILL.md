@@ -93,7 +93,9 @@ Order matters.
 2. **Envelope** — load/dump via `scripts/evidence_envelope.py` (`load_record` / `dump_record` / `make_record`). Fixtures: `evals/fixtures/evidence_baseline.json` (+ `evidence_candidate.json`, a known pass/fail/extra pair). Summary-first: read `summary`, page `items` with `page_items`.
 3. **Build brief** — what the agent must match; cite evidence ids.
 4. **Check** — re-capture at the same widths; list mismatches; pass/fail per item via `delta(baseline, candidate, tolerance=0)` → rows `{id, pass, note}`: baseline item missing / kind differs / value differs (numbers within `tolerance`) = fail; candidate-only items pass as `extra`. Claim overall pass only with `all_pass(rows)` (false for empty). Structural only — no pixel scoring.
-5. **Page big records** — summary first, then detail on request.
+5. **Compose mapping** — how `powercore-website-clone` / `-feature-scan` / `powercore-site-map-tree` outputs become envelope items (ids, `value` shapes, confidence, clean-vs-deep gate): [references/compose-mapping.md](references/compose-mapping.md). Capture skills are not re-implemented here.
+6. **Render** — `py -3.13 scripts/render_brief.py baseline.json [candidate.json]` emits the Output Contract card (delta only when a candidate exists); worked example: `evals/fixtures/example_brief.md`.
+7. **Page big records** — summary first, then detail on request.
 
 ```powershell
 cd C:\Powercore-repo-main\agent-skills
@@ -143,5 +145,5 @@ py -3.13 -m tools.skill_gap.scaffold_surfaces --skill powercore-cleanroom-brief 
 
 ## Status
 
-v0.1.2 — Phase 1 envelope + Phase 2 `delta()` / `all_pass()` on disk (`scripts/evidence_envelope.py`).
+v0.1.3 — envelope + `delta()` / `all_pass()` (`scripts/evidence_envelope.py`), compose mapping note, `scripts/render_brief.py` + example brief on disk.
 Hub `/run cleanroom-brief` not shipped.

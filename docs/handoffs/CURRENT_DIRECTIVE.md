@@ -6,8 +6,8 @@ Do **not** confuse with `telegram_bot2/tbcc/docs/handoffs/CURRENT_DIRECTIVE.md`.
 | Field | Value |
 |-------|--------|
 | **path** | `docs/handoffs/2026-11-02_cleanroom-brief-envelope-delta.md` |
-| **status** | **ACTIVE** — Phase 2 only after this ACK; STOP for `/cc-report` when done |
-| **active_phase** | Phase 2 |
+| **status** | **ACTIVE** — Phase 3 only after this ACK; STOP for `/cc-report` when done |
+| **active_phase** | Phase 3 |
 | **track** | cleanroom-brief evidence envelope + delta |
 | **updated** | 2026-11-02 |
 | **reverse** | `docs/handoffs/2026-11-02_cleanroom-brief-envelope-delta_report.md` |
